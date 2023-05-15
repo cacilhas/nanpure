@@ -1,0 +1,27 @@
+[package]
+name = "nanpure"
+version = "0.1.0"
+authors     = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
+license     = "BSD-3-Clause"
+readme      = "README.md"
+homepage    = "https://github.com/cacilhas/nanpure"
+repository  = "https://github.com/cacilhas/nanpure"
+keywords    = ["raylib", "sudoku"]
+description = "Yet another sudoku playing game."
+edition     = "2021"
+
+[profile.release]
+opt-level     = "s"
+codegen-units = 1
+debug = false
+lto   = true
+rpath = false
+strip = true
+
+[dependencies]
+anyhow = "1.0"
+
+[dependencies.raylib]
+version = "4.5"
+git = "https://github.com/litten2up/raylib-rs"
+branch = "4.5.0"

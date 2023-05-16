@@ -1,31 +1,7 @@
+mod level;
+
+pub use self::level::Level;
 use legion::*;
-
-const EXTREMELY_EASY: usize = (25 << 8) | 31;
-const EASY: usize = (32 << 8) | 44;
-const MEDIUM: usize = (45 << 8) | 49;
-const HARD: usize = (50 << 8) | 53;
-const FIENDISH: usize = (54 << 8) | 59;
-
-#[derive(Debug)]
-pub enum Level {
-    ExtremelyEasy,
-    Easy,
-    Medium,
-    Hard,
-    Fiendish,
-}
-
-impl Level {
-    fn count(&self) -> usize {
-        match self {
-            Self::ExtremelyEasy => EXTREMELY_EASY,
-            Self::Easy => EASY,
-            Self::Medium => MEDIUM,
-            Self::Hard => HARD,
-            Self::Fiendish => FIENDISH,
-        }
-    }
-}
 
 #[derive(Debug)]
 pub struct Game {
@@ -58,7 +34,7 @@ impl Game {
         for (_, position, candidates, current) in query.iter(&self.world) {
             if position.x == x && position.y == y {
                 if let Some(value) = value {
-                    if current.0.is_some() || !candidates.is_set(value) {
+                    if current.is_some() || !candidates.is_set(value) {
                         return;
                     }
                 }
@@ -75,7 +51,7 @@ impl Game {
         let mut query = <(&Cell, &Position, &Value)>::query();
         for (_, position, current) in query.iter(&self.world) {
             if position.x == x && position.y == y {
-                if current.0.is_some() {
+                if current.is_some() {
                     return;
                 }
                 break;
@@ -190,7 +166,7 @@ impl Default for Game {
                     _ => x,
                 };
                 let value = (value % 9) + 1;
-                world.push((Cell, Position { x, y }, Candidates(0), Value(Some(value))));
+                world.push((Cell, Position { x, y }, Candidates(0), Value::new(value)));
             }
         }
 
@@ -224,8 +200,34 @@ impl Candidates {
     }
 }
 
-#[derive(Debug)]
-struct Value(pub Option<u8>);
+#[derive(Debug, Default)]
+struct Value(Option<u8>);
+
+impl Value {
+    fn new(value: u8) -> Self {
+        Self(Some(value))
+    }
+
+    fn is_none(&self) -> bool {
+        self.0.is_none()
+    }
+
+    fn is_some(&self) -> bool {
+        self.0.is_some()
+    }
+}
+
+impl From<&Value> for Option<u8> {
+    fn from(value: &Value) -> Self {
+        value.0
+    }
+}
+
+impl From<&Value> for u8 {
+    fn from(value: &Value) -> Self {
+        value.0.unwrap()
+    }
+}
 
 #[derive(Debug)]
 struct IsGameOver(pub bool);
@@ -246,7 +248,7 @@ struct ToggleCandidate {
 
 #[system(for_each)]
 fn game_over(_: &Cell, value: &Value, #[resource] res: &mut IsGameOver) {
-    if value.0.is_none() {
+    if value.is_none() {
         res.0 = false;
     }
 }

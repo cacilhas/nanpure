@@ -1,0 +1,288 @@
+use legion::*;
+use raylib::misc::get_random_value;
+
+#[derive(Debug)]
+pub enum Level {
+    ExtremelyEasy,
+    Easy,
+    Medium,
+    Hard,
+    Fiendish,
+}
+
+impl Level {
+    fn unmark(&self) -> usize {
+        match self {
+            Self::ExtremelyEasy => (25 << 8) | 31,
+            Self::Easy => (32 << 8) | 44,
+            Self::Medium => (45 << 8) | 49,
+            Self::Hard => (50 << 8) | 53,
+            Self::Fiendish => (54 << 8) | 59,
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct Game {
+    schedule: Schedule,
+    world: World,
+}
+
+impl Game {
+    pub fn shuffle(&mut self, level: &Level) {
+        self.shuffle_x();
+        self.shuffle_y();
+        self.shuffle_x_group();
+        self.shuffle_y_group();
+        self.hide_cells(level.unmark())
+    }
+
+    pub fn is_game_over(&mut self) -> bool {
+        let mut resources = Resources::default();
+        resources.insert(IsGameOver(true));
+        self.schedule.execute(&mut self.world, &mut resources);
+        let res = match resources.get_mut::<IsGameOver>() {
+            Some(value) => value.0,
+            None => false,
+        };
+        res
+    }
+
+    pub fn set_cell(&mut self, x: u8, y: u8, value: Option<u8>) {
+        let mut query = <(&Cell, &Position, &Candidates, &Value)>::query();
+        for (_, position, candidates, current) in query.iter(&self.world) {
+            if position.x == x && position.y == y {
+                if let Some(value) = value {
+                    if current.0.is_some() || !candidates.is_set(value) {
+                        return;
+                    }
+                }
+                break;
+            }
+        }
+
+        let mut resources = Resources::default();
+        resources.insert(SetCell { x, y, value });
+        self.schedule.execute(&mut self.world, &mut resources);
+    }
+
+    pub fn toggle_candidate(&mut self, x: u8, y: u8, value: u8) {
+        let mut query = <(&Cell, &Position, &Value)>::query();
+        for (_, position, current) in query.iter(&self.world) {
+            if position.x == x && position.y == y {
+                if current.0.is_some() {
+                    return;
+                }
+                break;
+            }
+        }
+
+        let mut resources = Resources::default();
+        resources.insert(ToggleCandidate { x, y, value });
+        self.schedule.execute(&mut self.world, &mut resources);
+    }
+
+    fn shuffle_x(&mut self) {
+        for _ in 0..10 {
+            let g = get_random_value::<i32>(0, 2) as u8;
+            let x1 = get_random_value::<i32>(0, 2) as u8;
+            let x2 = (x1 + get_random_value::<i32>(1, 2) as u8) % 3;
+            let x1 = g * 3 + x1;
+            let x2 = g * 3 + x2;
+            let mut query = <(&Cell, &mut Position)>::query();
+            for (_, position) in query.iter_mut(&mut self.world) {
+                match position.x {
+                    x if x == x1 => position.x = x2,
+                    x if x == x2 => position.x = x1,
+                    _ => (),
+                }
+            }
+        }
+    }
+
+    fn shuffle_x_group(&mut self) {
+        for _ in 0..10 {
+            let g1 = get_random_value::<i32>(0, 2) as u8;
+            let g2 = (g1 + get_random_value::<i32>(1, 2) as u8) % 3;
+            let mut query = <(&Cell, &mut Position)>::query();
+            for (_, position) in query.iter_mut(&mut self.world) {
+                match position.x {
+                    x if x / 3 == g1 => position.x += g2 * 3 - g1 * 3,
+                    x if x / 3 == g2 => position.x += g1 * 3 - g2 * 3,
+                    _ => (),
+                }
+            }
+        }
+    }
+
+    fn shuffle_y(&mut self) {
+        for _ in 0..10 {
+            let g = get_random_value::<i32>(0, 2) as u8;
+            let y1 = get_random_value::<i32>(0, 2) as u8;
+            let y2 = (y1 + get_random_value::<i32>(1, 2) as u8) % 3;
+            let y1 = g * 3 + y1;
+            let y2 = g * 3 + y2;
+            let mut query = <(&Cell, &mut Position)>::query();
+            for (_, position) in query.iter_mut(&mut self.world) {
+                match position.y {
+                    y if y == y1 => position.y = y2,
+                    y if y == y2 => position.y = y1,
+                    _ => (),
+                }
+            }
+        }
+    }
+
+    fn shuffle_y_group(&mut self) {
+        for _ in 0..10 {
+            let g1 = get_random_value::<i32>(0, 2) as u8;
+            let g2 = (g1 + get_random_value::<i32>(1, 2) as u8) % 3;
+            let mut query = <(&Cell, &mut Position)>::query();
+            for (_, position) in query.iter_mut(&mut self.world) {
+                match position.y {
+                    y if y / 3 == g1 => position.y += g2 * 3 - g1 * 3,
+                    y if y / 3 == g2 => position.y += g1 * 3 - g2 * 3,
+                    _ => (),
+                }
+            }
+        }
+    }
+
+    fn hide_cells(&mut self, count: usize) {
+        let mut query = <(&Cell, &Position, &mut Value)>::query();
+        for _ in 0..count {
+            let x = get_random_value::<i32>(0, 8) as u8;
+            let y = get_random_value::<i32>(0, 8) as u8;
+            for (_, position, value) in query.iter_mut(&mut self.world) {
+                if position.x == x && position.y == y {
+                    value.0 = None;
+                }
+            }
+        }
+    }
+}
+
+impl Default for Game {
+    fn default() -> Self {
+        let mut world = World::default();
+        let schedule = Schedule::builder()
+            .add_system(game_over_system())
+            .add_system(set_cell_system())
+            .add_system(toggle_candidate_system())
+            .build();
+
+        for y in 0..9 {
+            for x in 0..9 {
+                let value = match y {
+                    1 => x + 3,
+                    2 => x + 6,
+                    3 => x + 1,
+                    4 => x + 4,
+                    5 => x + 7,
+                    6 => x + 2,
+                    7 => x + 5,
+                    8 => x + 8,
+                    _ => x,
+                };
+                let value = (value % 9) + 1;
+                world.push((Cell, Position { x, y }, Candidates(0), Value(Some(value))));
+            }
+        }
+
+        Self { schedule, world }
+    }
+}
+
+#[derive(Debug)]
+struct Cell;
+
+#[derive(Debug)]
+struct Position {
+    x: u8,
+    y: u8,
+}
+
+#[derive(Debug)]
+struct Candidates(u16);
+
+impl Candidates {
+    fn is_set(&self, value: u8) -> bool {
+        self.0 & (1 << value) != 0
+    }
+
+    fn set(&mut self, value: u8) {
+        self.0 |= 1 << value;
+    }
+
+    fn clear(&mut self, value: u8) {
+        self.0 &= 0b1111111110 ^ (1 << value);
+    }
+}
+
+#[derive(Debug)]
+struct Value(pub Option<u8>);
+
+#[derive(Debug)]
+struct IsGameOver(pub bool);
+
+#[derive(Debug)]
+struct SetCell {
+    x: u8,
+    y: u8,
+    value: Option<u8>,
+}
+
+#[derive(Debug)]
+struct ToggleCandidate {
+    x: u8,
+    y: u8,
+    value: u8,
+}
+
+#[system(for_each)]
+fn game_over(_: &Cell, value: &Value, #[resource] res: &mut IsGameOver) {
+    if value.0.is_none() {
+        res.0 = false;
+    }
+}
+
+#[system(for_each)]
+fn set_cell(
+    _: &Cell,
+    position: &Position,
+    candidates: &mut Candidates,
+    value: &mut Value,
+    #[resource] res: &SetCell,
+) {
+    if position.x == res.x && position.y == res.y {
+        value.0 = res.value;
+    } else if position.x == res.x
+        || position.y == res.y
+        || position.x % 3 == res.x % 3
+        || position.y % 3 == res.y % 3
+    {
+        // TODO: deal with None
+        if let Some(v) = res.value {
+            candidates.clear(v);
+        }
+        if value.0 == res.value {
+            value.0 = None;
+        }
+    }
+}
+
+#[system(for_each)]
+fn toggle_candidate(
+    _: &Cell,
+    position: &Position,
+    candidates: &mut Candidates,
+    #[resource] res: &ToggleCandidate,
+) {
+    if position.x == res.x && position.y == res.y {
+        if candidates.is_set(res.value) {
+            candidates.clear(res.value);
+        } else {
+            candidates.set(res.value);
+        }
+    }
+}

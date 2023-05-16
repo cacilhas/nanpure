@@ -1,4 +1,4 @@
-mod signals;
+mod game;
 
 fn main() {
     //

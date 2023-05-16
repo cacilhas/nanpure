@@ -1,6 +1,12 @@
 use legion::*;
 use raylib::misc::get_random_value;
 
+const EXTREMELY_EASY: usize = (25 << 8) | 31;
+const EASY: usize = (32 << 8) | 44;
+const MEDIUM: usize = (45 << 8) | 49;
+const HARD: usize = (50 << 8) | 53;
+const FIENDISH: usize = (54 << 8) | 59;
+
 #[derive(Debug)]
 pub enum Level {
     ExtremelyEasy,
@@ -13,11 +19,11 @@ pub enum Level {
 impl Level {
     fn unmark(&self) -> usize {
         match self {
-            Self::ExtremelyEasy => (25 << 8) | 31,
-            Self::Easy => (32 << 8) | 44,
-            Self::Medium => (45 << 8) | 49,
-            Self::Hard => (50 << 8) | 53,
-            Self::Fiendish => (54 << 8) | 59,
+            Self::ExtremelyEasy => EXTREMELY_EASY,
+            Self::Easy => EASY,
+            Self::Medium => MEDIUM,
+            Self::Hard => HARD,
+            Self::Fiendish => FIENDISH,
         }
     }
 }

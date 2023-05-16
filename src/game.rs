@@ -17,7 +17,7 @@ pub enum Level {
 }
 
 impl Level {
-    fn unmark(&self) -> usize {
+    fn count(&self) -> usize {
         match self {
             Self::ExtremelyEasy => EXTREMELY_EASY,
             Self::Easy => EASY,
@@ -40,7 +40,7 @@ impl Game {
         self.shuffle_y();
         self.shuffle_x_group();
         self.shuffle_y_group();
-        self.hide_cells(level.unmark())
+        self.hide_cells(level.count())
     }
 
     pub fn is_game_over(&mut self) -> bool {

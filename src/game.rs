@@ -1,5 +1,4 @@
 use legion::*;
-use raylib::misc::get_random_value;
 
 const EXTREMELY_EASY: usize = (25 << 8) | 31;
 const EASY: usize = (32 << 8) | 44;
@@ -90,9 +89,9 @@ impl Game {
 
     fn shuffle_x(&mut self) {
         for _ in 0..10 {
-            let g = get_random_value::<i32>(0, 2) as u8;
-            let x1 = get_random_value::<i32>(0, 2) as u8;
-            let x2 = (x1 + get_random_value::<i32>(1, 2) as u8) % 3;
+            let g = get_random_value::<u8>(0, 2);
+            let x1 = get_random_value::<u8>(0, 2);
+            let x2 = (x1 + get_random_value::<u8>(1, 2)) % 3;
             let x1 = g * 3 + x1;
             let x2 = g * 3 + x2;
             let mut query = <(&Cell, &mut Position)>::query();
@@ -108,8 +107,8 @@ impl Game {
 
     fn shuffle_x_group(&mut self) {
         for _ in 0..10 {
-            let g1 = get_random_value::<i32>(0, 2) as u8;
-            let g2 = (g1 + get_random_value::<i32>(1, 2) as u8) % 3;
+            let g1 = get_random_value::<u8>(0, 2);
+            let g2 = (g1 + get_random_value::<u8>(1, 2)) % 3;
             let mut query = <(&Cell, &mut Position)>::query();
             for (_, position) in query.iter_mut(&mut self.world) {
                 match position.x {
@@ -123,9 +122,9 @@ impl Game {
 
     fn shuffle_y(&mut self) {
         for _ in 0..10 {
-            let g = get_random_value::<i32>(0, 2) as u8;
-            let y1 = get_random_value::<i32>(0, 2) as u8;
-            let y2 = (y1 + get_random_value::<i32>(1, 2) as u8) % 3;
+            let g = get_random_value::<u8>(0, 2);
+            let y1 = get_random_value::<u8>(0, 2);
+            let y2 = (y1 + get_random_value::<u8>(1, 2)) % 3;
             let y1 = g * 3 + y1;
             let y2 = g * 3 + y2;
             let mut query = <(&Cell, &mut Position)>::query();
@@ -141,8 +140,8 @@ impl Game {
 
     fn shuffle_y_group(&mut self) {
         for _ in 0..10 {
-            let g1 = get_random_value::<i32>(0, 2) as u8;
-            let g2 = (g1 + get_random_value::<i32>(1, 2) as u8) % 3;
+            let g1 = get_random_value::<u8>(0, 2);
+            let g2 = (g1 + get_random_value::<u8>(1, 2)) % 3;
             let mut query = <(&Cell, &mut Position)>::query();
             for (_, position) in query.iter_mut(&mut self.world) {
                 match position.y {
@@ -157,8 +156,8 @@ impl Game {
     fn hide_cells(&mut self, count: usize) {
         let mut query = <(&Cell, &Position, &mut Value)>::query();
         for _ in 0..count {
-            let x = get_random_value::<i32>(0, 8) as u8;
-            let y = get_random_value::<i32>(0, 8) as u8;
+            let x = get_random_value::<u8>(0, 8);
+            let y = get_random_value::<u8>(0, 8);
             for (_, position, value) in query.iter_mut(&mut self.world) {
                 if position.x == x && position.y == y {
                     value.0 = None;
@@ -291,4 +290,12 @@ fn toggle_candidate(
             candidates.set(res.value);
         }
     }
+}
+
+fn get_random_value<T>(min: i32, max: i32) -> T
+where
+    T: TryFrom<i32>,
+{
+    let value = raylib::misc::get_random_value::<i32>(min, max);
+    T::try_from(value).unwrap_or_else(|_| panic!("conversion failure"))
 }

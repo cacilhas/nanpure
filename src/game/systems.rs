@@ -37,7 +37,7 @@ pub fn create_cells(cmd: &mut CommandBuffer) {
             cmd.push((
                 Cell,
                 Position { x, y },
-                Candidates::new(0b1111111110),
+                Candidates::default(),
                 Value::new(value),
             ));
         }

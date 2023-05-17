@@ -24,3 +24,33 @@ impl Level {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_should_return_extremely_easy() {
+        assert_eq!(Level::ExtremelyEasy.count(), EXTREMELY_EASY);
+    }
+
+    #[test]
+    fn it_should_return_easy() {
+        assert_eq!(Level::Easy.count(), EASY);
+    }
+
+    #[test]
+    fn it_should_return_medium() {
+        assert_eq!(Level::Medium.count(), MEDIUM);
+    }
+
+    #[test]
+    fn it_should_return_hard() {
+        assert_eq!(Level::Hard.count(), HARD);
+    }
+
+    #[test]
+    fn it_should_return_fiendish() {
+        assert_eq!(Level::Fiendish.count(), FIENDISH);
+    }
+}

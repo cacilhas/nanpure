@@ -1,13 +1,10 @@
 mod level;
 
 pub use self::level::Level;
-use legion::*;
+use legion::{systems::CommandBuffer, *};
 
 #[derive(Debug)]
-pub struct Game {
-    schedule: Schedule,
-    world: World,
-}
+pub struct Game(World);
 
 impl Game {
     pub fn shuffle(&mut self, level: &Level) {
@@ -21,7 +18,10 @@ impl Game {
     pub fn is_game_over(&mut self) -> bool {
         let mut resources = Resources::default();
         resources.insert(IsGameOver(true));
-        self.schedule.execute(&mut self.world, &mut resources);
+        Schedule::builder()
+            .add_system(game_over_system())
+            .build()
+            .execute(&mut self.0, &mut resources);
         let res = match resources.get_mut::<IsGameOver>() {
             Some(value) => value.0,
             None => false,
@@ -31,7 +31,7 @@ impl Game {
 
     pub fn set_cell(&mut self, x: u8, y: u8, value: Option<u8>) {
         let mut query = <(&Cell, &Position, &Candidates, &Value)>::query();
-        for (_, position, candidates, current) in query.iter(&self.world) {
+        for (_, position, candidates, current) in query.iter(&self.0) {
             if position.x == x && position.y == y {
                 if let Some(value) = value {
                     if current.is_some() || !candidates.is_set(value) {
@@ -44,12 +44,15 @@ impl Game {
 
         let mut resources = Resources::default();
         resources.insert(SetCell { x, y, value });
-        self.schedule.execute(&mut self.world, &mut resources);
+        Schedule::builder()
+            .add_system(set_cell_system())
+            .build()
+            .execute(&mut self.0, &mut resources);
     }
 
     pub fn toggle_candidate(&mut self, x: u8, y: u8, value: u8) {
         let mut query = <(&Cell, &Position, &Value)>::query();
-        for (_, position, current) in query.iter(&self.world) {
+        for (_, position, current) in query.iter(&self.0) {
             if position.x == x && position.y == y {
                 if current.is_some() {
                     return;
@@ -60,7 +63,10 @@ impl Game {
 
         let mut resources = Resources::default();
         resources.insert(ToggleCandidate { x, y, value });
-        self.schedule.execute(&mut self.world, &mut resources);
+        Schedule::builder()
+            .add_system(toggle_candidate_system())
+            .build()
+            .execute(&mut self.0, &mut resources);
     }
 
     fn shuffle_x(&mut self) {
@@ -71,7 +77,7 @@ impl Game {
             let x1 = g * 3 + x1;
             let x2 = g * 3 + x2;
             let mut query = <(&Cell, &mut Position)>::query();
-            for (_, position) in query.iter_mut(&mut self.world) {
+            for (_, position) in query.iter_mut(&mut self.0) {
                 match position.x {
                     x if x == x1 => position.x = x2,
                     x if x == x2 => position.x = x1,
@@ -86,7 +92,7 @@ impl Game {
             let g1 = get_random_value::<u8>(0, 2);
             let g2 = (g1 + get_random_value::<u8>(1, 2)) % 3;
             let mut query = <(&Cell, &mut Position)>::query();
-            for (_, position) in query.iter_mut(&mut self.world) {
+            for (_, position) in query.iter_mut(&mut self.0) {
                 match position.x {
                     x if x / 3 == g1 => position.x += g2 * 3 - g1 * 3,
                     x if x / 3 == g2 => position.x += g1 * 3 - g2 * 3,
@@ -104,7 +110,7 @@ impl Game {
             let y1 = g * 3 + y1;
             let y2 = g * 3 + y2;
             let mut query = <(&Cell, &mut Position)>::query();
-            for (_, position) in query.iter_mut(&mut self.world) {
+            for (_, position) in query.iter_mut(&mut self.0) {
                 match position.y {
                     y if y == y1 => position.y = y2,
                     y if y == y2 => position.y = y1,
@@ -119,7 +125,7 @@ impl Game {
             let g1 = get_random_value::<u8>(0, 2);
             let g2 = (g1 + get_random_value::<u8>(1, 2)) % 3;
             let mut query = <(&Cell, &mut Position)>::query();
-            for (_, position) in query.iter_mut(&mut self.world) {
+            for (_, position) in query.iter_mut(&mut self.0) {
                 match position.y {
                     y if y / 3 == g1 => position.y += g2 * 3 - g1 * 3,
                     y if y / 3 == g2 => position.y += g1 * 3 - g2 * 3,
@@ -134,7 +140,7 @@ impl Game {
         for _ in 0..count {
             let x = get_random_value::<u8>(0, 8);
             let y = get_random_value::<u8>(0, 8);
-            for (_, position, value) in query.iter_mut(&mut self.world) {
+            for (_, position, value) in query.iter_mut(&mut self.0) {
                 if position.x == x && position.y == y {
                     value.0 = None;
                 }
@@ -146,31 +152,11 @@ impl Game {
 impl Default for Game {
     fn default() -> Self {
         let mut world = World::default();
-        let schedule = Schedule::builder()
-            .add_system(game_over_system())
-            .add_system(set_cell_system())
-            .add_system(toggle_candidate_system())
-            .build();
-
-        for y in 0..9 {
-            for x in 0..9 {
-                let value = match y {
-                    1 => x + 3,
-                    2 => x + 6,
-                    3 => x + 1,
-                    4 => x + 4,
-                    5 => x + 7,
-                    6 => x + 2,
-                    7 => x + 5,
-                    8 => x + 8,
-                    _ => x,
-                };
-                let value = (value % 9) + 1;
-                world.push((Cell, Position { x, y }, Candidates(0), Value::new(value)));
-            }
-        }
-
-        Self { schedule, world }
+        Schedule::builder()
+            .add_system(create_cells_system())
+            .build()
+            .execute(&mut world, &mut Resources::default());
+        Self(world)
     }
 }
 
@@ -253,6 +239,27 @@ fn game_over(_: &Cell, value: &Value, #[resource] res: &mut IsGameOver) {
     }
 }
 
+#[system]
+fn create_cells(cmd: &mut CommandBuffer) {
+    for y in 0..9 {
+        for x in 0..9 {
+            let value = match y {
+                1 => x + 3,
+                2 => x + 6,
+                3 => x + 1,
+                4 => x + 4,
+                5 => x + 7,
+                6 => x + 2,
+                7 => x + 5,
+                8 => x + 8,
+                _ => x,
+            };
+            let value = (value % 9) + 1;
+            cmd.push((Cell, Position { x, y }, Candidates(0), Value::new(value)));
+        }
+    }
+}
+
 #[system(for_each)]
 fn set_cell(
     _: &Cell,
@@ -300,4 +307,15 @@ where
 {
     let value = raylib::misc::get_random_value::<i32>(min, max);
     T::try_from(value).unwrap_or_else(|_| panic!("conversion failure"))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_should_create_new_game() {
+        let mut game = Game::default();
+        assert!(game.is_game_over());
+    }
 }

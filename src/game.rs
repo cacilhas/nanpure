@@ -1,7 +1,14 @@
+mod candidates;
+mod cell;
 mod level;
+mod position;
+mod systems;
+mod value;
+
+use self::{candidates::Candidates, cell::Cell, position::Position, systems::*, value::Value};
 
 pub use self::level::Level;
-use legion::{systems::CommandBuffer, *};
+use legion::*;
 
 #[derive(Debug)]
 pub struct Game(World);
@@ -166,7 +173,7 @@ impl Game {
             let y = get_random_value::<u8>(0, 8);
             for (_, position, value) in query.iter_mut(&mut self.0) {
                 if position.x == x && position.y == y {
-                    value.0 = None;
+                    value.clean();
                 }
             }
         }
@@ -182,166 +189,6 @@ impl Default for Game {
             .execute(&mut world, &mut Resources::default());
         Self(world)
     }
-}
-
-#[derive(Debug)]
-struct Cell;
-
-#[derive(Debug)]
-struct Position {
-    x: u8,
-    y: u8,
-}
-
-#[derive(Debug)]
-struct Candidates(u16);
-
-impl Candidates {
-    fn is_set(&self, value: u8) -> bool {
-        self.0 & (1 << value) != 0
-    }
-
-    fn set(&mut self, value: u8) {
-        self.0 |= 1 << value;
-    }
-
-    fn clear(&mut self, value: u8) {
-        self.0 &= 0b1111111110 ^ (1 << value);
-    }
-}
-
-#[derive(Debug, Default)]
-struct Value(Option<u8>);
-
-impl Value {
-    fn new(value: u8) -> Self {
-        Self(Some(value))
-    }
-
-    fn is_none(&self) -> bool {
-        self.0.is_none()
-    }
-
-    fn is_some(&self) -> bool {
-        self.0.is_some()
-    }
-}
-
-impl From<&Value> for Option<u8> {
-    fn from(value: &Value) -> Self {
-        value.0
-    }
-}
-
-impl From<&Value> for u8 {
-    fn from(value: &Value) -> Self {
-        value.0.unwrap()
-    }
-}
-
-#[derive(Debug)]
-struct IsGameOver(pub bool);
-
-#[derive(Debug)]
-struct SetCell {
-    x: u8,
-    y: u8,
-    value: Option<u8>,
-}
-
-#[derive(Debug)]
-struct ToggleCandidate {
-    x: u8,
-    y: u8,
-    value: u8,
-}
-
-#[system(for_each)]
-fn game_over(_: &Cell, value: &Value, #[resource] res: &mut IsGameOver) {
-    if value.is_none() {
-        res.0 = false;
-    }
-}
-
-#[system]
-fn create_cells(cmd: &mut CommandBuffer) {
-    for y in 0..9 {
-        for x in 0..9 {
-            let value = match y {
-                1 => x + 3,
-                2 => x + 6,
-                3 => x + 1,
-                4 => x + 4,
-                5 => x + 7,
-                6 => x + 2,
-                7 => x + 5,
-                8 => x + 8,
-                _ => x,
-            };
-            let value = (value % 9) + 1;
-            cmd.push((
-                Cell,
-                Position { x, y },
-                Candidates(0b1111111110),
-                Value::new(value),
-            ));
-        }
-    }
-}
-
-#[system(for_each)]
-fn set_cell(
-    _: &Cell,
-    position: &Position,
-    candidates: &mut Candidates,
-    value: &mut Value,
-    #[resource] res: &SetCell,
-) {
-    if position.x == res.x && position.y == res.y {
-        value.0 = res.value;
-    } else if position.x == res.x
-        || position.y == res.y
-        || (position.x % 3 == res.x % 3 && position.y % 3 == res.y % 3)
-    {
-        // TODO: deal with None
-        if let Some(v) = res.value {
-            candidates.clear(v);
-        }
-        if value.0 == res.value {
-            value.0 = None;
-        }
-    }
-}
-
-#[system(for_each)]
-fn toggle_candidate(
-    _: &Cell,
-    position: &Position,
-    candidates: &mut Candidates,
-    #[resource] res: &ToggleCandidate,
-) {
-    if position.x == res.x && position.y == res.y {
-        if candidates.is_set(res.value) {
-            candidates.clear(res.value);
-        } else {
-            candidates.set(res.value);
-        }
-    }
-}
-
-#[system(for_each)]
-fn display(_: &Cell, position: &Position, value: &Value, #[resource] res: &mut [u8; 81]) {
-    let index = (position.x + position.y * 9) as usize;
-    let value: Option<u8> = value.into();
-    res[index] = value.unwrap_or(0);
-}
-
-fn get_random_value<T>(min: i32, max: i32) -> T
-where
-    T: TryFrom<i32>,
-{
-    let value = raylib::misc::get_random_value::<i32>(min, max);
-    T::try_from(value).unwrap_or_else(|_| panic!("conversion failure"))
 }
 
 #[cfg(test)]

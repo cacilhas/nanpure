@@ -15,6 +15,30 @@ impl Game {
         self.hide_cells(level.count())
     }
 
+    pub fn stringify(&mut self) -> Result<String, String> {
+        let mut resources = Resources::default();
+        resources.insert([0_u8; 81]);
+        Schedule::builder()
+            .add_system(display_system())
+            .build()
+            .execute(&mut self.0, &mut resources);
+        let mut res = "".to_owned();
+        let arr = resources.get::<[u8; 81]>().ok_or("resources not found")?;
+        for i in 0..81 {
+            let value = if arr[i] == 0 {
+                " ".to_owned()
+            } else {
+                format!("{}", arr[i])
+            };
+            if i % 9 == 0 {
+                res = format!("{}\n{}", res, value);
+            } else {
+                res = format!("{}{}", res, value);
+            }
+        }
+        Ok(res[1..].to_owned())
+    }
+
     pub fn is_game_over(&mut self) -> bool {
         let mut resources = Resources::default();
         resources.insert(IsGameOver(true));
@@ -255,7 +279,12 @@ fn create_cells(cmd: &mut CommandBuffer) {
                 _ => x,
             };
             let value = (value % 9) + 1;
-            cmd.push((Cell, Position { x, y }, Candidates(0), Value::new(value)));
+            cmd.push((
+                Cell,
+                Position { x, y },
+                Candidates(0b1111111110),
+                Value::new(value),
+            ));
         }
     }
 }
@@ -272,8 +301,7 @@ fn set_cell(
         value.0 = res.value;
     } else if position.x == res.x
         || position.y == res.y
-        || position.x % 3 == res.x % 3
-        || position.y % 3 == res.y % 3
+        || (position.x % 3 == res.x % 3 && position.y % 3 == res.y % 3)
     {
         // TODO: deal with None
         if let Some(v) = res.value {
@@ -301,6 +329,13 @@ fn toggle_candidate(
     }
 }
 
+#[system(for_each)]
+fn display(_: &Cell, position: &Position, value: &Value, #[resource] res: &mut [u8; 81]) {
+    let index = (position.x + position.y * 9) as usize;
+    let value: Option<u8> = value.into();
+    res[index] = value.unwrap_or(0);
+}
+
 fn get_random_value<T>(min: i32, max: i32) -> T
 where
     T: TryFrom<i32>,
@@ -317,5 +352,39 @@ mod tests {
     fn it_should_create_new_game() {
         let mut game = Game::default();
         assert!(game.is_game_over());
+    }
+
+    #[test]
+    fn it_should_stringify() {
+        let mut game = Game::default();
+        let expected = "123456789\n\
+            456789123\n\
+            789123456\n\
+            234567891\n\
+            567891234\n\
+            891234567\n\
+            345678912\n\
+            678912345\n\
+            912345678";
+        assert_eq!(game.stringify().unwrap(), expected);
+    }
+
+    #[test]
+    fn it_should_set_cell() {
+        let mut game = Game::default();
+        for x in 0..9 {
+            game.set_cell(x, 0, None);
+        }
+        game.set_cell(3, 0, Some(4));
+        let expected = "   4     \n\
+            456789123\n\
+            789123456\n\
+            234567891\n\
+            567891234\n\
+            891234567\n\
+            345678912\n\
+            678912345\n\
+            912345678";
+        assert_eq!(game.stringify().unwrap(), expected);
     }
 }

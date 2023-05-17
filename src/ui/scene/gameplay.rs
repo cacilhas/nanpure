@@ -2,11 +2,15 @@ use raylib::prelude::*;
 
 use crate::game::{Game, Level, COLORS};
 
-use super::{Scene, State};
+use super::{
+    player::{Move, Player},
+    Scene, State,
+};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct GameplayScene {
     game: Game,
+    player: Player,
     rect: Rectangle,
 }
 
@@ -62,13 +66,23 @@ impl GameplayScene {
             );
         }
     }
-}
 
-impl Default for GameplayScene {
-    fn default() -> Self {
-        Self {
-            rect: Rectangle::default(),
-            game: Game::default(),
+    fn detect_keys(&mut self, handle: &mut RaylibDrawHandle) {
+        if handle.is_key_pressed(KeyboardKey::KEY_LEFT) || handle.is_key_pressed(KeyboardKey::KEY_A)
+        {
+            self.player.move_to(&Move::Left);
+        }
+        if handle.is_key_pressed(KeyboardKey::KEY_RIGHT)
+            || handle.is_key_pressed(KeyboardKey::KEY_D)
+        {
+            self.player.move_to(&Move::Right);
+        }
+        if handle.is_key_pressed(KeyboardKey::KEY_UP) || handle.is_key_pressed(KeyboardKey::KEY_W) {
+            self.player.move_to(&Move::Up);
+        }
+        if handle.is_key_pressed(KeyboardKey::KEY_DOWN) || handle.is_key_pressed(KeyboardKey::KEY_S)
+        {
+            self.player.move_to(&Move::Down);
         }
     }
 }
@@ -85,6 +99,7 @@ impl Scene for GameplayScene {
 
     fn update(&mut self, _: chrono::Duration, handle: &mut RaylibDrawHandle) -> State {
         self.update_rect(handle);
+        self.detect_keys(handle);
         let camera = Camera2D {
             zoom: 1.0,
             ..Default::default()
@@ -92,6 +107,7 @@ impl Scene for GameplayScene {
         let mut draw = handle.begin_mode2D(camera);
         let background_color = Color::WHEAT;
         draw.clear_background(background_color);
+        self.player.draw(&mut draw, self.rect.to_owned());
         self.game.draw(&mut draw, self.rect.to_owned());
         self.deal_with_keyboard(&mut draw);
 

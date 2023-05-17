@@ -77,30 +77,6 @@ impl Game {
         self.hide_cells(level.count())
     }
 
-    pub fn stringify(&mut self) -> Result<String, String> {
-        let mut resources = Resources::default();
-        resources.insert([0_u8; 81]);
-        Schedule::builder()
-            .add_system(display_system())
-            .build()
-            .execute(&mut self.0, &mut resources);
-        let mut res = "".to_owned();
-        let arr = resources.get::<[u8; 81]>().ok_or("resources not found")?;
-        for i in 0..81 {
-            let value = if arr[i] == 0 {
-                " ".to_owned()
-            } else {
-                format!("{}", arr[i])
-            };
-            if i % 9 == 0 {
-                res = format!("{}\n{}", res, value);
-            } else {
-                res = format!("{}{}", res, value);
-            }
-        }
-        Ok(res[1..].to_owned())
-    }
-
     pub fn is_game_over(&mut self) -> bool {
         let mut resources = Resources::default();
         let is_game_over: IsGameOver = true.into();
@@ -235,6 +211,31 @@ impl Game {
                 }
             }
         }
+    }
+
+    #[cfg(test)]
+    fn stringify(&mut self) -> Result<String, String> {
+        let mut resources = Resources::default();
+        resources.insert([0_u8; 81]);
+        Schedule::builder()
+            .add_system(display_system())
+            .build()
+            .execute(&mut self.0, &mut resources);
+        let mut res = "".to_owned();
+        let arr = resources.get::<[u8; 81]>().ok_or("resources not found")?;
+        for i in 0..81 {
+            let value = if arr[i] == 0 {
+                " ".to_owned()
+            } else {
+                format!("{}", arr[i])
+            };
+            if i % 9 == 0 {
+                res = format!("{}\n{}", res, value);
+            } else {
+                res = format!("{}{}", res, value);
+            }
+        }
+        Ok(res[1..].to_owned())
     }
 }
 

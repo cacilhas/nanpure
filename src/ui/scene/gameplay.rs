@@ -84,6 +84,19 @@ impl GameplayScene {
         {
             self.player.move_to(&Move::Down);
         }
+        let control = handle.is_key_down(KeyboardKey::KEY_LEFT_CONTROL)
+            || handle.is_key_down(KeyboardKey::KEY_RIGHT_CONTROL);
+        for (i, keys) in CHANGE_KEYS.iter().enumerate() {
+            if keys.iter().any(|key| handle.is_key_released(*key)) {
+                if control {
+                    let value = if i == 0 { None } else { Some(i as u8) };
+                    self.game.set_cell(self.player.x, self.player.y, value);
+                } else if i > 0 {
+                    self.game
+                        .toggle_candidate(self.player.x, self.player.y, i as u8);
+                }
+            }
+        }
     }
 }
 
@@ -99,13 +112,19 @@ impl Scene for GameplayScene {
 
     fn update(&mut self, _: chrono::Duration, handle: &mut RaylibDrawHandle) -> State {
         self.update_rect(handle);
-        self.detect_keys(handle);
+        if !self.game.is_game_over() {
+            self.detect_keys(handle);
+        }
         let camera = Camera2D {
             zoom: 1.0,
             ..Default::default()
         };
         let mut draw = handle.begin_mode2D(camera);
-        let background_color = Color::WHEAT;
+        let background_color = if self.game.is_game_over() {
+            Color::DARKCYAN
+        } else {
+            Color::WHEAT
+        };
         draw.clear_background(background_color);
         self.player.draw(&mut draw, self.rect.to_owned());
         self.game.draw(&mut draw, self.rect.to_owned());
@@ -114,3 +133,16 @@ impl Scene for GameplayScene {
         State::Keep
     }
 }
+
+static CHANGE_KEYS: [[KeyboardKey; 2]; 10] = [
+    [KeyboardKey::KEY_ZERO, KeyboardKey::KEY_KP_0],
+    [KeyboardKey::KEY_ONE, KeyboardKey::KEY_KP_1],
+    [KeyboardKey::KEY_TWO, KeyboardKey::KEY_KP_2],
+    [KeyboardKey::KEY_THREE, KeyboardKey::KEY_KP_3],
+    [KeyboardKey::KEY_FOUR, KeyboardKey::KEY_KP_4],
+    [KeyboardKey::KEY_FIVE, KeyboardKey::KEY_KP_5],
+    [KeyboardKey::KEY_SIX, KeyboardKey::KEY_KP_6],
+    [KeyboardKey::KEY_SEVEN, KeyboardKey::KEY_KP_7],
+    [KeyboardKey::KEY_EIGHT, KeyboardKey::KEY_KP_8],
+    [KeyboardKey::KEY_NINE, KeyboardKey::KEY_KP_9],
+];

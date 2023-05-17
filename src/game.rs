@@ -52,7 +52,7 @@ impl Game {
                         if candidates.is_set(i) {
                             let rect = Rectangle {
                                 x: rect.x + sw * ((i - 1) % 3) as f32,
-                                y: rect.y + sh * ((i - 1) / 3) as f32,
+                                y: rect.y + sh * (2 - (i - 1) / 3) as f32,
                                 width: sw,
                                 height: sh,
                             };

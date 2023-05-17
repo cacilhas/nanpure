@@ -48,16 +48,19 @@ impl Game {
 
     pub fn is_game_over(&mut self) -> bool {
         let mut resources = Resources::default();
-        resources.insert(IsGameOver(true));
+        let is_game_over: IsGameOver = true.into();
+        resources.insert(is_game_over);
         Schedule::builder()
             .add_system(game_over_system())
             .build()
             .execute(&mut self.0, &mut resources);
-        let res = match resources.get_mut::<IsGameOver>() {
-            Some(value) => value.0,
-            None => false,
-        };
-        res
+        resources
+            .get::<IsGameOver>()
+            .map(|value| {
+                let value: bool = (*value).into();
+                value
+            })
+            .unwrap_or(false)
     }
 
     pub fn set_cell(&mut self, x: u8, y: u8, value: Option<u8>) {
@@ -191,6 +194,14 @@ impl Default for Game {
     }
 }
 
+pub fn get_random_value<T>(min: i32, max: i32) -> T
+where
+    T: TryFrom<i32>,
+{
+    let value = raylib::misc::get_random_value::<i32>(min, max);
+    T::try_from(value).unwrap_or_else(|_| panic!("conversion failure"))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -234,12 +245,4 @@ mod tests {
             912345678";
         assert_eq!(game.stringify().unwrap(), expected);
     }
-}
-
-pub fn get_random_value<T>(min: i32, max: i32) -> T
-where
-    T: TryFrom<i32>,
-{
-    let value = raylib::misc::get_random_value::<i32>(min, max);
-    T::try_from(value).unwrap_or_else(|_| panic!("conversion failure"))
 }

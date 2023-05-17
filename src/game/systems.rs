@@ -1,8 +1,20 @@
 use super::{candidates::Candidates, cell::Cell, position::Position, value::Value};
 use legion::{systems::CommandBuffer, *};
 
-#[derive(Debug)]
-pub struct IsGameOver(pub bool);
+#[derive(Clone, Copy, Debug)]
+pub struct IsGameOver(bool);
+
+impl From<bool> for IsGameOver {
+    fn from(value: bool) -> Self {
+        IsGameOver(value)
+    }
+}
+
+impl From<IsGameOver> for bool {
+    fn from(value: IsGameOver) -> Self {
+        value.0
+    }
+}
 
 #[derive(Debug)]
 pub struct SetCell {

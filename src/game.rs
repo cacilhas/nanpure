@@ -235,3 +235,11 @@ mod tests {
         assert_eq!(game.stringify().unwrap(), expected);
     }
 }
+
+pub fn get_random_value<T>(min: i32, max: i32) -> T
+where
+    T: TryFrom<i32>,
+{
+    let value = raylib::misc::get_random_value::<i32>(min, max);
+    T::try_from(value).unwrap_or_else(|_| panic!("conversion failure"))
+}

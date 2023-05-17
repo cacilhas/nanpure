@@ -10,7 +10,7 @@ impl Candidates {
         self.0 |= 1 << value;
     }
 
-    pub fn clear(&mut self, value: u8) {
+    pub fn clean(&mut self, value: u8) {
         self.0 &= 0b1111111110 ^ (1 << value);
     }
 }

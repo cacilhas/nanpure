@@ -70,7 +70,7 @@ pub fn set_cell(
     {
         // TODO: deal with None
         if let Some(v) = res.value {
-            candidates.clear(v);
+            candidates.clean(v);
         }
         let value_0: Option<u8> = value.into();
         if value_0 == res.value {
@@ -88,7 +88,7 @@ pub fn toggle_candidate(
 ) {
     if position.x == res.x && position.y == res.y {
         if candidates.is_set(res.value) {
-            candidates.clear(res.value);
+            candidates.clean(res.value);
         } else {
             candidates.set(res.value);
         }

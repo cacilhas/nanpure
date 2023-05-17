@@ -20,7 +20,11 @@ strip = true
 
 [dependencies]
 anyhow = "1.0"
+chrono = "0.4"
 legion = "0.4"
+static_init = "1.0"
+thiserror = "1.0"
+walkdir = "2.3"
 
 [dependencies.raylib]
 version = "4.5"

@@ -7,18 +7,73 @@ mod value;
 
 use self::{candidates::Candidates, cell::Cell, position::Position, systems::*, value::Value};
 
+pub use self::cell::COLORS;
 pub use self::level::Level;
 use legion::*;
+use raylib::prelude::*;
 
 #[derive(Debug)]
 pub struct Game(World);
 
 impl Game {
+    pub fn draw(&mut self, draw: &mut RaylibMode2D<RaylibDrawHandle>, rect: Rectangle) {
+        let mut query = <(&Cell, &Position, &Candidates, &Value)>::query();
+        let width = rect.width / 9.0;
+        let height = rect.height / 9.0;
+        let sw = width / 3.0;
+        let sh = height / 3.0;
+        let radius = *[width, height]
+            .iter()
+            .reduce(|a, b| if a < b { a } else { b })
+            .unwrap()
+            / 2.0;
+        let sr = *[sw, sh]
+            .iter()
+            .reduce(|a, b| if a < b { a } else { b })
+            .unwrap()
+            / 2.0;
+        for (_, position, candidates, value) in query.iter(&self.0) {
+            let value: Option<u8> = value.into();
+            let rect = Rectangle {
+                x: rect.x + width * position.x as f32,
+                y: rect.y + height * position.y as f32,
+                width,
+                height,
+            };
+            match value {
+                Some(value) => draw.draw_circle(
+                    (rect.x + width / 2.0) as i32,
+                    (rect.y + height / 2.0) as i32,
+                    radius,
+                    COLORS[value as usize],
+                ),
+                None => {
+                    for i in 1_u8..9 {
+                        if candidates.is_set(i) {
+                            let rect = Rectangle {
+                                x: rect.x + sw * ((i - 1) % 3) as f32,
+                                y: rect.y + sh * ((i - 1) / 3) as f32,
+                                width: sw,
+                                height: sh,
+                            };
+                            draw.draw_circle(
+                                (rect.x + sw / 2.0) as i32,
+                                (rect.y + sh / 2.0) as i32,
+                                sr,
+                                COLORS[i as usize],
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     pub fn shuffle(&mut self, level: &Level) {
         self.shuffle_x();
         self.shuffle_y();
-        self.shuffle_x_group();
-        self.shuffle_y_group();
+        // self.shuffle_x_group();
+        // self.shuffle_y_group();
         self.hide_cells(level.count())
     }
 

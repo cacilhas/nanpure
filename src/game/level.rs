@@ -1,8 +1,10 @@
-const EXTREMELY_EASY: usize = (25 << 8) | 31;
-const EASY: usize = (32 << 8) | 44;
-const MEDIUM: usize = (45 << 8) | 49;
-const HARD: usize = (50 << 8) | 53;
-const FIENDISH: usize = (54 << 8) | 59;
+use super::get_random_value;
+
+const EXTREMELY_EASY: (usize, usize) = (25, 31);
+const EASY: (usize, usize) = (32, 44);
+const MEDIUM: (usize, usize) = (45, 49);
+const HARD: (usize, usize) = (50, 53);
+const FIENDISH: (usize, usize) = (54, 59);
 
 #[derive(Debug)]
 pub enum Level {
@@ -16,13 +18,17 @@ pub enum Level {
 impl Level {
     pub(crate) fn count(&self) -> usize {
         match self {
-            Self::ExtremelyEasy => EXTREMELY_EASY,
-            Self::Easy => EASY,
-            Self::Medium => MEDIUM,
-            Self::Hard => HARD,
-            Self::Fiendish => FIENDISH,
+            Self::ExtremelyEasy => get_random(EXTREMELY_EASY),
+            Self::Easy => get_random(EASY),
+            Self::Medium => get_random(MEDIUM),
+            Self::Hard => get_random(HARD),
+            Self::Fiendish => get_random(FIENDISH),
         }
     }
+}
+
+fn get_random((min, max): (usize, usize)) -> usize {
+    get_random_value::<i32>(min as i32, max as i32) as usize
 }
 
 #[cfg(test)]
@@ -31,26 +37,31 @@ mod tests {
 
     #[test]
     fn it_should_return_extremely_easy() {
-        assert_eq!(Level::ExtremelyEasy.count(), EXTREMELY_EASY);
+        assert!(Level::ExtremelyEasy.count() >= EXTREMELY_EASY.0);
+        assert!(Level::ExtremelyEasy.count() <= EXTREMELY_EASY.1);
     }
 
     #[test]
     fn it_should_return_easy() {
-        assert_eq!(Level::Easy.count(), EASY);
+        assert!(Level::Easy.count() >= EASY.0);
+        assert!(Level::Easy.count() <= EASY.1);
     }
 
     #[test]
     fn it_should_return_medium() {
-        assert_eq!(Level::Medium.count(), MEDIUM);
+        assert!(Level::Medium.count() >= MEDIUM.0);
+        assert!(Level::Medium.count() <= MEDIUM.1);
     }
 
     #[test]
     fn it_should_return_hard() {
-        assert_eq!(Level::Hard.count(), HARD);
+        assert!(Level::Hard.count() >= HARD.0);
+        assert!(Level::Hard.count() <= HARD.1);
     }
 
     #[test]
     fn it_should_return_fiendish() {
-        assert_eq!(Level::Fiendish.count(), FIENDISH);
+        assert!(Level::Fiendish.count() >= FIENDISH.0);
+        assert!(Level::Fiendish.count() <= FIENDISH.1);
     }
 }

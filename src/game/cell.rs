@@ -9,9 +9,9 @@ pub static COLORS: [Color; 10] = [
     Color::ORANGE,
     Color::YELLOW,
     Color::GREEN,
-    Color::CYAN,
+    Color::SKYBLUE,
     Color::INDIGO,
     Color::VIOLET,
-    Color::PINK,
+    Color::MAGENTA,
     Color::DARKGRAY,
 ];

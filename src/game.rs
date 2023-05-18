@@ -218,6 +218,28 @@ impl Game {
                 None::<Option<()>>
             });
         }
+
+        // Update candidates
+        let mut query = <(&Cell, &Position, &Value)>::query();
+        let mut set_cells: Vec<SetCell> = vec![];
+        for (_, position, value) in query.iter(&mut self.0) {
+            let value: Option<u8> = value.into();
+            if value.is_some() {
+                set_cells.push(SetCell {
+                    x: position.x,
+                    y: position.y,
+                    value,
+                });
+            }
+        }
+        while let Some(set_cell) = set_cells.pop() {
+            let mut resources = Resources::default();
+            resources.insert(set_cell);
+            Schedule::builder()
+                .add_system(set_cell_system())
+                .build()
+                .execute(&mut self.0, &mut resources);
+        }
     }
 
     #[cfg(test)]

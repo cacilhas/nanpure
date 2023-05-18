@@ -7,6 +7,12 @@
 
 Yet another (colourful) [Sudoku][] playing game.
 
+## Installation
+
+```sh
+cargo install --git https://github.com/cacilhas/nanpure
+```
+
 ## Controls
 
 - Cursor keys or WASD: select another cell

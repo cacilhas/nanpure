@@ -85,7 +85,9 @@ impl GameplayScene {
             self.player.move_to(&Move::Down);
         }
         let control = handle.is_key_down(KeyboardKey::KEY_LEFT_CONTROL)
-            || handle.is_key_down(KeyboardKey::KEY_RIGHT_CONTROL);
+            || handle.is_key_down(KeyboardKey::KEY_RIGHT_CONTROL)
+            || handle.is_key_down(KeyboardKey::KEY_LEFT_SHIFT)
+            || handle.is_key_down(KeyboardKey::KEY_RIGHT_SHIFT);
         for (i, keys) in CHANGE_KEYS.iter().enumerate() {
             if keys.iter().any(|key| handle.is_key_released(*key)) {
                 if control {

@@ -50,7 +50,7 @@ impl Game {
                     COLORS[value as usize],
                 ),
                 None => {
-                    for i in 1_u8..9 {
+                    for i in 1_u8..=9 {
                         if candidates.is_set(i) {
                             let rect = Rectangle {
                                 x: rect.x + sw * ((i - 1) % 3) as f32,

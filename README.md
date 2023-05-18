@@ -19,15 +19,15 @@ No mouse during gameplay.
 
 ## Colours
 
-- 1: <span style="color: red;">red</span>
-- 2: <span style="color: orange;">orange</span>
-- 3: <span style="color: yellow;">yellow</span>
-- 4: <span style="color: green;">green</span>
-- 5: <span style="color: skyblue;">blue</span>
-- 6: <span style="color: indigo;">indigo</span>
-- 7: <span style="color: violet;">violet</span>
-- 8: <span style="color: magenta;">magenta</span>
-- 9: <span style="color: darkgray;">gray</span>
+- 1: <span style="color: white; background-color: red;">red</span>
+- 2: <span style="color: black; background-color: orange;">orange</span>
+- 3: <span style="color: black; background-color: yellow;">yellow</span>
+- 4: <span style="color: white; background-color: green;">green</span>
+- 5: <span style="color: black; background-color: skyblue;">blue</span>
+- 6: <span style="color: white; background-color: indigo;">indigo</span>
+- 7: <span style="color: black; background-color: violet;">violet</span>
+- 8: <span style="color: white; background-color: magenta;">magenta</span>
+- 9: <span style="color: black: background-color: darkgray;">gray</span>
 
 ## License
 

@@ -78,16 +78,17 @@ pub fn set_cell(
         }
     } else if position.x == res.x
         || position.y == res.y
-        || (position.x % 3 == res.x % 3 && position.y % 3 == res.y % 3)
+        || (position.x / 3 == res.x / 3 && position.y / 3 == res.y / 3)
     {
-        // TODO: deal with None
         if let Some(v) = res.value {
             candidates.clean(v);
+            let value_0: Option<u8> = value.into();
+            match value_0 {
+                Some(c) if c == v => value.clean(),
+                _ => (),
+            }
         }
-        let value_0: Option<u8> = value.into();
-        if value_0 == res.value {
-            value.clean();
-        }
+        // TODO: deal with None
     }
 }
 

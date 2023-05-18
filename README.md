@@ -1,6 +1,6 @@
 [COPYING]: https://github.com/cacilhas/nanpure/blob/master/COPYING
 [The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
-[Rodrigo Cacilhας <montegasppa@cacilhas.info>]: mailto:montegasppa@cacilhas.info
+[Rodrigo Cacilhας \<montegasppa@cacilhas.info\>]: mailto:montegasppa@cacilhas.info
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 
 # Nanpure
@@ -31,6 +31,6 @@ No mouse during gameplay.
 
 ## License
 
-- Copyright 2023 [Rodrigo Cacilhας <montegasppa@cacilhas.info>][]
+- Copyright 2023 [Rodrigo Cacilhας \<montegasppa@cacilhas.info\>][]
 - [The 3-Clause BSD License][]
 - [COPYING][]

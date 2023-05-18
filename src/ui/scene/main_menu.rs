@@ -152,6 +152,25 @@ impl Scene for MainMenuScene {
         };
         draw.draw_text_ex(self.font.as_ref(), "Fiendish", position, 64.0, 1.0, tint);
 
+        let url = "https://crates.io/crates/nanpure";
+        let size = measure_text_ex(self.font.as_ref(), url, 12.0, 1.0);
+        let position = Vector2::new(
+            self.rect.width - size.x - 12.0,
+            self.rect.height - size.y - 12.0,
+        );
+        let doc_bt = Rectangle {
+            x: position.x,
+            y: position.y,
+            width: size.x,
+            height: size.y,
+        };
+        let tint = if doc_bt.check_collision_point_rec(mouse) {
+            Color::BLACK
+        } else {
+            Color::DARKGRAY
+        };
+        draw.draw_text_ex(self.font.as_ref(), url, position, 12.0, 1.0, tint);
+
         if clicked {
             if extremely_easy_bt.check_collision_point_rec(mouse) {
                 let gameplay = GameplayScene::new(&Level::ExtremelyEasy);
@@ -172,6 +191,9 @@ impl Scene for MainMenuScene {
             if fiendish_bt.check_collision_point_rec(mouse) {
                 let gameplay = GameplayScene::new(&Level::Fiendish);
                 return State::New(Rc::new(RefCell::new(gameplay)));
+            }
+            if doc_bt.check_collision_point_rec(mouse) {
+                raylib::open_url(url);
             }
         } else {
             if draw.is_key_released(KeyboardKey::KEY_ONE) {

@@ -5,6 +5,8 @@ mod position;
 mod systems;
 mod value;
 
+use std::collections::HashMap;
+
 use self::{candidates::Candidates, cell::Cell, position::Position, systems::*, value::Value};
 
 pub use self::cell::COLORS;
@@ -202,14 +204,19 @@ impl Game {
 
     fn hide_cells(&mut self, count: usize) {
         let mut query = <(&Cell, &Position, &mut Value)>::query();
+        let mut values: HashMap<u8, &mut Value> = HashMap::default();
+        for (_, position, value) in query.iter_mut(&mut self.0) {
+            let i = position.x + position.y * 9;
+            values.insert(i, value);
+        }
+        let mut indexes = (0_u8..81).collect::<Vec<_>>();
         for _ in 0..count {
-            let x = get_random_value::<u8>(0, 8);
-            let y = get_random_value::<u8>(0, 8);
-            for (_, position, value) in query.iter_mut(&mut self.0) {
-                if position.x == x && position.y == y {
-                    value.clean();
-                }
-            }
+            let i = get_random_value::<u8>(0, indexes.len() as i32 - 1);
+            let i = indexes.remove(i.into());
+            values.get_mut(&i).and_then(|value| {
+                value.clean();
+                None::<Option<()>>
+            });
         }
     }
 

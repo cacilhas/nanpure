@@ -72,8 +72,8 @@ impl Game {
     pub fn shuffle(&mut self, level: &Level) {
         self.shuffle_x();
         self.shuffle_y();
-        // self.shuffle_x_group();
-        // self.shuffle_y_group();
+        self.shuffle_x_group();
+        self.shuffle_y_group();
         self.hide_cells(level.count())
     }
 
@@ -159,8 +159,8 @@ impl Game {
             let mut query = <(&Cell, &mut Position)>::query();
             for (_, position) in query.iter_mut(&mut self.0) {
                 match position.x {
-                    x if x / 3 == g1 => position.x += g2 * 3 - g1 * 3,
-                    x if x / 3 == g2 => position.x += g1 * 3 - g2 * 3,
+                    x if x / 3 == g1 => position.x = (position.x + g2 * 3 - g1 * 3 + 9) % 9,
+                    x if x / 3 == g2 => position.x = (position.x + g1 * 3 - g2 * 3 + 9) % 9,
                     _ => (),
                 }
             }
@@ -192,8 +192,8 @@ impl Game {
             let mut query = <(&Cell, &mut Position)>::query();
             for (_, position) in query.iter_mut(&mut self.0) {
                 match position.y {
-                    y if y / 3 == g1 => position.y += g2 * 3 - g1 * 3,
-                    y if y / 3 == g2 => position.y += g1 * 3 - g2 * 3,
+                    y if y / 3 == g1 => position.y = (position.y + g2 * 3 - g1 * 3 + 9) % 9,
+                    y if y / 3 == g2 => position.y = (position.y + g1 * 3 - g2 * 3 + 9) % 9,
                     _ => (),
                 }
             }

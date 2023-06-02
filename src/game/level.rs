@@ -6,7 +6,7 @@ const MEDIUM: (usize, usize) = (45, 49);
 const HARD: (usize, usize) = (50, 53);
 const FIENDISH: (usize, usize) = (54, 59);
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Level {
     ExtremelyEasy,
     Easy,

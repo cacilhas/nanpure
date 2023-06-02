@@ -12,7 +12,7 @@ use self::{candidates::Candidates, cell::Cell, position::Position, systems::*, v
 pub use self::cell::COLORS;
 pub use self::level::Level;
 use legion::*;
-use raylib::prelude::*;
+use rscenes::prelude::*;
 
 #[derive(Debug)]
 pub struct Game(World);
@@ -71,7 +71,7 @@ impl Game {
         }
     }
 
-    pub fn shuffle(&mut self, level: &Level) {
+    pub fn shuffle(&mut self, level: Level) {
         self.shuffle_x();
         self.shuffle_y();
         self.shuffle_x_group();

@@ -1,36 +1,73 @@
-use std::{cell::RefCell, rc::Rc};
+use std::rc::Rc;
 
 use crate::game::Level;
 
-use super::{gameplay::GameplayScene, Scene, State};
-use raylib::prelude::*;
+use super::gameplay::GameplayScene;
+use rscenes::prelude::*;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct MainMenuScene {
-    rect: Rectangle,
-    font: Rc<Font>,
-}
-
-impl Default for MainMenuScene {
-    fn default() -> Self {
-        let font = unsafe { ffi::GetFontDefault() };
-        let font = unsafe { Font::from_raw(font) };
-        Self {
-            rect: Rectangle::default(),
-            font: font.into(),
-        }
-    }
+    extremely_easy: bool,
+    easy: bool,
+    medium: bool,
+    hard: bool,
+    fiendish: bool,
+    url: Option<String>,
 }
 
 impl Scene for MainMenuScene {
-    fn init(&mut self, handle: &mut RaylibHandle, _: &RaylibThread, font: Rc<Font>) {
-        self.update_rect(handle);
-        self.font = font;
+    fn init(&mut self, _: &mut RaylibHandle, _: &RaylibThread) -> anyhow::Result<()> {
+        self.extremely_easy = false;
+        self.easy = false;
+        self.medium = false;
+        self.hard = false;
+        self.fiendish = false;
+        self.url = None;
+        Ok(())
     }
 
-    fn update(&mut self, _: chrono::Duration, handle: &mut RaylibDrawHandle) -> State {
-        self.update_rect(handle);
-        let clicked = handle.is_mouse_button_released(MouseButton::MOUSE_BUTTON_LEFT);
+    fn update(
+        &mut self,
+        _: (&mut RaylibHandle, &RaylibThread),
+        _: f32,
+        _: Option<Rc<&mut RaylibAudio>>,
+    ) -> anyhow::Result<State> {
+        if let Some(url) = &self.url {
+            raylib::open_url(&url);
+        }
+        self.url = None;
+        if self.extremely_easy {
+            let gameplay = GameplayScene::new(Level::ExtremelyEasy);
+            return Ok(State::New(Box::new(gameplay)));
+        }
+        if self.easy {
+            let gameplay = GameplayScene::new(Level::Easy);
+            return Ok(State::New(Box::new(gameplay)));
+        }
+        if self.medium {
+            let gameplay = GameplayScene::new(Level::Medium);
+            return Ok(State::New(Box::new(gameplay)));
+        }
+        if self.hard {
+            let gameplay = GameplayScene::new(Level::Hard);
+            return Ok(State::New(Box::new(gameplay)));
+        }
+        if self.fiendish {
+            let gameplay = GameplayScene::new(Level::Fiendish);
+            return Ok(State::New(Box::new(gameplay)));
+        }
+        Ok(State::Keep)
+    }
+    fn draw(
+        &mut self,
+        handle: &mut RaylibDrawHandle,
+        screen: Rectangle,
+        font: Option<Rc<Font>>,
+        _: Option<Rc<&mut RaylibAudio>>,
+    ) -> anyhow::Result<()> {
+        let font = font.unwrap();
+        let clicked =
+            handle.is_mouse_button_released(raylib::consts::MouseButton::MOUSE_LEFT_BUTTON);
         let mouse = Vector2::new(handle.get_mouse_x() as f32, handle.get_mouse_y() as f32);
 
         let camera = Camera2D {
@@ -39,35 +76,35 @@ impl Scene for MainMenuScene {
         };
         let mut draw = handle.begin_mode2D(camera);
 
-        let background_color = Color::WHEAT;
+        let background_color = Color::new(245, 222, 179, 255);
         draw.clear_background(background_color);
 
-        let size = measure_text_ex(self.font.as_ref(), "Nanpure", 84.0, 2.0);
-        let position = Vector2::new((self.rect.width - size.x) / 2.0, 0.0);
+        let size = measure_text_ex(font.as_ref(), "Nanpure", 84.0, 2.0);
+        let position = Vector2::new((screen.width - size.x) / 2.0, 0.0);
         let bottom = size.y + 16.0;
         draw.draw_text_ex(
-            self.font.as_ref(),
+            font.as_ref(),
             "Nanpure",
             position,
             84.0,
             2.0,
-            Color::DARKCYAN,
+            Color::new(0, 139, 139, 255),
         );
 
-        let size = measure_text_ex(self.font.as_ref(), "(Sudoku)", 32.0, 1.0);
-        let position = Vector2::new((self.rect.width - size.x) / 2.0, bottom);
+        let size = measure_text_ex(font.as_ref(), "(Sudoku)", 32.0, 1.0);
+        let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let bottom = bottom + size.y + 64.0;
         draw.draw_text_ex(
-            self.font.as_ref(),
+            font.as_ref(),
             "(Sudoku)",
             position,
             32.0,
             2.0,
-            Color::DARKCYAN,
+            Color::new(0, 139, 139, 255),
         );
 
-        let size = measure_text_ex(self.font.as_ref(), "Extremely Easy", 64.0, 1.0);
-        let position = Vector2::new((self.rect.width - size.x) / 2.0, bottom);
+        let size = measure_text_ex(font.as_ref(), "Extremely Easy", 64.0, 1.0);
+        let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let bottom = bottom + 12.0 + size.y;
         let extremely_easy_bt = Rectangle {
             x: position.x,
@@ -80,17 +117,10 @@ impl Scene for MainMenuScene {
         } else {
             Color::DARKGRAY
         };
-        draw.draw_text_ex(
-            self.font.as_ref(),
-            "Extremely Easy",
-            position,
-            64.0,
-            1.0,
-            tint,
-        );
+        draw.draw_text_ex(font.as_ref(), "Extremely Easy", position, 64.0, 1.0, tint);
 
-        let size = measure_text_ex(self.font.as_ref(), "Easy", 64.0, 1.0);
-        let position = Vector2::new((self.rect.width - size.x) / 2.0, bottom);
+        let size = measure_text_ex(font.as_ref(), "Easy", 64.0, 1.0);
+        let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let bottom = bottom + 12.0 + size.y;
         let easy_bt = Rectangle {
             x: position.x,
@@ -103,10 +133,10 @@ impl Scene for MainMenuScene {
         } else {
             Color::DARKGRAY
         };
-        draw.draw_text_ex(self.font.as_ref(), "Easy", position, 64.0, 1.0, tint);
+        draw.draw_text_ex(font.as_ref(), "Easy", position, 64.0, 1.0, tint);
 
-        let size = measure_text_ex(self.font.as_ref(), "Medium", 64.0, 1.0);
-        let position = Vector2::new((self.rect.width - size.x) / 2.0, bottom);
+        let size = measure_text_ex(font.as_ref(), "Medium", 64.0, 1.0);
+        let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let bottom = bottom + 12.0 + size.y;
         let medium_bt = Rectangle {
             x: position.x,
@@ -119,10 +149,10 @@ impl Scene for MainMenuScene {
         } else {
             Color::DARKGRAY
         };
-        draw.draw_text_ex(self.font.as_ref(), "Medium", position, 64.0, 1.0, tint);
+        draw.draw_text_ex(font.as_ref(), "Medium", position, 64.0, 1.0, tint);
 
-        let size = measure_text_ex(self.font.as_ref(), "Hard", 64.0, 1.0);
-        let position = Vector2::new((self.rect.width - size.x) / 2.0, bottom);
+        let size = measure_text_ex(font.as_ref(), "Hard", 64.0, 1.0);
+        let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let bottom = bottom + 12.0 + size.y;
         let hard_bt = Rectangle {
             x: position.x,
@@ -135,10 +165,10 @@ impl Scene for MainMenuScene {
         } else {
             Color::DARKGRAY
         };
-        draw.draw_text_ex(self.font.as_ref(), "Hard", position, 64.0, 1.0, tint);
+        draw.draw_text_ex(font.as_ref(), "Hard", position, 64.0, 1.0, tint);
 
-        let size = measure_text_ex(self.font.as_ref(), "Fiendish", 64.0, 1.0);
-        let position = Vector2::new((self.rect.width - size.x) / 2.0, bottom);
+        let size = measure_text_ex(font.as_ref(), "Fiendish", 64.0, 1.0);
+        let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let fiendish_bt = Rectangle {
             x: position.x,
             y: position.y,
@@ -150,14 +180,11 @@ impl Scene for MainMenuScene {
         } else {
             Color::DARKGRAY
         };
-        draw.draw_text_ex(self.font.as_ref(), "Fiendish", position, 64.0, 1.0, tint);
+        draw.draw_text_ex(font.as_ref(), "Fiendish", position, 64.0, 1.0, tint);
 
         let url = "https://github.com/cacilhas/nanpure";
-        let size = measure_text_ex(self.font.as_ref(), url, 12.0, 1.0);
-        let position = Vector2::new(
-            self.rect.width - size.x - 12.0,
-            self.rect.height - size.y - 12.0,
-        );
+        let size = measure_text_ex(font.as_ref(), url, 12.0, 1.0);
+        let position = Vector2::new(screen.width - size.x - 12.0, screen.height - size.y - 12.0);
         let doc_bt = Rectangle {
             x: position.x,
             y: position.y,
@@ -169,65 +196,45 @@ impl Scene for MainMenuScene {
         } else {
             Color::DARKGRAY
         };
-        draw.draw_text_ex(self.font.as_ref(), url, position, 12.0, 1.0, tint);
+        draw.draw_text_ex(font.as_ref(), url, position, 12.0, 1.0, tint);
 
         if clicked {
             if extremely_easy_bt.check_collision_point_rec(mouse) {
-                let gameplay = GameplayScene::new(&Level::ExtremelyEasy);
-                return State::New(Rc::new(RefCell::new(gameplay)));
+                self.extremely_easy = true;
             }
             if easy_bt.check_collision_point_rec(mouse) {
-                let gameplay = GameplayScene::new(&Level::Easy);
-                return State::New(Rc::new(RefCell::new(gameplay)));
+                self.easy = true;
             }
             if medium_bt.check_collision_point_rec(mouse) {
-                let gameplay = GameplayScene::new(&Level::Medium);
-                return State::New(Rc::new(RefCell::new(gameplay)));
+                self.medium = true;
             }
             if hard_bt.check_collision_point_rec(mouse) {
-                let gameplay = GameplayScene::new(&Level::Hard);
-                return State::New(Rc::new(RefCell::new(gameplay)));
+                self.hard = true;
             }
             if fiendish_bt.check_collision_point_rec(mouse) {
-                let gameplay = GameplayScene::new(&Level::Fiendish);
-                return State::New(Rc::new(RefCell::new(gameplay)));
+                self.fiendish = true;
             }
             if doc_bt.check_collision_point_rec(mouse) {
-                raylib::open_url(url);
+                self.url = Some(url.to_owned());
             }
         } else {
             if draw.is_key_released(KeyboardKey::KEY_ONE) {
-                let gameplay = GameplayScene::new(&Level::ExtremelyEasy);
-                return State::New(Rc::new(RefCell::new(gameplay)));
+                self.extremely_easy = true;
             }
             if draw.is_key_released(KeyboardKey::KEY_TWO) {
-                let gameplay = GameplayScene::new(&Level::Easy);
-                return State::New(Rc::new(RefCell::new(gameplay)));
+                self.easy = true;
             }
             if draw.is_key_released(KeyboardKey::KEY_THREE) {
-                let gameplay = GameplayScene::new(&Level::Medium);
-                return State::New(Rc::new(RefCell::new(gameplay)));
+                self.medium = true;
             }
             if draw.is_key_released(KeyboardKey::KEY_FOUR) {
-                let gameplay = GameplayScene::new(&Level::Hard);
-                return State::New(Rc::new(RefCell::new(gameplay)));
+                self.hard = true;
             }
             if draw.is_key_released(KeyboardKey::KEY_FIVE) {
-                let gameplay = GameplayScene::new(&Level::Fiendish);
-                return State::New(Rc::new(RefCell::new(gameplay)));
+                self.fiendish = true;
             }
         }
 
-        State::Keep
-    }
-}
-
-impl MainMenuScene {
-    fn update_rect(&mut self, handle: &RaylibHandle) {
-        self.rect = Rectangle {
-            width: handle.get_screen_width() as f32,
-            height: handle.get_screen_height() as f32,
-            ..Default::default()
-        };
+        Ok(())
     }
 }

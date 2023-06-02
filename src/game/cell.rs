@@ -1,4 +1,4 @@
-use raylib::prelude::Color;
+use rscenes::prelude::Color;
 
 #[derive(Debug)]
 pub struct Cell;
@@ -10,7 +10,7 @@ pub static COLORS: [Color; 10] = [
     Color::YELLOW,
     Color::GREEN,
     Color::SKYBLUE,
-    Color::INDIGO,
+    Color::new(75, 0, 130, 255), //INDIGO,
     Color::VIOLET,
     Color::MAGENTA,
     Color::DARKGRAY,

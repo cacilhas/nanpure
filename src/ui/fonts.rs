@@ -1,7 +1,7 @@
 #[cfg(target_os = "linux")]
 use std::{env, process::Command};
 
-use raylib::prelude::*;
+use rscenes::prelude::*;
 #[cfg(target_os = "linux")]
 use walkdir::WalkDir;
 

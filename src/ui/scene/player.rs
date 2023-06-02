@@ -1,4 +1,4 @@
-use raylib::prelude::*;
+use rscenes::prelude::*;
 
 pub enum Move {
     Left,
@@ -28,7 +28,7 @@ impl Player {
             (self.y as f32 * height + rect.y) as i32,
             width as i32,
             height as i32,
-            Color::DARKCYAN,
+            Color::new(0, 139, 139, 255),
         );
     }
 

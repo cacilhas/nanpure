@@ -20,13 +20,8 @@ strip = true
 
 [dependencies]
 anyhow = "1.0"
-chrono = "0.4"
 legion = "0.4"
+rscenes = "*"
 static_init = "1.0"
 thiserror = "1.0"
 walkdir = "2.3"
-
-[dependencies.raylib]
-version = "4.5"
-git = "https://github.com/litten2up/raylib-rs"
-branch = "4.5.0"

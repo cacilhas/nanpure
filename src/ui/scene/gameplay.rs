@@ -1,11 +1,10 @@
-use raylib::prelude::*;
+use std::rc::Rc;
+
+use rscenes::prelude::*;
 
 use crate::game::{Game, Level, COLORS};
 
-use super::{
-    player::{Move, Player},
-    Scene, State,
-};
+use super::player::{Move, Player};
 
 #[derive(Debug, Default)]
 pub struct GameplayScene {
@@ -17,18 +16,14 @@ pub struct GameplayScene {
 const SIZE: f32 = 630.0;
 
 impl GameplayScene {
-    pub fn new(level: &Level) -> Self {
+    pub fn new(level: Level) -> Self {
         let mut gameplay = Self::default();
         gameplay.game.shuffle(level);
         gameplay
     }
 
-    fn update_rect(&mut self, handle: &RaylibHandle) {
-        let mut rect = Rectangle {
-            width: handle.get_screen_width() as f32,
-            height: handle.get_screen_height() as f32,
-            ..Default::default()
-        };
+    fn update_rect(&mut self, screen: Rectangle) {
+        let mut rect = screen.clone();
         if rect.width > SIZE {
             rect.x = (rect.width - SIZE) / 2.0;
             rect.width = SIZE;
@@ -67,7 +62,7 @@ impl GameplayScene {
         }
     }
 
-    fn detect_keys(&mut self, handle: &mut RaylibDrawHandle) {
+    fn detect_keys(&mut self, handle: &mut RaylibHandle) {
         if handle.is_key_pressed(KeyboardKey::KEY_LEFT) || handle.is_key_pressed(KeyboardKey::KEY_A)
         {
             self.player.move_to(&Move::Left);
@@ -103,36 +98,42 @@ impl GameplayScene {
 }
 
 impl Scene for GameplayScene {
-    fn init(
+    fn update(
         &mut self,
-        handle: &mut raylib::RaylibHandle,
-        _: &raylib::RaylibThread,
-        _: std::rc::Rc<raylib::text::Font>,
-    ) {
-        self.update_rect(handle);
-    }
-
-    fn update(&mut self, _: chrono::Duration, handle: &mut RaylibDrawHandle) -> State {
-        self.update_rect(handle);
+        (handle, _): (&mut RaylibHandle, &RaylibThread),
+        _: f32,
+        _: Option<Rc<&mut RaylibAudio>>,
+    ) -> anyhow::Result<State> {
         if !self.game.is_game_over() {
             self.detect_keys(handle);
         }
+        Ok(State::Keep)
+    }
+
+    fn draw(
+        &mut self,
+        handle: &mut RaylibDrawHandle,
+        screen: Rectangle,
+        _: Option<Rc<Font>>,
+        _: Option<Rc<&mut RaylibAudio>>,
+    ) -> anyhow::Result<()> {
+        self.update_rect(screen);
         let camera = Camera2D {
             zoom: 1.0,
             ..Default::default()
         };
         let mut draw = handle.begin_mode2D(camera);
         let background_color = if self.game.is_game_over() {
-            Color::DARKCYAN
+            Color::new(0, 139, 139, 255)
         } else {
-            Color::WHEAT
+            Color::new(245, 222, 179, 255)
         };
         draw.clear_background(background_color);
         self.player.draw(&mut draw, self.rect.to_owned());
         self.game.draw(&mut draw, self.rect.to_owned());
         self.deal_with_keyboard(&mut draw);
 
-        State::Keep
+        Ok(())
     }
 }
 

@@ -76,7 +76,7 @@ impl Scene for MainMenuScene {
         };
         let mut draw = handle.begin_mode2D(camera);
 
-        let background_color = Color::new(245, 222, 179, 255);
+        let background_color = colors::WHEAT;
         draw.clear_background(background_color);
 
         let size = measure_text_ex(font.as_ref(), "Nanpure", 84.0, 2.0);
@@ -88,7 +88,7 @@ impl Scene for MainMenuScene {
             position,
             84.0,
             2.0,
-            Color::new(0, 139, 139, 255),
+            colors::DARKCYAN,
         );
 
         let size = measure_text_ex(font.as_ref(), "(Sudoku)", 32.0, 1.0);
@@ -100,7 +100,7 @@ impl Scene for MainMenuScene {
             position,
             32.0,
             2.0,
-            Color::new(0, 139, 139, 255),
+            colors::DARKCYAN,
         );
 
         let size = measure_text_ex(font.as_ref(), "Extremely Easy", 64.0, 1.0);
@@ -113,9 +113,9 @@ impl Scene for MainMenuScene {
             height: size.y,
         };
         let tint = if extremely_easy_bt.check_collision_point_rec(mouse) {
-            Color::BLACK
+            colors::BLACK
         } else {
-            Color::DARKGRAY
+            colors::DARKGRAY
         };
         draw.draw_text_ex(font.as_ref(), "Extremely Easy", position, 64.0, 1.0, tint);
 
@@ -129,9 +129,9 @@ impl Scene for MainMenuScene {
             height: size.y,
         };
         let tint = if easy_bt.check_collision_point_rec(mouse) {
-            Color::BLACK
+            colors::BLACK
         } else {
-            Color::DARKGRAY
+            colors::DARKGRAY
         };
         draw.draw_text_ex(font.as_ref(), "Easy", position, 64.0, 1.0, tint);
 
@@ -145,9 +145,9 @@ impl Scene for MainMenuScene {
             height: size.y,
         };
         let tint = if medium_bt.check_collision_point_rec(mouse) {
-            Color::BLACK
+            colors::BLACK
         } else {
-            Color::DARKGRAY
+            colors::DARKGRAY
         };
         draw.draw_text_ex(font.as_ref(), "Medium", position, 64.0, 1.0, tint);
 
@@ -161,9 +161,9 @@ impl Scene for MainMenuScene {
             height: size.y,
         };
         let tint = if hard_bt.check_collision_point_rec(mouse) {
-            Color::BLACK
+            colors::BLACK
         } else {
-            Color::DARKGRAY
+            colors::DARKGRAY
         };
         draw.draw_text_ex(font.as_ref(), "Hard", position, 64.0, 1.0, tint);
 
@@ -176,9 +176,9 @@ impl Scene for MainMenuScene {
             height: size.y,
         };
         let tint = if fiendish_bt.check_collision_point_rec(mouse) {
-            Color::BLACK
+            colors::BLACK
         } else {
-            Color::DARKGRAY
+            colors::DARKGRAY
         };
         draw.draw_text_ex(font.as_ref(), "Fiendish", position, 64.0, 1.0, tint);
 
@@ -192,9 +192,9 @@ impl Scene for MainMenuScene {
             height: size.y,
         };
         let tint = if doc_bt.check_collision_point_rec(mouse) {
-            Color::BLACK
+            colors::BLACK
         } else {
-            Color::DARKGRAY
+            colors::DARKGRAY
         };
         draw.draw_text_ex(font.as_ref(), url, position, 12.0, 1.0, tint);
 

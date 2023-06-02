@@ -124,9 +124,9 @@ impl Scene for GameplayScene {
         };
         let mut draw = handle.begin_mode2D(camera);
         let background_color = if self.game.is_game_over() {
-            Color::new(0, 139, 139, 255)
+            colors::DARKCYAN
         } else {
-            Color::new(245, 222, 179, 255)
+            colors::WHEAT
         };
         draw.clear_background(background_color);
         self.player.draw(&mut draw, self.rect.to_owned());

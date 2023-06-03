@@ -96,6 +96,16 @@ impl Game {
             .unwrap_or(false)
     }
 
+    pub fn get_cell(&self, x: u8, y: u8) -> (Option<u8>, &Candidates) {
+        let mut query = <(&Cell, &Position, &Candidates, &Value)>::query();
+        for (_, position, candidates, value) in query.iter(&self.0) {
+            if position.x == x && position.y == y {
+                return (value.into(), candidates);
+            }
+        }
+        panic!("should never get here")
+    }
+
     pub fn set_cell(&mut self, x: u8, y: u8, value: Option<u8>) {
         let mut query = <(&Cell, &Position, &Candidates, &Value)>::query();
         for (_, position, candidates, current) in query.iter(&self.0) {

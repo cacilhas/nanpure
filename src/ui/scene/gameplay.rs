@@ -79,12 +79,21 @@ impl GameplayScene {
         {
             self.player.move_to(&Move::Down);
         }
+        if handle.is_key_released(KeyboardKey::KEY_SPACE) {
+            let (value, candidates) = self.game.get_cell(self.player.x, self.player.y);
+            match value {
+                Some(_) => self.game.set_cell(self.player.x, self.player.y, None),
+                None => self
+                    .game
+                    .set_cell(self.player.x, self.player.y, candidates.only()),
+            }
+        }
         let control = handle.is_key_down(KeyboardKey::KEY_LEFT_CONTROL)
             || handle.is_key_down(KeyboardKey::KEY_RIGHT_CONTROL)
             || handle.is_key_down(KeyboardKey::KEY_LEFT_SHIFT)
             || handle.is_key_down(KeyboardKey::KEY_RIGHT_SHIFT);
         for (i, keys) in CHANGE_KEYS.iter().enumerate() {
-            if keys.iter().any(|key| handle.is_key_released(*key)) {
+            if keys.iter().any(|&key| handle.is_key_released(key)) {
                 if control {
                     let value = if i == 0 { None } else { Some(i as u8) };
                     self.game.set_cell(self.player.x, self.player.y, value);

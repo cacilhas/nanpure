@@ -3,6 +3,7 @@ use std::rc::Rc;
 use crate::game::Level;
 
 use super::gameplay::GameplayScene;
+use super::help::HelpScene;
 use rscenes::prelude::*;
 
 #[derive(Debug, Default)]
@@ -12,6 +13,7 @@ pub struct MainMenuScene {
     medium: bool,
     hard: bool,
     fiendish: bool,
+    help: bool,
     url: Option<String>,
 }
 
@@ -22,16 +24,36 @@ impl Scene for MainMenuScene {
         self.medium = false;
         self.hard = false;
         self.fiendish = false;
+        self.help = false;
         self.url = None;
         Ok(())
     }
 
     fn update(
         &mut self,
-        _: (&mut RaylibHandle, &RaylibThread),
+        (handle, _): (&mut RaylibHandle, &RaylibThread),
         _: f32,
         _: Option<Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<State> {
+        if handle.is_key_released(KeyboardKey::KEY_ONE) {
+            self.extremely_easy = true;
+        }
+        if handle.is_key_released(KeyboardKey::KEY_TWO) {
+            self.easy = true;
+        }
+        if handle.is_key_released(KeyboardKey::KEY_THREE) {
+            self.medium = true;
+        }
+        if handle.is_key_released(KeyboardKey::KEY_FOUR) {
+            self.hard = true;
+        }
+        if handle.is_key_released(KeyboardKey::KEY_FIVE) {
+            self.fiendish = true;
+        }
+        if handle.is_key_released(KeyboardKey::KEY_F1) {
+            self.help = true;
+        }
+
         if let Some(url) = &self.url {
             raylib::open_url(&url);
         }
@@ -54,6 +76,10 @@ impl Scene for MainMenuScene {
         }
         if self.fiendish {
             let gameplay = GameplayScene::new(Level::Fiendish);
+            return Ok(State::New(Box::new(gameplay)));
+        }
+        if self.help {
+            let gameplay = HelpScene::default();
             return Ok(State::New(Box::new(gameplay)));
         }
         Ok(State::Keep)
@@ -198,6 +224,21 @@ impl Scene for MainMenuScene {
         };
         draw.draw_text_ex(font.as_ref(), url, position, 12.0, 1.0, tint);
 
+        let size = measure_text_ex(font.as_ref(), "Help", 24.0, 1.0);
+        let position = Vector2::new(screen.width - size.x - 12.0, position.y - size.y - 12.0);
+        let help_bt = Rectangle {
+            x: position.x,
+            y: position.y,
+            width: size.x,
+            height: size.y,
+        };
+        let tint = if help_bt.check_collision_point_rec(mouse) {
+            colors::BLACK
+        } else {
+            colors::DARKGRAY
+        };
+        draw.draw_text_ex(font.as_ref(), "Help", position, 24.0, 1.0, tint);
+
         if clicked {
             if extremely_easy_bt.check_collision_point_rec(mouse) {
                 self.extremely_easy = true;
@@ -214,24 +255,11 @@ impl Scene for MainMenuScene {
             if fiendish_bt.check_collision_point_rec(mouse) {
                 self.fiendish = true;
             }
+            if help_bt.check_collision_point_rec(mouse) {
+                self.help = true;
+            }
             if doc_bt.check_collision_point_rec(mouse) {
                 self.url = Some(url.to_owned());
-            }
-        } else {
-            if draw.is_key_released(KeyboardKey::KEY_ONE) {
-                self.extremely_easy = true;
-            }
-            if draw.is_key_released(KeyboardKey::KEY_TWO) {
-                self.easy = true;
-            }
-            if draw.is_key_released(KeyboardKey::KEY_THREE) {
-                self.medium = true;
-            }
-            if draw.is_key_released(KeyboardKey::KEY_FOUR) {
-                self.hard = true;
-            }
-            if draw.is_key_released(KeyboardKey::KEY_FIVE) {
-                self.fiendish = true;
             }
         }
 

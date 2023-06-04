@@ -4,7 +4,10 @@ use rscenes::prelude::*;
 
 use crate::game::{Game, Level, COLORS};
 
-use super::player::{Move, Player};
+use super::{
+    help::HelpScene,
+    player::{Move, Player},
+};
 
 #[derive(Debug, Default)]
 pub struct GameplayScene {
@@ -113,6 +116,10 @@ impl Scene for GameplayScene {
         _: f32,
         _: Option<Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<State> {
+        if handle.is_key_released(KeyboardKey::KEY_F1) {
+            let scene = HelpScene::default();
+            return Ok(State::New(Box::new(scene)));
+        }
         if !self.game.is_game_over() {
             self.detect_keys(handle);
         }

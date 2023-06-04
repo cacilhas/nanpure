@@ -208,7 +208,7 @@ impl Scene for MainMenuScene {
         };
         draw.draw_text_ex(font.as_ref(), "Fiendish", position, 64.0, 1.0, tint);
 
-        let url = "https://github.com/cacilhas/nanpure";
+        let url = "https://crates.io/crates/nanpure";
         let size = measure_text_ex(font.as_ref(), url, 12.0, 1.0);
         let position = Vector2::new(screen.width - size.x - 12.0, screen.height - size.y - 12.0);
         let doc_bt = Rectangle {

@@ -68,10 +68,12 @@ impl Scene for HelpScene {
             "WASD: select",
             "Cursor keys: select",
             "1~9: toggle candidate",
-            "Shift + 1~9: toggle value",
+            "Shift + 1~9: toggle cell value",
+            "Control + 1~9: toggle cell value",
+            "0: clean cell value up",
             "Space: alias to toggle one value",
             "F1: help",
-            "Esc: back",
+            "Esc: back or quit",
         ];
 
         let mut width = 0f32;
@@ -101,7 +103,7 @@ impl Scene for HelpScene {
         }
 
         let size = measure_text_ex(font.as_ref(), "Colours: 1 2 3 4 5 6 7 8 9", 24.0, 1.0);
-        let mut position = Vector2::new((screen.width - size.x) / 2.0, bottom);
+        let mut position = Vector2::new((screen.width - size.x) / 2.0, bottom + 12.0);
         let size = measure_text_ex(font.as_ref(), "Colours:", 24.0, 1.0);
         draw.draw_text_ex(font.as_ref(), "Colours:", position, 24.0, 1.0, COLORS[0]);
         position.x += size.x;

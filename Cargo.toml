@@ -22,7 +22,7 @@ strip = true
 [dependencies]
 anyhow = "1.0"
 legion = "0.4"
-rscenes = "1.1"
+rscenes = "1.2"
 static_init = "1.0"
 thiserror = "1.0"
 walkdir = "2.3"

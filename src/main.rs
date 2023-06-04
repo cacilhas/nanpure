@@ -50,23 +50,22 @@ mod error;
 mod game;
 mod ui;
 
-use crate::ui::{fonts, scene::main_menu::MainMenuScene};
+use crate::ui::{fonts, resources::Resources, scene::main_menu::MainMenuScene};
 use rscenes::prelude::*;
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 fn main() -> anyhow::Result<()> {
-    use std::rc::Rc;
-
     let mut builder = raylib::init();
     builder
         .size(640, 720) // desired dimensions
         .title("nanpure"); // WM_CLASS
-    let mut manager = SceneManager::new(builder);
-    let font = manager.config(|handle, thread| {
+    let mut manager = SceneManager::new(builder, Resources::default());
+    manager.config(|handle, thread, resources| {
         handle.set_window_title(thread, "Kodumaro Nanpure");
-        fonts::get_font(handle, thread)
+        let font = fonts::get_font(handle, thread)?;
+        resources.set(font);
+        anyhow::Ok(())
     })?;
-    manager.push_font("main", &Rc::new(font));
     manager.add_first_scene(Box::new(MainMenuScene::default()));
     manager.start()
 }

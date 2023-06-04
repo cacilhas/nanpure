@@ -1,8 +1,7 @@
-use std::{collections::HashMap, rc::Rc};
-
 use rscenes::prelude::*;
 
 use crate::game::{Game, Level, COLORS};
+use crate::ui::resources::Resources;
 
 use super::{
     help::HelpScene,
@@ -109,13 +108,13 @@ impl GameplayScene {
     }
 }
 
-impl Scene for GameplayScene {
+impl Scene<Resources> for GameplayScene {
     fn update(
         &mut self,
         (handle, _): (&mut RaylibHandle, &RaylibThread),
         _: f32,
-        _: Option<Rc<&mut RaylibAudio>>,
-    ) -> anyhow::Result<State> {
+        _: &mut Resources,
+    ) -> anyhow::Result<State<Resources>> {
         if handle.is_key_released(KeyboardKey::KEY_F1) {
             let scene = HelpScene::default();
             return Ok(State::New(Box::new(scene)));
@@ -130,8 +129,7 @@ impl Scene for GameplayScene {
         &mut self,
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
-        _: HashMap<&str, Rc<Font>>,
-        _: Option<Rc<&mut RaylibAudio>>,
+        _: &Resources,
     ) -> anyhow::Result<()> {
         self.update_rect(screen);
         let camera = Camera2D {

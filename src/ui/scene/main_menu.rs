@@ -1,8 +1,8 @@
-use std::collections::HashMap;
-use std::rc::Rc;
+use std::borrow::Borrow;
 
 use crate::game::Level;
 
+use super::super::resources::Resources;
 use super::gameplay::GameplayScene;
 use super::help::HelpScene;
 use rscenes::prelude::*;
@@ -18,7 +18,7 @@ pub struct MainMenuScene {
     url: Option<String>,
 }
 
-impl Scene for MainMenuScene {
+impl Scene<Resources> for MainMenuScene {
     fn init(&mut self, _: &mut RaylibHandle, _: &RaylibThread) -> anyhow::Result<()> {
         self.extremely_easy = false;
         self.easy = false;
@@ -34,8 +34,8 @@ impl Scene for MainMenuScene {
         &mut self,
         (handle, _): (&mut RaylibHandle, &RaylibThread),
         _: f32,
-        _: Option<Rc<&mut RaylibAudio>>,
-    ) -> anyhow::Result<State> {
+        _: &mut Resources,
+    ) -> anyhow::Result<State<Resources>> {
         if handle.is_key_released(KeyboardKey::KEY_ONE) {
             self.extremely_easy = true;
         }
@@ -89,10 +89,9 @@ impl Scene for MainMenuScene {
         &mut self,
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
-        font: HashMap<&str, Rc<Font>>,
-        _: Option<Rc<&mut RaylibAudio>>,
+        resources: &Resources,
     ) -> anyhow::Result<()> {
-        let font = font["main"].to_owned();
+        let font: &Font = resources.borrow();
         let clicked =
             handle.is_mouse_button_released(raylib::consts::MouseButton::MOUSE_LEFT_BUTTON);
         let mouse = Vector2::new(handle.get_mouse_x() as f32, handle.get_mouse_y() as f32);
@@ -106,31 +105,17 @@ impl Scene for MainMenuScene {
         let background_color = colors::WHEAT;
         draw.clear_background(background_color);
 
-        let size = measure_text_ex(font.as_ref(), "Nanpure", 84.0, 2.0);
+        let size = measure_text_ex(font, "Nanpure", 84.0, 2.0);
         let position = Vector2::new((screen.width - size.x) / 2.0, 0.0);
         let bottom = size.y + 16.0;
-        draw.draw_text_ex(
-            font.as_ref(),
-            "Nanpure",
-            position,
-            84.0,
-            2.0,
-            colors::DARKCYAN,
-        );
+        draw.draw_text_ex(font, "Nanpure", position, 84.0, 2.0, colors::DARKCYAN);
 
-        let size = measure_text_ex(font.as_ref(), "(Sudoku)", 32.0, 1.0);
+        let size = measure_text_ex(font, "(Sudoku)", 32.0, 1.0);
         let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let bottom = bottom + size.y + 64.0;
-        draw.draw_text_ex(
-            font.as_ref(),
-            "(Sudoku)",
-            position,
-            32.0,
-            2.0,
-            colors::DARKCYAN,
-        );
+        draw.draw_text_ex(font, "(Sudoku)", position, 32.0, 2.0, colors::DARKCYAN);
 
-        let size = measure_text_ex(font.as_ref(), "Extremely Easy", 64.0, 1.0);
+        let size = measure_text_ex(font, "Extremely Easy", 64.0, 1.0);
         let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let bottom = bottom + 12.0 + size.y;
         let extremely_easy_bt = Rectangle {
@@ -144,9 +129,9 @@ impl Scene for MainMenuScene {
         } else {
             colors::DARKGRAY
         };
-        draw.draw_text_ex(font.as_ref(), "Extremely Easy", position, 64.0, 1.0, tint);
+        draw.draw_text_ex(font, "Extremely Easy", position, 64.0, 1.0, tint);
 
-        let size = measure_text_ex(font.as_ref(), "Easy", 64.0, 1.0);
+        let size = measure_text_ex(font, "Easy", 64.0, 1.0);
         let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let bottom = bottom + 12.0 + size.y;
         let easy_bt = Rectangle {
@@ -160,9 +145,9 @@ impl Scene for MainMenuScene {
         } else {
             colors::DARKGRAY
         };
-        draw.draw_text_ex(font.as_ref(), "Easy", position, 64.0, 1.0, tint);
+        draw.draw_text_ex(font, "Easy", position, 64.0, 1.0, tint);
 
-        let size = measure_text_ex(font.as_ref(), "Medium", 64.0, 1.0);
+        let size = measure_text_ex(font, "Medium", 64.0, 1.0);
         let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let bottom = bottom + 12.0 + size.y;
         let medium_bt = Rectangle {
@@ -176,9 +161,9 @@ impl Scene for MainMenuScene {
         } else {
             colors::DARKGRAY
         };
-        draw.draw_text_ex(font.as_ref(), "Medium", position, 64.0, 1.0, tint);
+        draw.draw_text_ex(font, "Medium", position, 64.0, 1.0, tint);
 
-        let size = measure_text_ex(font.as_ref(), "Hard", 64.0, 1.0);
+        let size = measure_text_ex(font, "Hard", 64.0, 1.0);
         let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let bottom = bottom + 12.0 + size.y;
         let hard_bt = Rectangle {
@@ -192,9 +177,9 @@ impl Scene for MainMenuScene {
         } else {
             colors::DARKGRAY
         };
-        draw.draw_text_ex(font.as_ref(), "Hard", position, 64.0, 1.0, tint);
+        draw.draw_text_ex(font, "Hard", position, 64.0, 1.0, tint);
 
-        let size = measure_text_ex(font.as_ref(), "Fiendish", 64.0, 1.0);
+        let size = measure_text_ex(font, "Fiendish", 64.0, 1.0);
         let position = Vector2::new((screen.width - size.x) / 2.0, bottom);
         let fiendish_bt = Rectangle {
             x: position.x,
@@ -207,10 +192,10 @@ impl Scene for MainMenuScene {
         } else {
             colors::DARKGRAY
         };
-        draw.draw_text_ex(font.as_ref(), "Fiendish", position, 64.0, 1.0, tint);
+        draw.draw_text_ex(font, "Fiendish", position, 64.0, 1.0, tint);
 
         let url = "https://crates.io/crates/nanpure";
-        let size = measure_text_ex(font.as_ref(), url, 12.0, 1.0);
+        let size = measure_text_ex(font, url, 12.0, 1.0);
         let position = Vector2::new(screen.width - size.x - 12.0, screen.height - size.y - 12.0);
         let doc_bt = Rectangle {
             x: position.x,
@@ -223,9 +208,9 @@ impl Scene for MainMenuScene {
         } else {
             colors::DARKGRAY
         };
-        draw.draw_text_ex(font.as_ref(), url, position, 12.0, 1.0, tint);
+        draw.draw_text_ex(font, url, position, 12.0, 1.0, tint);
 
-        let size = measure_text_ex(font.as_ref(), "Help", 24.0, 1.0);
+        let size = measure_text_ex(font, "Help", 24.0, 1.0);
         let position = Vector2::new(screen.width - size.x - 12.0, position.y - size.y - 12.0);
         let help_bt = Rectangle {
             x: position.x,
@@ -238,7 +223,7 @@ impl Scene for MainMenuScene {
         } else {
             colors::DARKGRAY
         };
-        draw.draw_text_ex(font.as_ref(), "Help", position, 24.0, 1.0, tint);
+        draw.draw_text_ex(font, "Help", position, 24.0, 1.0, tint);
 
         if clicked {
             if extremely_easy_bt.check_collision_point_rec(mouse) {

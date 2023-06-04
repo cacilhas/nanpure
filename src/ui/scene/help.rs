@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::game::COLORS;
 use rscenes::prelude::*;
 
@@ -23,10 +25,10 @@ impl Scene for HelpScene {
         &mut self,
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
-        font: Option<std::rc::Rc<Font>>,
+        font: HashMap<&str, std::rc::Rc<Font>>,
         _: Option<std::rc::Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<()> {
-        let font = font.unwrap();
+        let font = font["main"].to_owned();
         let clicked =
             handle.is_mouse_button_released(raylib::consts::MouseButton::MOUSE_LEFT_BUTTON);
         let mouse = Vector2::new(handle.get_mouse_x() as f32, handle.get_mouse_y() as f32);

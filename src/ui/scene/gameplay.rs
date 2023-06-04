@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{collections::HashMap, rc::Rc};
 
 use rscenes::prelude::*;
 
@@ -130,7 +130,7 @@ impl Scene for GameplayScene {
         &mut self,
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
-        _: Option<Rc<Font>>,
+        _: HashMap<&str, Rc<Font>>,
         _: Option<Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<()> {
         self.update_rect(screen);

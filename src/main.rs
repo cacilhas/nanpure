@@ -66,8 +66,7 @@ fn main() -> anyhow::Result<()> {
         handle.set_window_title(thread, "Kodumaro Nanpure");
         fonts::get_font(handle, thread)
     })?;
-    let font = Rc::new(font);
-    manager.set_font(&font);
+    manager.push_font("main", &Rc::new(font));
     manager.add_first_scene(Box::new(MainMenuScene::default()));
     manager.start()
 }

@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use crate::game::Level;
@@ -88,10 +89,10 @@ impl Scene for MainMenuScene {
         &mut self,
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
-        font: Option<Rc<Font>>,
+        font: HashMap<&str, Rc<Font>>,
         _: Option<Rc<&mut RaylibAudio>>,
     ) -> anyhow::Result<()> {
-        let font = font.unwrap();
+        let font = font["main"].to_owned();
         let clicked =
             handle.is_mouse_button_released(raylib::consts::MouseButton::MOUSE_LEFT_BUTTON);
         let mouse = Vector2::new(handle.get_mouse_x() as f32, handle.get_mouse_y() as f32);

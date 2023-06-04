@@ -2,9 +2,9 @@ use std::borrow::Borrow;
 
 use crate::game::Level;
 
-use super::super::resources::Resources;
 use super::gameplay::GameplayScene;
 use super::help::HelpScene;
+use crate::ui::resources::Resources;
 use rscenes::prelude::*;
 
 #[derive(Debug, Default)]

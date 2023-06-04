@@ -1,7 +1,7 @@
 use std::borrow::Borrow;
 
-use super::super::resources::Resources;
 use crate::game::COLORS;
+use crate::ui::resources::Resources;
 use rscenes::prelude::*;
 
 #[derive(Debug, Default)]

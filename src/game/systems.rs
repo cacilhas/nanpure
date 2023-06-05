@@ -1,5 +1,5 @@
 use super::{candidates::Candidates, cell::Cell, position::Position, value::Value};
-use legion::{systems::CommandBuffer, *};
+use hecs::*;
 
 #[derive(Clone, Copy, Debug)]
 pub struct IsGameOver(bool);
@@ -30,8 +30,7 @@ pub struct ToggleCandidate {
     pub value: u8,
 }
 
-#[system]
-pub fn create_cells(cmd: &mut CommandBuffer) {
+pub fn create_cells(world: &mut World) {
     for y in 0..9 {
         for x in 0..9 {
             let value = match y {
@@ -46,7 +45,7 @@ pub fn create_cells(cmd: &mut CommandBuffer) {
                 _ => x,
             };
             let value = (value % 9) + 1;
-            cmd.push((
+            world.spawn((
                 Cell,
                 Position { x, y },
                 Candidates::default(),
@@ -56,20 +55,11 @@ pub fn create_cells(cmd: &mut CommandBuffer) {
     }
 }
 
-#[system(for_each)]
-pub fn game_over(_: &Cell, value: &Value, #[resource] res: &mut IsGameOver) {
-    if value.is_none() {
-        res.0 = false;
-    }
-}
-
-#[system(for_each)]
-pub fn set_cell(
-    _: &Cell,
+pub fn set_cell_system(
     position: &Position,
     candidates: &mut Candidates,
     value: &mut Value,
-    #[resource] res: &SetCell,
+    res: &SetCell,
 ) {
     if position.x == res.x && position.y == res.y {
         match res.value {
@@ -92,12 +82,10 @@ pub fn set_cell(
     }
 }
 
-#[system(for_each)]
-pub fn toggle_candidate(
-    _: &Cell,
+pub fn toggle_candidate_system(
     position: &Position,
     candidates: &mut Candidates,
-    #[resource] res: &ToggleCandidate,
+    res: &ToggleCandidate,
 ) {
     if position.x == res.x && position.y == res.y {
         if candidates.is_set(res.value) {
@@ -108,8 +96,7 @@ pub fn toggle_candidate(
     }
 }
 
-#[system(for_each)]
-pub fn display(_: &Cell, position: &Position, value: &Value, #[resource] res: &mut [u8; 81]) {
+pub fn display_system(position: &Position, value: &Value, res: &mut [u8; 81]) {
     let index = (position.x + position.y * 9) as usize;
     let value: Option<u8> = value.into();
     res[index] = value.unwrap_or(0);

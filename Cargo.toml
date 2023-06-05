@@ -21,7 +21,7 @@ strip = true
 
 [dependencies]
 anyhow = "1.0"
-legion = "0.4"
+hecs = "0.10"
 rscenes = "1.2"
 static_init = "1.0"
 thiserror = "1.0"

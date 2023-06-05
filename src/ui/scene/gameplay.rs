@@ -67,19 +67,19 @@ impl GameplayScene {
     fn detect_keys(&mut self, handle: &mut RaylibHandle) {
         if handle.is_key_pressed(KeyboardKey::KEY_LEFT) || handle.is_key_pressed(KeyboardKey::KEY_A)
         {
-            self.player.move_to(&Move::Left);
+            self.player.move_to(Move::Left);
         }
         if handle.is_key_pressed(KeyboardKey::KEY_RIGHT)
             || handle.is_key_pressed(KeyboardKey::KEY_D)
         {
-            self.player.move_to(&Move::Right);
+            self.player.move_to(Move::Right);
         }
         if handle.is_key_pressed(KeyboardKey::KEY_UP) || handle.is_key_pressed(KeyboardKey::KEY_W) {
-            self.player.move_to(&Move::Up);
+            self.player.move_to(Move::Up);
         }
         if handle.is_key_pressed(KeyboardKey::KEY_DOWN) || handle.is_key_pressed(KeyboardKey::KEY_S)
         {
-            self.player.move_to(&Move::Down);
+            self.player.move_to(Move::Down);
         }
         if handle.is_key_released(KeyboardKey::KEY_SPACE) {
             let (value, candidates) = self.game.get_cell(self.player.x, self.player.y);

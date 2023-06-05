@@ -1,5 +1,6 @@
 use rscenes::prelude::*;
 
+#[derive(Clone, Copy)]
 pub enum Move {
     Left,
     Right,
@@ -32,7 +33,7 @@ impl Player {
         );
     }
 
-    pub fn move_to(&mut self, direction: &Move) {
+    pub fn move_to(&mut self, direction: Move) {
         match direction {
             Move::Left => self.x = (self.x + 8) % 9,
             Move::Right => self.x = (self.x + 1) % 9,

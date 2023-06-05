@@ -1,4 +1,4 @@
-#[derive(Debug, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Value(Option<u8>);
 
 impl Value {
@@ -23,26 +23,14 @@ impl Value {
     }
 }
 
-impl From<&Value> for Option<u8> {
-    fn from(value: &Value) -> Self {
+impl From<Value> for Option<u8> {
+    fn from(value: Value) -> Self {
         value.0
     }
 }
 
-impl From<&mut Value> for Option<u8> {
-    fn from(value: &mut Value) -> Self {
-        value.0
-    }
-}
-
-impl From<&Value> for u8 {
-    fn from(value: &Value) -> Self {
-        value.0.unwrap()
-    }
-}
-
-impl From<&mut Value> for u8 {
-    fn from(value: &mut Value) -> Self {
+impl From<Value> for u8 {
+    fn from(value: Value) -> Self {
         value.0.unwrap()
     }
 }

@@ -6,20 +6,19 @@ mod systems;
 mod value;
 
 use std::collections::HashMap;
+use std::fmt;
 
 use self::{candidates::Candidates, cell::Cell, position::Position, systems::*, value::Value};
 
 pub use self::cell::COLORS;
 pub use self::level::Level;
-use legion::*;
+use hecs::*;
 use rscenes::prelude::*;
 
-#[derive(Debug)]
 pub struct Game(World);
 
 impl Game {
     pub fn draw(&mut self, draw: &mut RaylibMode2D<RaylibDrawHandle>, rect: Rectangle) {
-        let mut query = <(&Cell, &Position, &Candidates, &Value)>::query();
         let width = rect.width / 9.0;
         let height = rect.height / 9.0;
         let sw = width / 3.0;
@@ -34,7 +33,10 @@ impl Game {
             .reduce(|a, b| if a < b { a } else { b })
             .unwrap()
             / 2.0;
-        for (_, position, candidates, value) in query.iter(&self.0) {
+        for (_, (&position, &candidates, &value)) in self
+            .0
+            .query_mut::<With<(&Position, &Candidates, &Value), &Cell>>()
+        {
             let value: Option<u8> = value.into();
             let rect = Rectangle {
                 x: rect.x + width * position.x as f32,
@@ -80,25 +82,19 @@ impl Game {
     }
 
     pub fn is_game_over(&mut self) -> bool {
-        let mut resources = Resources::default();
-        let is_game_over: IsGameOver = true.into();
-        resources.insert(is_game_over);
-        Schedule::builder()
-            .add_system(game_over_system())
-            .build()
-            .execute(&mut self.0, &mut resources);
-        resources
-            .get::<IsGameOver>()
-            .map(|value| {
-                let value: bool = (*value).into();
-                value
-            })
-            .unwrap_or(false)
+        for (_, value) in self.0.query_mut::<With<&Value, &Cell>>() {
+            if value.is_none() {
+                return false;
+            }
+        }
+        true
     }
 
-    pub fn get_cell(&self, x: u8, y: u8) -> (Option<u8>, &Candidates) {
-        let mut query = <(&Cell, &Position, &Candidates, &Value)>::query();
-        for (_, position, candidates, value) in query.iter(&self.0) {
+    pub fn get_cell(&mut self, x: u8, y: u8) -> (Option<u8>, Candidates) {
+        for (_, (&position, &candidates, &value)) in self
+            .0
+            .query_mut::<With<(&Position, &Candidates, &Value), &Cell>>()
+        {
             if position.x == x && position.y == y {
                 return (value.into(), candidates);
             }
@@ -107,8 +103,10 @@ impl Game {
     }
 
     pub fn set_cell(&mut self, x: u8, y: u8, value: Option<u8>) {
-        let mut query = <(&Cell, &Position, &Candidates, &Value)>::query();
-        for (_, position, candidates, current) in query.iter(&self.0) {
+        for (_, (&position, candidates, current)) in self
+            .0
+            .query_mut::<With<(&Position, &mut Candidates, &Value), &Cell>>()
+        {
             if position.x == x && position.y == y {
                 if let Some(value) = value {
                     if current.is_some() || !candidates.is_set(value) {
@@ -119,17 +117,17 @@ impl Game {
             }
         }
 
-        let mut resources = Resources::default();
-        resources.insert(SetCell { x, y, value });
-        Schedule::builder()
-            .add_system(set_cell_system())
-            .build()
-            .execute(&mut self.0, &mut resources);
+        let mut res = SetCell { x, y, value };
+        for (_, (&position, candidates, value)) in self
+            .0
+            .query_mut::<With<(&Position, &mut Candidates, &mut Value), &Cell>>()
+        {
+            set_cell_system(position, candidates, value, &mut res);
+        }
     }
 
     pub fn toggle_candidate(&mut self, x: u8, y: u8, value: u8) {
-        let mut query = <(&Cell, &Position, &Value)>::query();
-        for (_, position, current) in query.iter(&self.0) {
+        for (_, (&position, current)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
             if position.x == x && position.y == y {
                 if current.is_some() {
                     return;
@@ -138,12 +136,14 @@ impl Game {
             }
         }
 
-        let mut resources = Resources::default();
-        resources.insert(ToggleCandidate { x, y, value });
-        Schedule::builder()
-            .add_system(toggle_candidate_system())
-            .build()
-            .execute(&mut self.0, &mut resources);
+        let res = ToggleCandidate { x, y, value };
+
+        for (_, (&position, candidates)) in self
+            .0
+            .query_mut::<With<(&Position, &mut Candidates), &Cell>>()
+        {
+            toggle_candidate_system(&position, candidates, &res);
+        }
     }
 
     fn shuffle_x(&mut self) {
@@ -153,8 +153,7 @@ impl Game {
             let x2 = (x1 + get_random_value::<u8>(1, 2)) % 3;
             let x1 = g * 3 + x1;
             let x2 = g * 3 + x2;
-            let mut query = <(&Cell, &mut Position)>::query();
-            for (_, position) in query.iter_mut(&mut self.0) {
+            for (_, position) in self.0.query_mut::<With<&mut Position, &Cell>>() {
                 match position.x {
                     x if x == x1 => position.x = x2,
                     x if x == x2 => position.x = x1,
@@ -168,8 +167,7 @@ impl Game {
         for _ in 0..10 {
             let g1 = get_random_value::<u8>(0, 2);
             let g2 = (g1 + get_random_value::<u8>(1, 2)) % 3;
-            let mut query = <(&Cell, &mut Position)>::query();
-            for (_, position) in query.iter_mut(&mut self.0) {
+            for (_, position) in self.0.query_mut::<With<&mut Position, &Cell>>() {
                 match position.x {
                     x if x / 3 == g1 => position.x = (position.x + g2 * 3 - g1 * 3 + 9) % 9,
                     x if x / 3 == g2 => position.x = (position.x + g1 * 3 - g2 * 3 + 9) % 9,
@@ -186,8 +184,7 @@ impl Game {
             let y2 = (y1 + get_random_value::<u8>(1, 2)) % 3;
             let y1 = g * 3 + y1;
             let y2 = g * 3 + y2;
-            let mut query = <(&Cell, &mut Position)>::query();
-            for (_, position) in query.iter_mut(&mut self.0) {
+            for (_, position) in self.0.query_mut::<With<&mut Position, &Cell>>() {
                 match position.y {
                     y if y == y1 => position.y = y2,
                     y if y == y2 => position.y = y1,
@@ -201,8 +198,7 @@ impl Game {
         for _ in 0..10 {
             let g1 = get_random_value::<u8>(0, 2);
             let g2 = (g1 + get_random_value::<u8>(1, 2)) % 3;
-            let mut query = <(&Cell, &mut Position)>::query();
-            for (_, position) in query.iter_mut(&mut self.0) {
+            for (_, position) in self.0.query_mut::<With<&mut Position, &Cell>>() {
                 match position.y {
                     y if y / 3 == g1 => position.y = (position.y + g2 * 3 - g1 * 3 + 9) % 9,
                     y if y / 3 == g2 => position.y = (position.y + g1 * 3 - g2 * 3 + 9) % 9,
@@ -213,9 +209,8 @@ impl Game {
     }
 
     fn hide_cells(&mut self, count: usize) {
-        let mut query = <(&Cell, &Position, &mut Value)>::query();
         let mut values: HashMap<u8, &mut Value> = HashMap::default();
-        for (_, position, value) in query.iter_mut(&mut self.0) {
+        for (_, (&position, value)) in self.0.query_mut::<With<(&Position, &mut Value), &Cell>>() {
             let i = position.x + position.y * 9;
             values.insert(i, value);
         }
@@ -230,9 +225,8 @@ impl Game {
         }
 
         // Update candidates
-        let mut query = <(&Cell, &Position, &Value)>::query();
         let mut set_cells: Vec<SetCell> = vec![];
-        for (_, position, value) in query.iter(&mut self.0) {
+        for (_, (&position, &value)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
             let value: Option<u8> = value.into();
             if value.is_some() {
                 set_cells.push(SetCell {
@@ -242,26 +236,23 @@ impl Game {
                 });
             }
         }
-        while let Some(set_cell) = set_cells.pop() {
-            let mut resources = Resources::default();
-            resources.insert(set_cell);
-            Schedule::builder()
-                .add_system(set_cell_system())
-                .build()
-                .execute(&mut self.0, &mut resources);
+        while let Some(res) = set_cells.pop() {
+            for (_, (&position, candidates, value)) in self
+                .0
+                .query_mut::<With<(&Position, &mut Candidates, &mut Value), &Cell>>()
+            {
+                set_cell_system(position, candidates, value, &res);
+            }
         }
     }
 
     #[cfg(test)]
     fn stringify(&mut self) -> Result<String, String> {
-        let mut resources = Resources::default();
-        resources.insert([0_u8; 81]);
-        Schedule::builder()
-            .add_system(display_system())
-            .build()
-            .execute(&mut self.0, &mut resources);
+        let mut arr = [0_u8; 81];
+        for (_, (&position, &value)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
+            display_system(position, value, &mut arr);
+        }
         let mut res = "".to_owned();
-        let arr = resources.get::<[u8; 81]>().ok_or("resources not found")?;
         for i in 0..81 {
             let value = if arr[i] == 0 {
                 " ".to_owned()
@@ -278,13 +269,16 @@ impl Game {
     }
 }
 
+impl fmt::Debug for Game {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "a game")
+    }
+}
+
 impl Default for Game {
     fn default() -> Self {
         let mut world = World::default();
-        Schedule::builder()
-            .add_system(create_cells_system())
-            .build()
-            .execute(&mut world, &mut Resources::default());
+        create_cells(&mut world);
         Self(world)
     }
 }

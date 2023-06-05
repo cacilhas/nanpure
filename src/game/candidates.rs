@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Candidates(u16);
 
 impl Candidates {

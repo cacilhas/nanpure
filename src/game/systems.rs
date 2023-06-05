@@ -56,7 +56,7 @@ pub fn create_cells(world: &mut World) {
 }
 
 pub fn set_cell_system(
-    position: &Position,
+    position: Position,
     candidates: &mut Candidates,
     value: &mut Value,
     res: &SetCell,
@@ -72,7 +72,7 @@ pub fn set_cell_system(
     {
         if let Some(v) = res.value {
             candidates.clean(v);
-            let value_0: Option<u8> = value.into();
+            let value_0: Option<u8> = (*value).into();
             match value_0 {
                 Some(c) if c == v => value.clean(),
                 _ => (),
@@ -96,7 +96,8 @@ pub fn toggle_candidate_system(
     }
 }
 
-pub fn display_system(position: &Position, value: &Value, res: &mut [u8; 81]) {
+#[cfg(test)]
+pub fn display_system(position: Position, value: Value, res: &mut [u8; 81]) {
     let index = (position.x + position.y * 9) as usize;
     let value: Option<u8> = value.into();
     res[index] = value.unwrap_or(0);

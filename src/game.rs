@@ -33,7 +33,7 @@ impl Game {
             .reduce(|a, b| if a < b { a } else { b })
             .unwrap()
             / 2.0;
-        for (_, (position, candidates, value)) in self
+        for (_, (&position, &candidates, &value)) in self
             .0
             .query_mut::<With<(&Position, &Candidates, &Value), &Cell>>()
         {
@@ -91,7 +91,7 @@ impl Game {
     }
 
     pub fn get_cell(&mut self, x: u8, y: u8) -> (Option<u8>, Candidates) {
-        for (_, (position, &candidates, value)) in self
+        for (_, (&position, &candidates, &value)) in self
             .0
             .query_mut::<With<(&Position, &Candidates, &Value), &Cell>>()
         {
@@ -103,7 +103,7 @@ impl Game {
     }
 
     pub fn set_cell(&mut self, x: u8, y: u8, value: Option<u8>) {
-        for (_, (position, candidates, current)) in self
+        for (_, (&position, candidates, current)) in self
             .0
             .query_mut::<With<(&Position, &mut Candidates, &Value), &Cell>>()
         {
@@ -118,7 +118,7 @@ impl Game {
         }
 
         let mut res = SetCell { x, y, value };
-        for (_, (position, candidates, value)) in self
+        for (_, (&position, candidates, value)) in self
             .0
             .query_mut::<With<(&Position, &mut Candidates, &mut Value), &Cell>>()
         {
@@ -127,7 +127,7 @@ impl Game {
     }
 
     pub fn toggle_candidate(&mut self, x: u8, y: u8, value: u8) {
-        for (_, (position, current)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
+        for (_, (&position, current)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
             if position.x == x && position.y == y {
                 if current.is_some() {
                     return;
@@ -138,7 +138,7 @@ impl Game {
 
         let res = ToggleCandidate { x, y, value };
 
-        for (_, (position, candidates)) in self
+        for (_, (&position, candidates)) in self
             .0
             .query_mut::<With<(&Position, &mut Candidates), &Cell>>()
         {
@@ -210,7 +210,7 @@ impl Game {
 
     fn hide_cells(&mut self, count: usize) {
         let mut values: HashMap<u8, &mut Value> = HashMap::default();
-        for (_, (position, value)) in self.0.query_mut::<With<(&Position, &mut Value), &Cell>>() {
+        for (_, (&position, value)) in self.0.query_mut::<With<(&Position, &mut Value), &Cell>>() {
             let i = position.x + position.y * 9;
             values.insert(i, value);
         }
@@ -226,7 +226,7 @@ impl Game {
 
         // Update candidates
         let mut set_cells: Vec<SetCell> = vec![];
-        for (_, (position, value)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
+        for (_, (&position, &value)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
             let value: Option<u8> = value.into();
             if value.is_some() {
                 set_cells.push(SetCell {
@@ -237,11 +237,11 @@ impl Game {
             }
         }
         while let Some(res) = set_cells.pop() {
-            for (_, (position, candidates, value)) in self
+            for (_, (&position, candidates, value)) in self
                 .0
                 .query_mut::<With<(&Position, &mut Candidates, &mut Value), &Cell>>()
             {
-                set_cell_system(&position, candidates, value, &res);
+                set_cell_system(position, candidates, value, &res);
             }
         }
     }
@@ -249,7 +249,7 @@ impl Game {
     #[cfg(test)]
     fn stringify(&mut self) -> Result<String, String> {
         let mut arr = [0_u8; 81];
-        for (_, (position, value)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
+        for (_, (&position, &value)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
             display_system(position, value, &mut arr);
         }
         let mut res = "".to_owned();

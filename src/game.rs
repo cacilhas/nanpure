@@ -12,7 +12,6 @@ use self::{candidates::Candidates, cell::Cell, position::Position, systems::*, v
 
 pub use self::cell::COLORS;
 pub use self::level::Level;
-use hecs::*;
 use rscenes::prelude::*;
 
 pub struct Game(World);

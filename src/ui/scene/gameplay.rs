@@ -25,7 +25,7 @@ impl GameplayScene {
     }
 
     fn update_rect(&mut self, screen: Rectangle) {
-        let mut rect = screen.clone();
+        let mut rect = screen;
         if rect.width > SIZE {
             rect.x = (rect.width - SIZE) / 2.0;
             rect.width = SIZE;

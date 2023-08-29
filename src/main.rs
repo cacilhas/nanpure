@@ -66,6 +66,6 @@ fn main() -> eyre::Result<()> {
         resources.set(font);
         Ok::<(), eyre::Report>(())
     })?;
-    manager.add_first_scene(Box::new(MainMenuScene::default()));
+    manager.add_first_scene(Box::<MainMenuScene>::default());
     manager.start()
 }

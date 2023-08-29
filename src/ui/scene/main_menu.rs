@@ -56,7 +56,7 @@ impl Scene<Resources> for MainMenuScene {
         }
 
         if let Some(url) = &self.url {
-            raylib::open_url(&url);
+            raylib::open_url(url);
         }
         self.url = None;
         if self.extremely_easy {

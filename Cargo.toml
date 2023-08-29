@@ -28,4 +28,5 @@ walkdir = "2.3"
 
 [dependencies.rscenes]
 version = "1.4"
-features = ["ecs"]
+features = ["ecs", "eyre"]
+default-features = false

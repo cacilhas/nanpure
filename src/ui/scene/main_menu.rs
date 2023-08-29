@@ -19,7 +19,7 @@ pub struct MainMenuScene {
 }
 
 impl Scene<Resources> for MainMenuScene {
-    fn init(&mut self, _: &mut RaylibHandle, _: &RaylibThread) -> anyhow::Result<()> {
+    fn init(&mut self, _: &mut RaylibHandle, _: &RaylibThread) -> eyre::Result<()> {
         self.extremely_easy = false;
         self.easy = false;
         self.medium = false;
@@ -35,7 +35,7 @@ impl Scene<Resources> for MainMenuScene {
         (handle, _): (&mut RaylibHandle, &RaylibThread),
         _: f32,
         _: &mut Resources,
-    ) -> anyhow::Result<State<Resources>> {
+    ) -> eyre::Result<State<Resources>> {
         if handle.is_key_released(KeyboardKey::KEY_ONE) {
             self.extremely_easy = true;
         }
@@ -56,7 +56,7 @@ impl Scene<Resources> for MainMenuScene {
         }
 
         if let Some(url) = &self.url {
-            raylib::open_url(&url);
+            raylib::open_url(url);
         }
         self.url = None;
         if self.extremely_easy {
@@ -90,7 +90,7 @@ impl Scene<Resources> for MainMenuScene {
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
         resources: &Resources,
-    ) -> anyhow::Result<()> {
+    ) -> eyre::Result<()> {
         let font: &Font = resources.borrow();
         let clicked =
             handle.is_mouse_button_released(raylib::consts::MouseButton::MOUSE_LEFT_BUTTON);

@@ -114,7 +114,7 @@ impl Scene<Resources> for GameplayScene {
         (handle, _): (&mut RaylibHandle, &RaylibThread),
         _: f32,
         _: &mut Resources,
-    ) -> anyhow::Result<State<Resources>> {
+    ) -> eyre::Result<State<Resources>> {
         if handle.is_key_released(KeyboardKey::KEY_F1) {
             let scene = HelpScene::default();
             return Ok(State::New(Box::new(scene)));
@@ -130,7 +130,7 @@ impl Scene<Resources> for GameplayScene {
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
         _: &Resources,
-    ) -> anyhow::Result<()> {
+    ) -> eyre::Result<()> {
         self.update_rect(screen);
         let camera = Camera2D {
             zoom: 1.0,

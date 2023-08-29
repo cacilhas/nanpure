@@ -13,7 +13,7 @@ impl Scene<Resources> for HelpScene {
         _: (&mut RaylibHandle, &RaylibThread),
         _: f32,
         _: &mut Resources,
-    ) -> anyhow::Result<State<Resources>> {
+    ) -> eyre::Result<State<Resources>> {
         if self.0 {
             self.0 = false;
             Ok(State::Previous(1))
@@ -27,7 +27,7 @@ impl Scene<Resources> for HelpScene {
         handle: &mut RaylibDrawHandle,
         screen: Rectangle,
         resources: &Resources,
-    ) -> anyhow::Result<()> {
+    ) -> eyre::Result<()> {
         let font: &Font = resources.borrow();
         let clicked =
             handle.is_mouse_button_released(raylib::consts::MouseButton::MOUSE_LEFT_BUTTON);

@@ -54,7 +54,7 @@ use crate::ui::{fonts, resources::Resources, scene::main_menu::MainMenuScene};
 use rscenes::prelude::*;
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
-fn main() -> anyhow::Result<()> {
+fn main() -> eyre::Result<()> {
     let mut builder = raylib::init();
     builder
         .size(640, 720) // desired dimensions
@@ -64,7 +64,7 @@ fn main() -> anyhow::Result<()> {
         handle.set_window_title(thread, "Kodumaro Nanpure");
         let font = fonts::get_font(handle, thread)?;
         resources.set(font);
-        anyhow::Ok(())
+        Ok::<(), eyre::Report>(())
     })?;
     manager.add_first_scene(Box::new(MainMenuScene::default()));
     manager.start()

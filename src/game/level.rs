@@ -25,6 +25,16 @@ impl Level {
             Self::Fiendish => get_random(FIENDISH),
         }
     }
+
+    pub(crate) fn kennet_flag(&self) -> &'static str {
+        match self {
+            Self::ExtremelyEasy => "-cvery easy",
+            Self::Easy => "-ceasy",
+            Self::Medium => "-cmedium",
+            Self::Hard => "-chard",
+            Self::Fiendish => "-cfiendish",
+        }
+    }
 }
 
 fn get_random((min, max): (usize, usize)) -> usize {

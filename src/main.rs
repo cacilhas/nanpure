@@ -1,5 +1,6 @@
 //! [COPYING]: https://github.com/cacilhas/nanpure/blob/master/COPYING
 //! [email]: mailto:montegasppa@cacilhas.info
+//! [Michael Kennett’s Sudoku]: https://github.com/cinemast/sudoku
 //! [The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
 //! [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 //!
@@ -37,6 +38,11 @@
 //! - 8: <span style="color: white; background-color: magenta;">magenta</span>
 //! - 9: <span style="color: black: background-color: darkgray;">gray</span>
 //!
+//! ## Generator
+//!
+//! If you have [Michael Kennett’s Sudoku][] installed, it’s used as board
+//! generator.
+//!
 //! ## License
 //!
 //! - Copyright 2023 [Rodrigo Cacilhας \<montegasppa@cacilhas.info\>][email]
@@ -48,6 +54,7 @@ extern crate static_init;
 
 mod error;
 mod game;
+mod kennett;
 mod ui;
 
 use crate::ui::{fonts, resources::Resources, scene::main_menu::MainMenuScene};

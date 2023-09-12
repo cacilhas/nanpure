@@ -1,12 +1,14 @@
 mod candidates;
 mod cell;
-mod level;
+pub(crate) mod level;
 mod position;
 mod systems;
 mod value;
 
 use std::collections::HashMap;
 use std::fmt;
+
+use crate::kennett::KennettConnector;
 
 use self::{candidates::Candidates, cell::Cell, position::Position, systems::*, value::Value};
 
@@ -73,11 +75,28 @@ impl Game {
     }
 
     pub fn shuffle(&mut self, level: Level) {
-        self.shuffle_x();
-        self.shuffle_y();
-        self.shuffle_x_group();
-        self.shuffle_y_group();
-        self.hide_cells(level.count())
+        match KennettConnector::generate(level) {
+            Some(result) => {
+                create_empty_system(&mut self.0);
+                for y in 0..9 {
+                    for x in 0..9 {
+                        let index = (x + y * 9) as usize;
+                        match result[index] {
+                            0 => self.set_cell(x, y, None),
+                            value => self.set_cell(x, y, Some(value)),
+                        };
+                    }
+                }
+            }
+
+            None => {
+                self.shuffle_x();
+                self.shuffle_y();
+                self.shuffle_x_group();
+                self.shuffle_y_group();
+                self.hide_cells(level.count())
+            }
+        }
     }
 
     pub fn is_game_over(&mut self) -> bool {

@@ -12,7 +12,7 @@ impl KennettConnector {
 
     fn do_generate(level: Level) -> eyre::Result<Vec<u8>> {
         let output = Command::new("sudoku")
-            .args(["-g", level.kennet_flag()])
+            .args(["-g", level.kennett_flag()])
             .output()?
             .stdout
             .into_iter()

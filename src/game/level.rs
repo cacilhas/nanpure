@@ -26,7 +26,7 @@ impl Level {
         }
     }
 
-    pub(crate) fn kennet_flag(&self) -> &'static str {
+    pub(crate) fn kennett_flag(&self) -> &'static str {
         match self {
             Self::ExtremelyEasy => "-cvery easy",
             Self::Easy => "-ceasy",

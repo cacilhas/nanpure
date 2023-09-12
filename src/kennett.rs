@@ -1,4 +1,5 @@
 // Michael Kennett Sudoku connector
+use crate::error;
 use crate::game::level::Level;
 use std::process::Command;
 
@@ -25,6 +26,10 @@ impl KennettConnector {
                 }
             })
             .collect::<Vec<u8>>();
-        Ok(output)
+        if output.len() != 81 {
+            Err(error!("wrong size").into())
+        } else {
+            Ok(output)
+        }
     }
 }

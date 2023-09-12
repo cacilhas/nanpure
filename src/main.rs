@@ -48,6 +48,7 @@ extern crate static_init;
 
 mod error;
 mod game;
+mod kennett;
 mod ui;
 
 use crate::ui::{fonts, resources::Resources, scene::main_menu::MainMenuScene};

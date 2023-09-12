@@ -55,6 +55,26 @@ pub fn create_cells(world: &mut World) {
     }
 }
 
+pub fn create_empty_system(world: &mut World) {
+    let mut entities = vec![];
+    for (entity, _) in world.query_mut::<&Cell>() {
+        entities.push(entity);
+    }
+    for entity in entities.iter() {
+        world.despawn(*entity).unwrap();
+    }
+    for y in 0..9 {
+        for x in 0..9 {
+            world.spawn((
+                Cell,
+                Position { x, y },
+                Candidates::default(),
+                Value::default(),
+            ));
+        }
+    }
+}
+
 pub fn set_cell_system(
     position: Position,
     candidates: &mut Candidates,

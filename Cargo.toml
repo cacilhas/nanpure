@@ -1,6 +1,6 @@
 [package]
 name        = "nanpure"
-version     = "0.1.7"
+version     = "0.2.0"
 authors     = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license     = "BSD-3-Clause"
 readme      = "README.md"
@@ -20,13 +20,4 @@ rpath = false
 strip = true
 
 [dependencies]
-color-eyre = "0.6"
-eyre = "0.6"
-static_init = "1.0"
-thiserror = "1.0"
-walkdir = "2.3"
-
-[dependencies.rscenes]
-version = "1.4"
-features = ["ecs", "eyre"]
-default-features = false
+raylib-ffi = "5.0"

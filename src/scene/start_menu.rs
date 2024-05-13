@@ -128,13 +128,17 @@ impl StartMenu {
         let text = text.into();
         let size = raylib::MeasureTextEx(self.font, rl_str!(text), 64.0, 1.0);
         let bt = Rectangle {
-            x: (width - size.x) / 2.0,
+            x: 0.0,
             y,
-            width: size.x,
+            width,
             height: size.y,
         };
-        let position = Vector2 { x: bt.x, y: bt.y };
+        let position = Vector2 {
+            x: (width - size.x) / 2.0,
+            y: bt.y,
+        };
         let tint = if raylib::CheckCollisionPointRec(mouse_pos, bt) {
+            raylib::DrawRectangleRec(bt, colors::BEIGE);
             colors::BLACK
         } else {
             colors::DARKGRAY

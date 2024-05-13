@@ -3,7 +3,6 @@ use std::os::raw::c_int;
 use super::Scene;
 use crate::{colors, scene::Action};
 use raylib::{draw, enums::KeyboardKey};
-use raylib_ffi as raylib;
 
 #[derive(Debug, Default)]
 pub struct StartMenu;

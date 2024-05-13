@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use raylib_ffi::Color;
+use raylib::Color;
 
 // Raylib 4.5 colours
 

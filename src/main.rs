@@ -1,10 +1,10 @@
+extern crate raylib_ffi as raylib;
 mod colors;
 mod scene;
 
 use crate::scene::{Action, Scene, StartMenu};
 use raylib::enums::KeyboardKey;
 use raylib::rl_str;
-use raylib_ffi as raylib;
 
 use std::os::raw::c_int;
 

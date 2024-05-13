@@ -3,7 +3,7 @@ mod colors;
 use raylib_ffi as raylib;
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
-fn main() -> Result<(), String> {
+fn main() -> eyre::Result<()> {
     unsafe {
         raylib::InitWindow(640, 720, rl_str!("nanpure")); // WM_CLASS
         raylib::SetWindowTitle(rl_str!("Kodumaro Nanpūrë"));

@@ -20,4 +20,6 @@ rpath = false
 strip = true
 
 [dependencies]
+color-eyre = "0.6"
+eyre = "0.6"
 raylib-ffi = "5.0"

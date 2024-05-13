@@ -74,107 +74,41 @@ impl StartMenu {
         let mouse_pos = raylib::GetMousePosition();
 
         let bottom = bottom + size.y + 64.0;
-        let size = raylib::MeasureTextEx(font, rl_str!("1. Extremely Easy"), 64.0, 1.0);
-        let extr_easy_bt = Rectangle {
-            x: (width - size.x) / 2.0,
-            y: bottom,
-            width: size.x,
-            height: size.y,
-        };
-        let position = Vector2 {
-            x: extr_easy_bt.x,
-            y: extr_easy_bt.y,
-        };
-        let tint = if raylib::CheckCollisionPointRec(mouse_pos, extr_easy_bt) {
-            colors::BLACK
-        } else {
-            colors::DARKGRAY
-        };
-        raylib::DrawTextEx(
-            font,
-            rl_str!("1. Extremely Easy"),
-            position,
-            64.0,
-            1.0,
-            tint,
-        );
-
-        let bottom = bottom + size.y + 12.0;
-        let size = raylib::MeasureTextEx(font, rl_str!("2. Easy"), 64.0, 1.0);
-        let easy_bt = Rectangle {
-            x: (width - size.x) / 2.0,
-            y: bottom,
-            width: size.x,
-            height: size.y,
-        };
-        let position = Vector2 {
-            x: easy_bt.x,
-            y: easy_bt.y,
-        };
-        let tint = if raylib::CheckCollisionPointRec(mouse_pos, easy_bt) {
-            colors::BLACK
-        } else {
-            colors::DARKGRAY
-        };
-        raylib::DrawTextEx(font, rl_str!("2. Easy"), position, 64.0, 1.0, tint);
-
-        let bottom = bottom + size.y + 12.0;
-        let size = raylib::MeasureTextEx(font, rl_str!("3. Medium"), 64.0, 1.0);
-        let medium_bt = Rectangle {
-            x: (width - size.x) / 2.0,
-            y: bottom,
-            width: size.x,
-            height: size.y,
-        };
-        let position = Vector2 {
-            x: medium_bt.x,
-            y: medium_bt.y,
-        };
-        let tint = if raylib::CheckCollisionPointRec(mouse_pos, medium_bt) {
-            colors::BLACK
-        } else {
-            colors::DARKGRAY
-        };
-        raylib::DrawTextEx(font, rl_str!("3. Medium"), position, 64.0, 1.0, tint);
-
-        let bottom = bottom + size.y + 12.0;
-        let size = raylib::MeasureTextEx(font, rl_str!("4. Hard"), 64.0, 1.0);
-        let hard_bt = Rectangle {
-            x: (width - size.x) / 2.0,
-            y: bottom,
-            width: size.x,
-            height: size.y,
-        };
-        let position = Vector2 {
-            x: hard_bt.x,
-            y: hard_bt.y,
-        };
-        let tint = if raylib::CheckCollisionPointRec(mouse_pos, hard_bt) {
-            colors::BLACK
-        } else {
-            colors::DARKGRAY
-        };
-        raylib::DrawTextEx(font, rl_str!("4. Hard"), position, 64.0, 1.0, tint);
-
-        let bottom = bottom + size.y + 12.0;
-        let size = raylib::MeasureTextEx(font, rl_str!("5. Fiendish"), 64.0, 1.0);
-        let fiendish_bt = Rectangle {
-            x: (width - size.x) / 2.0,
-            y: bottom,
-            width: size.x,
-            height: size.y,
-        };
-        let position = Vector2 {
-            x: fiendish_bt.x,
-            y: fiendish_bt.y,
-        };
-        let tint = if raylib::CheckCollisionPointRec(mouse_pos, fiendish_bt) {
-            colors::BLACK
-        } else {
-            colors::DARKGRAY
-        };
-        raylib::DrawTextEx(font, rl_str!("5. Fiendish"), position, 64.0, 1.0, tint);
+        let (etr_easy_bt, bottom) = self.draw_bt("1. Extremely Easy", width, bottom, mouse_pos);
+        let bottom = bottom + 12.0;
+        let (easy_bt, bottom) = self.draw_bt("2. Easy", width, bottom, mouse_pos);
+        let bottom = bottom + 12.0;
+        let (medium_bt, bottom) = self.draw_bt("3. Medium", width, bottom, mouse_pos);
+        let bottom = bottom + 12.0;
+        let (hard_bt, bottom) = self.draw_bt("4. Hard", width, bottom, mouse_pos);
+        let bottom = bottom + 12.0;
+        let (fiendish_bt, _) = self.draw_bt("5. Fiendish", width, bottom, mouse_pos);
 
         raylib::EndMode2D();
+    }
+
+    unsafe fn draw_bt(
+        &self,
+        text: impl Into<String>,
+        width: f32,
+        y: f32,
+        mouse_pos: Vector2,
+    ) -> (Rectangle, f32) {
+        let text = text.into();
+        let size = raylib::MeasureTextEx(self.font, rl_str!(text), 64.0, 1.0);
+        let bt = Rectangle {
+            x: (width - size.x) / 2.0,
+            y,
+            width: size.x,
+            height: size.y,
+        };
+        let position = Vector2 { x: bt.x, y: bt.y };
+        let tint = if raylib::CheckCollisionPointRec(mouse_pos, bt) {
+            colors::BLACK
+        } else {
+            colors::DARKGRAY
+        };
+        raylib::DrawTextEx(self.font, rl_str!(text), position, 64.0, 1.0, tint);
+        (bt, y + size.y)
     }
 }

@@ -17,6 +17,7 @@ pub struct Gameplay {
     theme: Theme,
     player: Position,
     draft: bool,
+    time: f32,
 }
 
 impl Scene for Gameplay {
@@ -56,6 +57,7 @@ impl Scene for Gameplay {
             height: screen.y - canvas.height,
         };
         if !self.board.is_game_over() {
+            self.time += raylib::GetFrameTime();
             self.move_player();
             self.detect_click(canvas);
             self.detect_change_cell();
@@ -64,6 +66,7 @@ impl Scene for Gameplay {
         }
         self.draw_lines(canvas);
         self.board.draw(canvas);
+        self.draw_timelapse(info);
         raylib::EndMode2D();
 
         // TODO: gameplay
@@ -83,6 +86,7 @@ impl Gameplay {
             board,
             player: Position { x: 4, y: 4 },
             draft: false,
+            time: 0.0,
         }
     }
 
@@ -232,6 +236,35 @@ impl Gameplay {
             && raylib::CheckCollisionPointRec(mouse, bt)
         {
             self.draft = !self.draft;
+        }
+    }
+
+    unsafe fn draw_timelapse(&self, canvas: Rectangle) {
+        let mouse = raylib::GetMousePosition();
+        let theme = self.get_theme();
+        let time = self.time.floor() as u32;
+        let text = format!("{:02}:{:02}", time / 60, time % 60);
+        let size = raylib::MeasureTextEx(self.font, rl_str!(text), 24.0, 1.0);
+        let label = Rectangle {
+            x: canvas.x + canvas.width - size.x,
+            y: canvas.y + (canvas.height - size.y) / 2.0,
+            width: size.x,
+            height: size.y,
+        };
+        if raylib::CheckCollisionPointRec(mouse, label) {
+            raylib::DrawTextEx(
+                self.font,
+                rl_str!(text),
+                Vector2 {
+                    x: label.x,
+                    y: label.y,
+                },
+                24.0,
+                1.0,
+                theme.foreground,
+            );
+        } else {
+            raylib::DrawRectangleRec(label, theme.hover_background);
         }
     }
 }

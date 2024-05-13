@@ -18,7 +18,7 @@ use raylib::{draw, enums::KeyboardKey, rl_str};
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 fn main() -> eyre::Result<()> {
     unsafe {
-        raylib::InitWindow(640, 720, rl_str!("nanpure")); // WM_CLASS
+        raylib::InitWindow(640, 768, rl_str!("nanpure")); // WM_CLASS
         raylib::SetWindowTitle(rl_str!("Kodumaro Nanpūrë"));
         raylib::SetTargetFPS(30);
         raylib::SetConfigFlags(0);

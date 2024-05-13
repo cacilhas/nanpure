@@ -7,7 +7,7 @@ use crate::{
 };
 use raylib::{
     enums::{KeyboardKey, MouseButton},
-    Camera2D, Font, Rectangle, Vector2,
+    rl_str, Camera2D, Font, Rectangle, Vector2,
 };
 
 #[derive(Debug)]
@@ -16,6 +16,7 @@ pub struct Gameplay {
     board: Game,
     theme: Theme,
     player: Position,
+    draft: bool,
 }
 
 impl Scene for Gameplay {
@@ -32,17 +33,28 @@ impl Scene for Gameplay {
         let theme = self.get_theme();
         raylib::BeginMode2D(camera);
         raylib::ClearBackground(theme.background);
+        let screen = Vector2 {
+            x: raylib::GetScreenWidth() as f32,
+            y: raylib::GetScreenHeight() as f32,
+        };
         let canvas = Rectangle {
             x: 0.0,
             y: 0.0,
-            width: raylib::GetScreenWidth() as f32,
-            height: raylib::GetScreenHeight() as f32,
+            width: screen.x,
+            height: screen.y - 48.0,
+        };
+        let info = Rectangle {
+            x: 12.0,
+            y: canvas.height,
+            width: screen.x - 24.0,
+            height: screen.y - canvas.height,
         };
         self.move_player();
         self.detect_click(canvas);
         self.draw_player(canvas);
         self.draw_lines(canvas);
         self.board.draw(canvas);
+        self.draw_draft_bt(info);
         raylib::EndMode2D();
 
         // TODO: gameplay
@@ -53,15 +65,15 @@ impl Scene for Gameplay {
 impl Gameplay {
     pub fn new(font: Font, theme: Theme, level: u8) -> Self {
         let mut board = Game::default();
-        let player = Position { x: 4, y: 4 };
         unsafe {
             board.shuffle(level.into());
         }
         Self {
             font,
             theme,
-            player,
             board,
+            player: Position { x: 4, y: 4 },
+            draft: true,
         }
     }
 
@@ -153,6 +165,37 @@ impl Gameplay {
                 if y % 3 == 0 { 3.0 } else { 1.0 },
                 tint,
             );
+        }
+    }
+
+    unsafe fn draw_draft_bt(&mut self, canvas: Rectangle) {
+        let mouse = raylib::GetMousePosition();
+        let theme = self.get_theme();
+        let size = raylib::MeasureTextEx(self.font, rl_str!("Draft"), 24.0, 1.0);
+        let bt = Rectangle {
+            x: canvas.x,
+            y: canvas.y + (canvas.height - size.y) / 2.0,
+            width: size.x,
+            height: size.y,
+        };
+        let tint = if self.draft {
+            raylib::DrawRectangleRec(bt, theme.hover_foreground);
+            theme.hover_background
+        } else {
+            theme.foreground
+        };
+        raylib::DrawTextEx(
+            self.font,
+            rl_str!("Draft"),
+            Vector2 { x: bt.x, y: bt.y },
+            24.0,
+            1.0,
+            tint,
+        );
+        if raylib::IsMouseButtonPressed(MouseButton::Left as c_int)
+            && raylib::CheckCollisionPointRec(mouse, bt)
+        {
+            self.draft = !self.draft;
         }
     }
 }

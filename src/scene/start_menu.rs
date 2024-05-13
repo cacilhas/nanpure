@@ -10,7 +10,7 @@ pub struct StartMenu;
 impl Scene for StartMenu {
     unsafe fn run_step(&mut self) -> Action {
         if raylib::IsKeyReleased(KeyboardKey::Escape as c_int) {
-            return Action::Pop;
+            return Action::Pop(1);
         }
         draw! {
             self.draw2d()

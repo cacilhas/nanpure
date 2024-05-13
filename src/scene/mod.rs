@@ -10,6 +10,6 @@ pub trait Scene: Debug + 'static {
 #[derive(Debug)]
 pub enum Action {
     Keep,
-    Pop,
+    Pop(usize),
     Push(Box<dyn Scene>),
 }

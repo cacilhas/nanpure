@@ -22,8 +22,10 @@ fn main() -> eyre::Result<()> {
             match scenes.last_mut() {
                 Some(scene) => match scene.run_step() {
                     Action::Keep => (),
-                    Action::Pop => {
-                        scenes.pop();
+                    Action::Pop(count) => {
+                        for _ in 0..count {
+                            scenes.pop();
+                        }
                     }
                     Action::Push(next_scene) => scenes.push(next_scene),
                 },

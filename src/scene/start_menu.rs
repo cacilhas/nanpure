@@ -4,7 +4,7 @@ use super::{action::Action, gameplay::Gameplay, Scene};
 use crate::{
     fonts::get_font,
     settings::{self, Config},
-    themes::{self, Theme, ThemeContent},
+    themes::{self, Theme},
 };
 use raylib::{
     enums::{KeyboardKey, MouseButton},

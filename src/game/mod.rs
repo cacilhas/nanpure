@@ -122,18 +122,6 @@ impl Game {
         true
     }
 
-    pub fn get_cell(&mut self, x: u8, y: u8) -> (Option<u8>, Candidates) {
-        for (_, (&position, &candidates, &value)) in self
-            .0
-            .query_mut::<With<(&Position, &Candidates, &Value), &Cell>>()
-        {
-            if position.x == x && position.y == y {
-                return (value.into(), candidates);
-            }
-        }
-        panic!("should never get here")
-    }
-
     pub fn set_cell(&mut self, x: u8, y: u8, value: Option<u8>) {
         for (_, (&position, candidates, current)) in self
             .0
@@ -278,6 +266,7 @@ impl Game {
         }
     }
 
+    #[cfg(test)]
     pub fn stringify(&mut self) -> String {
         let mut arr = [0_u8; 81];
         for (_, (&position, &value)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {

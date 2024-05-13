@@ -2,10 +2,10 @@ extern crate raylib_ffi as raylib;
 mod colors;
 mod scene;
 
+use std::os::raw::c_int;
+
 use crate::scene::{Action, Scene, StartMenu};
 use raylib::{enums::KeyboardKey, rl_str};
-
-use std::os::raw::c_int;
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 fn main() -> eyre::Result<()> {

@@ -9,9 +9,8 @@ use std::collections::HashMap;
 use std::fmt;
 use std::os::raw::c_int;
 
-pub use self::cell::COLORS;
-pub use self::level::Level;
-use self::{candidates::Candidates, cell::Cell, position::Position, systems::*, value::Value};
+use self::{candidates::Candidates, cell::Cell, systems::*, value::Value};
+pub use self::{cell::COLORS, level::Level, position::Position};
 use crate::kennett::KennettConnector;
 use hecs::*;
 

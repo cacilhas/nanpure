@@ -37,12 +37,12 @@ impl Game {
         let height = rect.height / 9.0;
         let sw = width / 3.0;
         let sh = height / 3.0;
-        let radius = *[width, height]
+        let radius = *[width - 4.0, height - 4.0]
             .iter()
             .reduce(|a, b| if a < b { a } else { b })
             .unwrap()
             / 2.0;
-        let sr = *[sw, sh]
+        let sr = *[sw - 2.0, sh - 2.0]
             .iter()
             .reduce(|a, b| if a < b { a } else { b })
             .unwrap()

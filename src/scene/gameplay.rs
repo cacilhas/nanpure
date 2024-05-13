@@ -70,7 +70,7 @@ impl Gameplay {
                     x: canvas.x + x as f32 * width,
                     y: canvas.y + canvas.height,
                 },
-                if x % 3 == 0 { 2.0 } else { 1.0 },
+                if x % 3 == 0 { 3.0 } else { 1.0 },
                 tint,
             );
         }
@@ -84,7 +84,7 @@ impl Gameplay {
                     x: canvas.x + canvas.width,
                     y: canvas.y + y as f32 * height,
                 },
-                if y % 3 == 0 { 2.0 } else { 1.0 },
+                if y % 3 == 0 { 3.0 } else { 1.0 },
                 tint,
             );
         }

@@ -24,6 +24,7 @@ impl Scene for Gameplay {
         if raylib::IsKeyReleased(KeyboardKey::Escape as c_int) {
             return Ok(Action::Pop(1));
         }
+
         let camera = Camera2D {
             offset: Vector2 { x: 0.0, y: 0.0 },
             rotation: 0.0,
@@ -31,8 +32,13 @@ impl Scene for Gameplay {
             zoom: 1.0,
         };
         let theme = self.get_theme();
+        let background = if self.board.is_game_over() {
+            theme.hover_background
+        } else {
+            theme.background
+        };
         raylib::BeginMode2D(camera);
-        raylib::ClearBackground(theme.background);
+        raylib::ClearBackground(background);
         let screen = Vector2 {
             x: raylib::GetScreenWidth() as f32,
             y: raylib::GetScreenHeight() as f32,
@@ -49,12 +55,15 @@ impl Scene for Gameplay {
             width: screen.x - 24.0,
             height: screen.y - canvas.height,
         };
-        self.move_player();
-        self.detect_click(canvas);
-        self.draw_player(canvas);
+        if !self.board.is_game_over() {
+            self.move_player();
+            self.detect_click(canvas);
+            self.detect_change_cell();
+            self.draw_player(canvas);
+            self.draw_draft_bt(info);
+        }
         self.draw_lines(canvas);
         self.board.draw(canvas);
-        self.draw_draft_bt(info);
         raylib::EndMode2D();
 
         // TODO: gameplay
@@ -73,7 +82,7 @@ impl Gameplay {
             theme,
             board,
             player: Position { x: 4, y: 4 },
-            draft: true,
+            draft: false,
         }
     }
 
@@ -115,6 +124,33 @@ impl Gameplay {
                 let x = x as u8;
                 let y = y as u8;
                 self.player = Position { x, y };
+            }
+        }
+    }
+
+    unsafe fn detect_change_cell(&mut self) {
+        if raylib::IsKeyReleased(KeyboardKey::LeftControl as c_int)
+            || raylib::IsKeyReleased(KeyboardKey::RightControl as c_int)
+        {
+            self.draft = !self.draft;
+        }
+
+        let key = raylib::GetKeyPressed();
+        if (key >= KeyboardKey::Zero as i32 && key <= KeyboardKey::Nine as i32)
+            || (key >= KeyboardKey::Kp0 as i32 && key <= KeyboardKey::Kp9 as i32)
+        {
+            let code = if key >= KeyboardKey::Zero as i32 && key <= KeyboardKey::Nine as i32 {
+                key - KeyboardKey::Zero as i32
+            } else {
+                key - KeyboardKey::Kp0 as i32
+            } as u8;
+
+            if self.draft {
+                self.board
+                    .toggle_candidate(self.player.x, self.player.y, code);
+            } else {
+                let value = if code == 0 { None } else { Some(code) };
+                self.board.set_cell(self.player.x, self.player.y, value);
             }
         }
     }

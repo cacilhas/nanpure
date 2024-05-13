@@ -28,9 +28,9 @@ impl Default for StartMenu {
 }
 
 impl Scene for StartMenu {
-    unsafe fn run_step(&mut self) -> Action {
+    unsafe fn run_step(&mut self) -> eyre::Result<Action> {
         if raylib::IsKeyReleased(KeyboardKey::Escape as c_int) {
-            return Action::Pop(1);
+            return Ok(Action::Pop(1));
         }
         let camera = raylib::Camera2D {
             offset: raylib::Vector2 { x: 0.0, y: 0.0 },
@@ -72,7 +72,7 @@ impl Scene for StartMenu {
         let theme_bt = self.theme_bt(width, raylib::GetScreenHeight() as f32, mouse_pos);
 
         if raylib::IsMouseButtonPressed(MouseButton::Left as c_int) {
-            let mut level: u32 = 0;
+            let mut level: u8 = 0;
             if raylib::CheckCollisionPointRec(mouse_pos, etr_easy_bt) {
                 level = 1;
             }
@@ -89,7 +89,9 @@ impl Scene for StartMenu {
                 level = 5;
             }
             if level != 0 {
-                return Action::Push(Box::new(Gameplay::new(font, level)));
+                return Ok(Action::Push(Box::new(Gameplay::new(
+                    font, self.theme, level,
+                ))));
             }
             if raylib::CheckCollisionPointRec(mouse_pos, theme_bt) {
                 self.theme = theme.next().r#type;
@@ -99,17 +101,25 @@ impl Scene for StartMenu {
         for level in 1..=5 {
             let code = (KeyboardKey::Zero as i32 + level) as c_int;
             if raylib::IsKeyReleased(code) {
-                return Action::Push(Box::new(Gameplay::new(font, level as u32)));
+                return Ok(Action::Push(Box::new(Gameplay::new(
+                    font,
+                    self.theme,
+                    level as u8,
+                ))));
             }
             let code = (KeyboardKey::Kp0 as i32 + level) as c_int;
             if raylib::IsKeyReleased(code) {
-                return Action::Push(Box::new(Gameplay::new(font, level as u32)));
+                return Ok(Action::Push(Box::new(Gameplay::new(
+                    font,
+                    self.theme,
+                    level as u8,
+                ))));
             }
         }
 
         raylib::EndMode2D();
 
-        Action::Keep
+        Ok(Action::Keep)
     }
 }
 

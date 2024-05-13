@@ -7,5 +7,5 @@ pub use self::start_menu::StartMenu;
 use std::fmt::Debug;
 
 pub trait Scene: Debug + 'static {
-    unsafe fn run_step(&mut self) -> Action;
+    unsafe fn run_step(&mut self) -> eyre::Result<Action>;
 }

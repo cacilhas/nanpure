@@ -3,6 +3,7 @@ use std::os::raw::c_int;
 use super::{action::Action, gameplay::Gameplay, Scene};
 use crate::{
     fonts::get_font,
+    settings::{self, Config},
     themes::{self, Theme, ThemeContent},
 };
 use raylib::{
@@ -14,14 +15,17 @@ use raylib::{
 pub struct StartMenu {
     font: Font,
     theme: Theme,
+    config: Config,
 }
 
 impl Default for StartMenu {
     fn default() -> Self {
+        let config = settings::load();
         unsafe {
             Self {
                 font: get_font().unwrap(),
-                theme: Theme::Light,
+                theme: config.theme.unwrap_or(Theme::Light),
+                config,
             }
         }
     }
@@ -30,7 +34,7 @@ impl Default for StartMenu {
 impl Scene for StartMenu {
     unsafe fn run_step(&mut self) -> eyre::Result<Action> {
         if raylib::IsKeyReleased(KeyboardKey::Escape as c_int) {
-            return Ok(Action::Pop(1));
+            return self.exit(Action::Pop(1));
         }
         let camera = raylib::Camera2D {
             offset: raylib::Vector2 { x: 0.0, y: 0.0 },
@@ -38,7 +42,7 @@ impl Scene for StartMenu {
             target: raylib::Vector2 { x: 0.0, y: 0.0 },
             zoom: 1.0,
         };
-        let theme = self.get_theme();
+        let theme = themes::get(self.theme);
         raylib::BeginMode2D(camera);
         raylib::ClearBackground(theme.background);
 
@@ -89,7 +93,7 @@ impl Scene for StartMenu {
                 level = 5;
             }
             if level != 0 {
-                return Ok(Action::Push(Box::new(Gameplay::new(
+                return self.exit(Action::Push(Box::new(Gameplay::new(
                     font, self.theme, level,
                 ))));
             }
@@ -101,7 +105,7 @@ impl Scene for StartMenu {
         for level in 1..=5 {
             let code = (KeyboardKey::Zero as i32 + level) as c_int;
             if raylib::IsKeyReleased(code) {
-                return Ok(Action::Push(Box::new(Gameplay::new(
+                return self.exit(Action::Push(Box::new(Gameplay::new(
                     font,
                     self.theme,
                     level as u8,
@@ -109,7 +113,7 @@ impl Scene for StartMenu {
             }
             let code = (KeyboardKey::Kp0 as i32 + level) as c_int;
             if raylib::IsKeyReleased(code) {
-                return Ok(Action::Push(Box::new(Gameplay::new(
+                return self.exit(Action::Push(Box::new(Gameplay::new(
                     font,
                     self.theme,
                     level as u8,
@@ -124,6 +128,13 @@ impl Scene for StartMenu {
 }
 
 impl StartMenu {
+    fn exit(&self, action: Action) -> eyre::Result<Action> {
+        let mut config = self.config;
+        config.theme = Some(self.theme);
+        settings::save(config);
+        Ok(action)
+    }
+
     unsafe fn draw_bt(
         &self,
         text: impl Into<String>,
@@ -132,7 +143,7 @@ impl StartMenu {
         mouse_pos: Vector2,
     ) -> (Rectangle, f32) {
         let text = text.into();
-        let theme = self.get_theme();
+        let theme = themes::get(self.theme);
         let size = raylib::MeasureTextEx(self.font, rl_str!(text), 64.0, 1.0);
         let bt = Rectangle {
             x: 0.0,
@@ -154,8 +165,8 @@ impl StartMenu {
         (bt, y + size.y)
     }
 
-    unsafe fn theme_bt(&self, width: f32, height: f32, mouse_pos: Vector2) -> Rectangle {
-        let mut theme = self.get_theme();
+    unsafe fn theme_bt(&mut self, width: f32, height: f32, mouse_pos: Vector2) -> Rectangle {
+        let mut theme = themes::get(self.theme);
         let mut text = format!(" {}", theme.r#type);
         let next = theme.next();
         let size = raylib::MeasureTextEx(self.font, rl_str!("0000000000"), 28.0, 1.0);
@@ -182,9 +193,5 @@ impl StartMenu {
         );
 
         bt
-    }
-
-    fn get_theme(&self) -> ThemeContent {
-        themes::get(self.theme)
     }
 }

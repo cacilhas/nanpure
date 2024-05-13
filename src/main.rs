@@ -7,6 +7,7 @@ mod fonts;
 mod game;
 mod kennett;
 mod scene;
+mod settings;
 mod themes;
 
 use std::os::raw::c_int;

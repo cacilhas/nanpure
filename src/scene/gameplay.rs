@@ -1,6 +1,6 @@
 use std::os::raw::c_int;
 
-use super::{action::Action, Scene};
+use super::{action::Action, pause::Pause, Scene};
 use crate::{
     game::{Game, Position},
     themes::{self, Theme, ThemeContent},
@@ -25,6 +25,9 @@ impl Scene for Gameplay {
         if raylib::IsKeyReleased(KeyboardKey::Escape as c_int) {
             return Ok(Action::Pop(1));
         }
+        if raylib::IsKeyReleased(KeyboardKey::Pause as c_int) {
+            return Ok(Action::Push(Box::new(Pause::new(self.font, self.theme))));
+        }
 
         let camera = Camera2D {
             offset: Vector2 { x: 0.0, y: 0.0 },
@@ -34,7 +37,7 @@ impl Scene for Gameplay {
         };
         let theme = self.get_theme();
         let background = if self.board.is_game_over() {
-            theme.hover_background
+            theme.title
         } else {
             theme.background
         };

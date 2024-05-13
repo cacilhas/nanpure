@@ -3,4 +3,5 @@ pub enum Theme {
     Light,
     Dark,
     Solarised,
+    Purple,
 }

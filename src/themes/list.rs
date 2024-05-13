@@ -49,5 +49,35 @@ pub(super) static SOLARISED: ThemeContent = ThemeContent {
         a: 0xff,
     },
     r#type: Theme::Solarised,
+    next_theme: Theme::Purple,
+};
+
+pub(super) static PURPLE: ThemeContent = ThemeContent {
+    title: Color {
+        r: 0xa4,
+        g: 0xe7,
+        b: 0x20,
+        a: 0xff,
+    },
+    foreground: Color {
+        r: 0xc4,
+        g: 0xbd,
+        b: 0xa6,
+        a: 0xff,
+    },
+    background: Color {
+        r: 0x0e,
+        g: 0x03,
+        b: 0x21,
+        a: 0xff,
+    },
+    hover_foreground: colors::WHITE,
+    hover_background: Color {
+        r: 0x1a,
+        g: 0x04,
+        b: 0x37,
+        a: 0xff,
+    },
+    r#type: Theme::Purple,
     next_theme: Theme::Light,
 };

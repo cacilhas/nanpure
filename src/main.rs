@@ -1,4 +1,5 @@
 use raylib::{draw, rl_str};
+mod colors;
 use raylib_ffi as raylib;
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]

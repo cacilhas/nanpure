@@ -1,6 +1,12 @@
-use raylib::{draw, rl_str};
 mod colors;
+mod scene;
+
+use crate::scene::{Action, Scene, StartMenu};
+use raylib::enums::KeyboardKey;
+use raylib::rl_str;
 use raylib_ffi as raylib;
+
+use std::os::raw::c_int;
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 fn main() -> eyre::Result<()> {
@@ -9,10 +15,20 @@ fn main() -> eyre::Result<()> {
         raylib::SetWindowTitle(rl_str!("Kodumaro Nanpūrë"));
         raylib::SetTargetFPS(30);
         raylib::SetConfigFlags(0);
+        raylib::SetExitKey(KeyboardKey::Null as c_int);
+
+        let mut scenes: Vec<Box<dyn Scene>> = vec![Box::new(StartMenu::default())];
 
         while !raylib::WindowShouldClose() {
-            draw! {
-                print!(".")
+            match scenes.last_mut() {
+                Some(scene) => match scene.run_step() {
+                    Action::Keep => (),
+                    Action::Pop => {
+                        scenes.pop();
+                    }
+                    Action::Push(next_scene) => scenes.push(next_scene),
+                },
+                None => raylib::CloseWindow(),
             }
         }
     }

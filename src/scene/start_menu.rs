@@ -1,7 +1,7 @@
 use std::os::raw::c_int;
 
-use super::Scene;
-use crate::{colors, scene::Action};
+use super::{Action, Scene};
+use crate::colors;
 use raylib::{draw, enums::KeyboardKey};
 
 #[derive(Debug, Default)]

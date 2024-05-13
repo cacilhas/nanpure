@@ -1,5 +1,5 @@
 use super::{candidates::Candidates, cell::Cell, position::Position, value::Value};
-use rscenes::prelude::*;
+use hecs::*;
 
 #[derive(Clone, Copy, Debug)]
 pub struct IsGameOver(bool);

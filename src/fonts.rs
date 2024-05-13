@@ -1,16 +1,16 @@
+use raylib::rl_str;
+use std::io::{Error, ErrorKind};
+
 #[cfg(target_os = "linux")]
 use std::{env, process::Command};
 
-use rscenes::prelude::*;
 #[cfg(target_os = "linux")]
 use walkdir::WalkDir;
 
-use crate::error;
-
-pub fn get_font(handle: &mut RaylibHandle, thr: &RaylibThread) -> eyre::Result<Font> {
+pub unsafe fn get_font() -> eyre::Result<raylib::Font> {
     let font_name = find_gnome_font()?;
     let path = find_font_path(font_name)?;
-    Ok(handle.load_font(thr, &path).map_err(error::Error)?)
+    Ok(raylib::LoadFont(rl_str!(path)))
 }
 
 #[cfg(target_os = "linux")]
@@ -29,14 +29,14 @@ fn find_font_path(font_name: Vec<String>) -> eyre::Result<String> {
             }
         }
     }
-    Err(error!("could not find {font_name:?}").into())
+    Err(Error::new(ErrorKind::NotFound, "could not find {font_name:?}").into())
 }
 
 #[cfg(target_os = "macos")]
 fn find_font_path(font_name: Vec<String>) -> eyre::Result<String> {
     let font = font_name
         .first()
-        .ok_or_else(|| error!("no font supplied"))?;
+        .ok_or_else(|| Error::new(ErrorKind::NotFound, "no font supplied"))?;
     Ok(format!("/System/Library/Fonts/{}", font))
 }
 
@@ -63,7 +63,14 @@ fn find_gnome_font() -> eyre::Result<Vec<String>> {
         Ok(font)
     } else {
         let err = String::from_utf8_lossy(&output.stderr).trim().to_owned();
-        Err(error!("error getting org.gnome.desktop.interface[font-name]: {err}").into())
+        Err(Error::new(
+            ErrorKind::Unsupported,
+            format!(
+                "error getting org.gnome.desktop.interface[font-name]: {}",
+                err
+            ),
+        )
+        .into())
     }
 }
 #[cfg(target_os = "macos")]

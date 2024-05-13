@@ -1,7 +1,9 @@
 // Michael Kennett Sudoku connector
-use crate::error;
 use crate::game::level::Level;
-use std::process::Command;
+use std::{
+    io::{Error, ErrorKind},
+    process::Command,
+};
 
 pub struct KennettConnector;
 
@@ -27,7 +29,7 @@ impl KennettConnector {
             })
             .collect::<Vec<u8>>();
         if output.len() != 81 {
-            Err(error!("wrong size").into())
+            Err(Error::new(ErrorKind::Unsupported, "wrong size").into())
         } else {
             Ok(output)
         }

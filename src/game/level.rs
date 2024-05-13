@@ -15,8 +15,20 @@ pub enum Level {
     Fiendish,
 }
 
+impl From<u8> for Level {
+    fn from(value: u8) -> Self {
+        match value {
+            0 | 1 => Level::ExtremelyEasy,
+            2 => Level::Easy,
+            3 => Level::Medium,
+            4 => Level::Hard,
+            _ => Level::Fiendish,
+        }
+    }
+}
+
 impl Level {
-    pub(crate) fn count(&self) -> usize {
+    pub fn count(&self) -> usize {
         match self {
             Self::ExtremelyEasy => get_random(EXTREMELY_EASY),
             Self::Easy => get_random(EASY),
@@ -26,7 +38,7 @@ impl Level {
         }
     }
 
-    pub(crate) fn kennett_flag(&self) -> &'static str {
+    pub fn kennett_flag(&self) -> &'static str {
         match self {
             Self::ExtremelyEasy => "-cvery easy",
             Self::Easy => "-ceasy",
@@ -38,7 +50,7 @@ impl Level {
 }
 
 fn get_random((min, max): (usize, usize)) -> usize {
-    get_random_value::<i32>(min as i32, max as i32) as usize
+    unsafe { get_random_value::<i32>(min as i32, max as i32) as usize }
 }
 
 #[cfg(test)]

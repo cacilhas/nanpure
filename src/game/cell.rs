@@ -1,4 +1,5 @@
-use rscenes::prelude::{colors, Color};
+use crate::colors;
+use raylib::Color;
 
 #[derive(Debug)]
 pub struct Cell;

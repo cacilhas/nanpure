@@ -1,35 +1,47 @@
 mod candidates;
 mod cell;
-pub(crate) mod level;
+pub mod level;
 mod position;
 mod systems;
 mod value;
 
 use std::collections::HashMap;
 use std::fmt;
+use std::os::raw::c_int;
 
+use self::{candidates::Candidates, cell::Cell, systems::*, value::Value};
+pub use self::{cell::COLORS, level::Level, position::Position};
 use crate::kennett::KennettConnector;
-
-use self::{candidates::Candidates, cell::Cell, position::Position, systems::*, value::Value};
-
-pub use self::cell::COLORS;
-pub use self::level::Level;
-use rscenes::prelude::*;
+use hecs::*;
 
 pub struct Game(World);
 
+impl fmt::Debug for Game {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "a game")
+    }
+}
+
+impl Default for Game {
+    fn default() -> Self {
+        let mut world = World::default();
+        create_cells(&mut world);
+        Self(world)
+    }
+}
+
 impl Game {
-    pub fn draw(&mut self, draw: &mut RaylibMode2D<RaylibDrawHandle>, rect: Rectangle) {
+    pub unsafe fn draw(&mut self, rect: raylib::Rectangle) {
         let width = rect.width / 9.0;
         let height = rect.height / 9.0;
         let sw = width / 3.0;
         let sh = height / 3.0;
-        let radius = *[width, height]
+        let radius = *[width - 4.0, height - 4.0]
             .iter()
             .reduce(|a, b| if a < b { a } else { b })
             .unwrap()
             / 2.0;
-        let sr = *[sw, sh]
+        let sr = *[sw - 2.0, sh - 2.0]
             .iter()
             .reduce(|a, b| if a < b { a } else { b })
             .unwrap()
@@ -39,14 +51,14 @@ impl Game {
             .query_mut::<With<(&Position, &Candidates, &Value), &Cell>>()
         {
             let value: Option<u8> = value.into();
-            let rect = Rectangle {
+            let rect = raylib::Rectangle {
                 x: rect.x + width * position.x as f32,
                 y: rect.y + height * position.y as f32,
                 width,
                 height,
             };
             match value {
-                Some(value) => draw.draw_circle(
+                Some(value) => raylib::DrawCircle(
                     (rect.x + width / 2.0) as i32,
                     (rect.y + height / 2.0) as i32,
                     radius,
@@ -55,13 +67,13 @@ impl Game {
                 None => {
                     for i in 1_u8..=9 {
                         if candidates.is_set(i) {
-                            let rect = Rectangle {
+                            let rect = raylib::Rectangle {
                                 x: rect.x + sw * ((i - 1) % 3) as f32,
                                 y: rect.y + sh * (2 - (i - 1) / 3) as f32,
                                 width: sw,
                                 height: sh,
                             };
-                            draw.draw_circle(
+                            raylib::DrawCircle(
                                 (rect.x + sw / 2.0) as i32,
                                 (rect.y + sh / 2.0) as i32,
                                 sr,
@@ -74,20 +86,22 @@ impl Game {
         }
     }
 
-    pub fn shuffle(&mut self, level: Level) {
-        match KennettConnector::generate(level) {
-            Some(result) => {
-                create_empty_system(&mut self.0);
-                for y in 0..9 {
-                    for x in 0..9 {
-                        let index = (x + y * 9) as usize;
-                        match result[index] {
-                            0 => self.set_cell(x, y, None),
-                            value => self.set_cell(x, y, Some(value)),
-                        };
-                    }
-                }
+    pub fn populate(&mut self, content: Vec<u8>) {
+        create_empty_system(&mut self.0);
+        for y in 0..9 {
+            for x in 0..9 {
+                let index = (x + y * 9) as usize;
+                match content[index] {
+                    0 => self.set_cell(x, y, None),
+                    value => self.set_cell(x, y, Some(value)),
+                };
             }
+        }
+    }
+
+    pub unsafe fn shuffle(&mut self, level: Level) {
+        match KennettConnector::generate(level) {
+            Some(result) => self.populate(result),
 
             None => {
                 self.shuffle_x();
@@ -106,18 +120,6 @@ impl Game {
             }
         }
         true
-    }
-
-    pub fn get_cell(&mut self, x: u8, y: u8) -> (Option<u8>, Candidates) {
-        for (_, (&position, &candidates, &value)) in self
-            .0
-            .query_mut::<With<(&Position, &Candidates, &Value), &Cell>>()
-        {
-            if position.x == x && position.y == y {
-                return (value.into(), candidates);
-            }
-        }
-        panic!("should never get here")
     }
 
     pub fn set_cell(&mut self, x: u8, y: u8, value: Option<u8>) {
@@ -164,7 +166,7 @@ impl Game {
         }
     }
 
-    fn shuffle_x(&mut self) {
+    unsafe fn shuffle_x(&mut self) {
         for _ in 0..10 {
             let g = get_random_value::<u8>(0, 2);
             let x1 = get_random_value::<u8>(0, 2);
@@ -181,7 +183,7 @@ impl Game {
         }
     }
 
-    fn shuffle_x_group(&mut self) {
+    unsafe fn shuffle_x_group(&mut self) {
         for _ in 0..10 {
             let g1 = get_random_value::<u8>(0, 2);
             let g2 = (g1 + get_random_value::<u8>(1, 2)) % 3;
@@ -195,7 +197,7 @@ impl Game {
         }
     }
 
-    fn shuffle_y(&mut self) {
+    unsafe fn shuffle_y(&mut self) {
         for _ in 0..10 {
             let g = get_random_value::<u8>(0, 2);
             let y1 = get_random_value::<u8>(0, 2);
@@ -212,7 +214,7 @@ impl Game {
         }
     }
 
-    fn shuffle_y_group(&mut self) {
+    unsafe fn shuffle_y_group(&mut self) {
         for _ in 0..10 {
             let g1 = get_random_value::<u8>(0, 2);
             let g2 = (g1 + get_random_value::<u8>(1, 2)) % 3;
@@ -226,7 +228,7 @@ impl Game {
         }
     }
 
-    fn hide_cells(&mut self, count: usize) {
+    unsafe fn hide_cells(&mut self, count: usize) {
         let mut values: HashMap<u8, &mut Value> = HashMap::default();
         for (_, (&position, value)) in self.0.query_mut::<With<(&Position, &mut Value), &Cell>>() {
             let i = position.x + position.y * 9;
@@ -265,7 +267,7 @@ impl Game {
     }
 
     #[cfg(test)]
-    fn stringify(&mut self) -> Result<String, String> {
+    pub fn stringify(&mut self) -> String {
         let mut arr = [0_u8; 81];
         for (_, (&position, &value)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
             display_system(position, value, &mut arr);
@@ -283,29 +285,15 @@ impl Game {
                 res = format!("{}{}", res, value);
             }
         }
-        Ok(res[1..].to_owned())
+        res[1..].to_owned()
     }
 }
 
-impl fmt::Debug for Game {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "a game")
-    }
-}
-
-impl Default for Game {
-    fn default() -> Self {
-        let mut world = World::default();
-        create_cells(&mut world);
-        Self(world)
-    }
-}
-
-pub fn get_random_value<T>(min: i32, max: i32) -> T
+pub unsafe fn get_random_value<T>(min: i32, max: i32) -> T
 where
     T: TryFrom<i32>,
 {
-    let value = raylib::misc::get_random_value::<i32>(min, max);
+    let value = raylib::GetRandomValue(min as c_int, max as c_int) as i32;
     T::try_from(value).unwrap_or_else(|_| panic!("conversion failure"))
 }
 

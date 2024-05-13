@@ -5,6 +5,7 @@ extern crate static_init;
 mod colors;
 mod fonts;
 mod scene;
+mod themes;
 
 use std::os::raw::c_int;
 

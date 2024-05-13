@@ -148,7 +148,7 @@ impl StartMenu {
         let mut theme = self.get_theme();
         let mut text = format!(" {}", theme.r#type);
         let next = theme.next();
-        let size = raylib::MeasureTextEx(self.font, rl_str!("000000"), 28.0, 1.0);
+        let size = raylib::MeasureTextEx(self.font, rl_str!("0000000000"), 28.0, 1.0);
         let bt = Rectangle {
             x: width - size.x - 4.0,
             y: height - size.y - 4.0,

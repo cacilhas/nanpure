@@ -16,5 +16,6 @@ pub fn get(theme: Theme) -> ThemeContent {
     match theme {
         Theme::Light => list::LIGHT,
         Theme::Dark => list::DARK,
+        Theme::Solarised => list::SOLARISED,
     }
 }

@@ -1,6 +1,6 @@
 use std::os::raw::c_int;
 
-use super::{Action, Scene};
+use super::{action::Action, Scene};
 use crate::colors;
 use raylib::{draw, enums::KeyboardKey};
 

@@ -1,8 +1,11 @@
 use std::os::raw::c_int;
 
-use super::{action::Action, Scene};
+use super::{action::Action, gameplay::Gameplay, Scene};
 use crate::{colors, fonts::get_font};
-use raylib::{draw, enums::KeyboardKey, rl_str, Font, Rectangle, Vector2};
+use raylib::{
+    enums::{KeyboardKey, MouseButton},
+    rl_str, Font, Rectangle, Vector2,
+};
 
 #[derive(Debug)]
 pub struct StartMenu {
@@ -24,15 +27,6 @@ impl Scene for StartMenu {
         if raylib::IsKeyReleased(KeyboardKey::Escape as c_int) {
             return Action::Pop(1);
         }
-        draw! {
-            self.draw2d()
-        }
-        Action::Keep
-    }
-}
-
-impl StartMenu {
-    unsafe fn draw2d(&mut self) {
         let camera = raylib::Camera2D {
             offset: raylib::Vector2 { x: 0.0, y: 0.0 },
             rotation: 0.0,
@@ -84,9 +78,46 @@ impl StartMenu {
         let bottom = bottom + 12.0;
         let (fiendish_bt, _) = self.draw_bt("5. Fiendish", width, bottom, mouse_pos);
 
-        raylib::EndMode2D();
-    }
+        if raylib::IsMouseButtonPressed(MouseButton::Left as c_int) {
+            let mut level: u32 = 0;
+            if raylib::CheckCollisionPointRec(mouse_pos, etr_easy_bt) {
+                level = 1;
+            }
+            if raylib::CheckCollisionPointRec(mouse_pos, easy_bt) {
+                level = 2;
+            }
+            if raylib::CheckCollisionPointRec(mouse_pos, medium_bt) {
+                level = 3;
+            }
+            if raylib::CheckCollisionPointRec(mouse_pos, hard_bt) {
+                level = 4;
+            }
+            if raylib::CheckCollisionPointRec(mouse_pos, fiendish_bt) {
+                level = 5;
+            }
+            if level != 0 {
+                return Action::Push(Box::new(Gameplay::new(font, level)));
+            }
+        }
 
+        for level in 1..=5 {
+            let code = (KeyboardKey::Zero as i32 + level) as c_int;
+            if raylib::IsKeyReleased(code) {
+                return Action::Push(Box::new(Gameplay::new(font, level as u32)));
+            }
+            let code = (KeyboardKey::Kp0 as i32 + level) as c_int;
+            if raylib::IsKeyReleased(code) {
+                return Action::Push(Box::new(Gameplay::new(font, level as u32)));
+            }
+        }
+
+        raylib::EndMode2D();
+
+        Action::Keep
+    }
+}
+
+impl StartMenu {
     unsafe fn draw_bt(
         &self,
         text: impl Into<String>,

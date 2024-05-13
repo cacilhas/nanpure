@@ -86,20 +86,22 @@ impl Game {
         }
     }
 
+    pub fn populate(&mut self, content: Vec<u8>) {
+        create_empty_system(&mut self.0);
+        for y in 0..9 {
+            for x in 0..9 {
+                let index = (x + y * 9) as usize;
+                match content[index] {
+                    0 => self.set_cell(x, y, None),
+                    value => self.set_cell(x, y, Some(value)),
+                };
+            }
+        }
+    }
+
     pub unsafe fn shuffle(&mut self, level: Level) {
         match KennettConnector::generate(level) {
-            Some(result) => {
-                create_empty_system(&mut self.0);
-                for y in 0..9 {
-                    for x in 0..9 {
-                        let index = (x + y * 9) as usize;
-                        match result[index] {
-                            0 => self.set_cell(x, y, None),
-                            value => self.set_cell(x, y, Some(value)),
-                        };
-                    }
-                }
-            }
+            Some(result) => self.populate(result),
 
             None => {
                 self.shuffle_x();
@@ -276,8 +278,7 @@ impl Game {
         }
     }
 
-    #[cfg(test)]
-    fn stringify(&mut self) -> Result<String, String> {
+    pub fn stringify(&mut self) -> String {
         let mut arr = [0_u8; 81];
         for (_, (&position, &value)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
             display_system(position, value, &mut arr);
@@ -295,7 +296,7 @@ impl Game {
                 res = format!("{}{}", res, value);
             }
         }
-        Ok(res[1..].to_owned())
+        res[1..].to_owned()
     }
 }
 

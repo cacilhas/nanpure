@@ -1,5 +1,9 @@
 extern crate raylib_ffi as raylib;
+#[macro_use]
+extern crate static_init;
+
 mod colors;
+mod fonts;
 mod scene;
 
 use std::os::raw::c_int;

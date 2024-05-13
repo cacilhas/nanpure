@@ -1,11 +1,23 @@
 use std::os::raw::c_int;
 
 use super::{action::Action, Scene};
-use crate::colors;
-use raylib::{draw, enums::KeyboardKey};
+use crate::{colors, fonts::get_font};
+use raylib::{draw, enums::KeyboardKey, rl_str, Font, Vector2};
 
-#[derive(Debug, Default)]
-pub struct StartMenu;
+#[derive(Debug)]
+pub struct StartMenu {
+    font: Font,
+}
+
+impl Default for StartMenu {
+    fn default() -> Self {
+        unsafe {
+            Self {
+                font: get_font().unwrap(),
+            }
+        }
+    }
+}
 
 impl Scene for StartMenu {
     unsafe fn run_step(&mut self) -> Action {
@@ -29,7 +41,37 @@ impl StartMenu {
         };
         raylib::BeginMode2D(camera);
         raylib::ClearBackground(colors::WHEAT);
-        // TODO: menu
+
+        let font = self.font;
+        let width = raylib::GetScreenWidth() as f32;
+        let size = raylib::MeasureTextEx(font, rl_str!("Nanpurë"), 84.0, 2.0);
+        let position = Vector2 {
+            x: (width - size.x) / 2.0,
+            y: 0.0,
+        };
+        raylib::DrawTextEx(
+            font,
+            rl_str!("Nanpurë"),
+            position,
+            84.0,
+            2.0,
+            colors::DARKCYAN,
+        );
+        let bottom = size.y + 16.0;
+        let size = raylib::MeasureTextEx(font, rl_str!("(Sudoku)"), 32.0, 1.0);
+        let position = Vector2 {
+            x: (width - size.x) / 2.0,
+            y: bottom,
+        };
+        raylib::DrawTextEx(
+            font,
+            rl_str!("(Sudoku)"),
+            position,
+            32.0,
+            1.0,
+            colors::DARKCYAN,
+        );
+
         raylib::EndMode2D();
     }
 }

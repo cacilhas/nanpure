@@ -23,3 +23,5 @@ strip = true
 color-eyre = "0.6"
 eyre = "0.6"
 raylib-ffi = "5.0"
+static_init = "1.0"
+walkdir = "2.5"

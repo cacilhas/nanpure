@@ -8,7 +8,7 @@ const FIENDISH: (usize, usize) = (54, 59);
 
 #[derive(Clone, Copy, Debug)]
 pub enum Level {
-    ExtremelyEasy,
+    ExtremelyEasy = 1,
     Easy,
     Medium,
     Hard,

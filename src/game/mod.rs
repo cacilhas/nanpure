@@ -11,8 +11,9 @@ use std::os::raw::c_int;
 
 use self::{candidates::Candidates, cell::Cell, systems::*, value::Value};
 pub use self::{cell::COLORS, level::Level, position::Position};
-use crate::kennett::KennettConnector;
+use crate::{colors, kennett::KennettConnector};
 use hecs::*;
+use raylib::Rectangle;
 
 pub struct Game(World);
 
@@ -31,7 +32,7 @@ impl Default for Game {
 }
 
 impl Game {
-    pub unsafe fn draw(&mut self, rect: raylib::Rectangle) {
+    pub unsafe fn draw(&mut self, rect: Rectangle) {
         let width = rect.width / 9.0;
         let height = rect.height / 9.0;
         let sw = width / 3.0;
@@ -51,7 +52,7 @@ impl Game {
             .query_mut::<With<(&Position, &Candidates, &Value), &Cell>>()
         {
             let value: Option<u8> = value.into();
-            let rect = raylib::Rectangle {
+            let rect = Rectangle {
                 x: rect.x + width * position.x as f32,
                 y: rect.y + height * position.y as f32,
                 width,
@@ -65,9 +66,11 @@ impl Game {
                     COLORS[value as usize],
                 ),
                 None => {
+                    let mut set = false;
                     for i in 1_u8..=9 {
                         if candidates.is_set(i) {
-                            let rect = raylib::Rectangle {
+                            set = true;
+                            let rect = Rectangle {
                                 x: rect.x + sw * ((i - 1) % 3) as f32,
                                 y: rect.y + sh * (2 - (i - 1) / 3) as f32,
                                 width: sw,
@@ -80,6 +83,17 @@ impl Game {
                                 COLORS[i as usize],
                             );
                         }
+                    }
+
+                    if !set {
+                        raylib::DrawRectangleRec(
+                            rect,
+                            if (raylib::GetTime() * 10.0) as i32 % 2 == 0 {
+                                colors::RED
+                            } else {
+                                colors::YELLOW
+                            },
+                        )
                     }
                 }
             }

@@ -38,13 +38,6 @@ impl Scene for Gameplay {
             zoom: 1.0,
         };
         let theme = self.get_theme();
-        let background = if self.game_over {
-            theme.title
-        } else {
-            theme.background
-        };
-        raylib::BeginMode2D(camera);
-        raylib::ClearBackground(background);
         let screen = Vector2 {
             x: raylib::GetScreenWidth() as f32,
             y: raylib::GetScreenHeight() as f32,
@@ -61,16 +54,28 @@ impl Scene for Gameplay {
             width: screen.x - 24.0,
             height: screen.y - canvas.height,
         };
-        if !self.game_over {
-            self.time += raylib::GetFrameTime();
-            self.move_player();
-            self.detect_click(canvas);
-            self.detect_change_cell();
-            self.draw_player(canvas);
-            self.draw_draft_bt(info);
+        let background = if self.game_over {
+            theme.title
+        } else {
+            theme.background
+        };
+        raylib::BeginMode2D(camera);
+        raylib::ClearBackground(background);
+
+        if raylib::IsWindowFocused() || self.game_over {
+            if !self.game_over {
+                self.time += raylib::GetFrameTime();
+                self.move_player();
+                self.detect_click(canvas);
+                self.detect_change_cell();
+                self.draw_player(canvas);
+                self.draw_draft_bt(info);
+            }
+            self.draw_lines(canvas);
+            self.board.draw(canvas);
+        } else {
+            self.draw_locked(canvas);
         }
-        self.draw_lines(canvas);
-        self.board.draw(canvas);
         self.draw_level(info);
         self.draw_timelapse(info);
         raylib::EndMode2D();
@@ -217,6 +222,23 @@ impl Gameplay {
                 tint,
             );
         }
+    }
+
+    unsafe fn draw_locked(&self, canvas: Rectangle) {
+        let theme = self.get_theme();
+        let size = raylib::MeasureTextEx(self.font, rl_str!("LOCKED"), 64.0, 2.0);
+        let position = Vector2 {
+            x: (canvas.width - size.x) / 2.0,
+            y: (canvas.height - size.y) / 2.0,
+        };
+        raylib::DrawTextEx(
+            self.font,
+            rl_str!("LOCKED"),
+            position,
+            64.0,
+            2.0,
+            theme.foreground,
+        );
     }
 
     unsafe fn draw_draft_bt(&mut self, canvas: Rectangle) {

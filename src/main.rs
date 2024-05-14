@@ -21,10 +21,10 @@ fn main() -> eyre::Result<()> {
     use raylib::enums::ConfigFlags;
 
     unsafe {
+        raylib::SetConfigFlags(ConfigFlags::WindowResizable as u32);
         raylib::InitWindow(640, 768, rl_str!("nanpure")); // WM_CLASS
         raylib::SetWindowTitle(rl_str!("Kodumaro Nanpūrë"));
         raylib::SetTargetFPS(30);
-        raylib::SetConfigFlags(ConfigFlags::WindowResizable as u32);
         raylib::SetExitKey(KeyboardKey::Null as c_int);
         raylib::SetRandomSeed((get_seed()? as c_int).try_into()?);
 

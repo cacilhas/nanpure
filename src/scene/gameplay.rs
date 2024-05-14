@@ -2,7 +2,7 @@ use std::os::raw::c_int;
 
 use super::{action::Action, pause::Pause, Scene};
 use crate::{
-    game::{Game, Position},
+    game::{Game, Level, Position},
     themes::{self, Theme, ThemeContent},
 };
 use raylib::{
@@ -18,6 +18,8 @@ pub struct Gameplay {
     player: Position,
     draft: bool,
     time: f32,
+    game_over: bool,
+    level: Level,
 }
 
 impl Scene for Gameplay {
@@ -36,7 +38,7 @@ impl Scene for Gameplay {
             zoom: 1.0,
         };
         let theme = self.get_theme();
-        let background = if self.board.is_game_over() {
+        let background = if self.game_over {
             theme.title
         } else {
             theme.background
@@ -59,7 +61,7 @@ impl Scene for Gameplay {
             width: screen.x - 24.0,
             height: screen.y - canvas.height,
         };
-        if !self.board.is_game_over() {
+        if !self.game_over {
             self.time += raylib::GetFrameTime();
             self.move_player();
             self.detect_click(canvas);
@@ -69,8 +71,11 @@ impl Scene for Gameplay {
         }
         self.draw_lines(canvas);
         self.board.draw(canvas);
+        self.draw_level(info);
         self.draw_timelapse(info);
         raylib::EndMode2D();
+
+        self.game_over = self.board.is_game_over();
 
         // TODO: gameplay
         Ok(Action::Keep)
@@ -90,6 +95,8 @@ impl Gameplay {
             player: Position { x: 4, y: 4 },
             draft: false,
             time: 0.0,
+            game_over: false,
+            level: level.into(),
         }
     }
 
@@ -138,6 +145,7 @@ impl Gameplay {
     unsafe fn detect_change_cell(&mut self) {
         if raylib::IsKeyReleased(KeyboardKey::LeftControl as c_int)
             || raylib::IsKeyReleased(KeyboardKey::RightControl as c_int)
+            || raylib::IsKeyReleased(KeyboardKey::KpDecimal as c_int)
         {
             self.draft = !self.draft;
         }
@@ -242,6 +250,24 @@ impl Gameplay {
         }
     }
 
+    unsafe fn draw_level(&self, canvas: Rectangle) {
+        let theme = self.get_theme();
+        let text = format!("{:?}", self.level);
+        let size = raylib::MeasureTextEx(self.font, rl_str!(text), 24.0, 1.0);
+        let position = Vector2 {
+            x: canvas.x + (canvas.width - size.x) / 2.0,
+            y: canvas.y + (canvas.height - size.y) / 2.0,
+        };
+        raylib::DrawTextEx(
+            self.font,
+            rl_str!(text),
+            position,
+            24.0,
+            1.0,
+            theme.foreground,
+        );
+    }
+
     unsafe fn draw_timelapse(&self, canvas: Rectangle) {
         let mouse = raylib::GetMousePosition();
         let theme = self.get_theme();
@@ -254,7 +280,7 @@ impl Gameplay {
             width: size.x,
             height: size.y,
         };
-        if raylib::CheckCollisionPointRec(mouse, label) {
+        if raylib::CheckCollisionPointRec(mouse, canvas) {
             raylib::DrawTextEx(
                 self.font,
                 rl_str!(text),
@@ -266,8 +292,6 @@ impl Gameplay {
                 1.0,
                 theme.foreground,
             );
-        } else {
-            raylib::DrawRectangleRec(label, theme.hover_background);
         }
     }
 }

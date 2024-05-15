@@ -1,6 +1,6 @@
 use std::os::raw::c_int;
 
-use super::{action::Action, gameplay::Gameplay, Scene};
+use super::{action::Action, gameplay::Gameplay, helpers, Scene};
 use crate::{
     colors,
     fonts::get_font,
@@ -47,34 +47,18 @@ impl Scene for StartMenu {
         raylib::BeginMode2D(camera);
         raylib::ClearBackground(colors::DARKGRAY);
 
-        let screen = Vector2 {
-            x: raylib::GetScreenWidth() as f32,
-            y: raylib::GetScreenHeight() as f32,
-        };
-        let screen = Rectangle {
-            x: if screen.x > screen.y {
-                (screen.x - screen.y) / 2.0
-            } else {
-                0.0
-            },
-            y: 0.0,
-            width: if screen.x > screen.y {
-                screen.y
-            } else {
-                screen.x
-            },
-            height: screen.y,
-        };
+        let screen = helpers::get_screen();
         raylib::DrawRectangleRec(screen, theme.background);
 
         let font = self.font;
         let size = raylib::MeasureTextEx(font, rl_str!("Nanpurë"), 84.0, 2.0);
+        let mut bottom = screen.y;
         let position = Vector2 {
             x: screen.x + (screen.width - size.x) / 2.0,
-            y: screen.y,
+            y: bottom,
         };
         raylib::DrawTextEx(font, rl_str!("Nanpurë"), position, 84.0, 2.0, theme.title);
-        let bottom = position.y + size.y + 16.0;
+        bottom += size.y + 16.0;
         let size = raylib::MeasureTextEx(font, rl_str!("(Sudoku)"), 32.0, 1.0);
         let position = Vector2 {
             x: screen.x + (screen.width - size.x) / 2.0,
@@ -83,16 +67,12 @@ impl Scene for StartMenu {
         raylib::DrawTextEx(font, rl_str!("(Sudoku)"), position, 32.0, 1.0, theme.title);
         let mouse_pos = raylib::GetMousePosition();
 
-        let bottom = bottom + size.y + 64.0;
-        let (etr_easy_bt, bottom) = self.draw_bt("1. Extremely Easy", screen, bottom, mouse_pos);
-        let bottom = bottom + 12.0;
-        let (easy_bt, bottom) = self.draw_bt("2. Easy", screen, bottom, mouse_pos);
-        let bottom = bottom + 12.0;
-        let (medium_bt, bottom) = self.draw_bt("3. Medium", screen, bottom, mouse_pos);
-        let bottom = bottom + 12.0;
-        let (hard_bt, bottom) = self.draw_bt("4. Hard", screen, bottom, mouse_pos);
-        let bottom = bottom + 12.0;
-        let (fiendish_bt, _) = self.draw_bt("5. Fiendish", screen, bottom, mouse_pos);
+        let (etr_easy_bt, bottom) =
+            self.draw_bt("1. Extremely Easy", screen, bottom + 64.0, mouse_pos);
+        let (easy_bt, bottom) = self.draw_bt("2. Easy", screen, bottom + 12.0, mouse_pos);
+        let (medium_bt, bottom) = self.draw_bt("3. Medium", screen, bottom + 12.0, mouse_pos);
+        let (hard_bt, bottom) = self.draw_bt("4. Hard", screen, bottom + 12.0, mouse_pos);
+        let (fiendish_bt, _) = self.draw_bt("5. Fiendish", screen, bottom + 12.0, mouse_pos);
         let theme_bt = self.theme_bt(screen, mouse_pos);
 
         if raylib::IsMouseButtonPressed(MouseButton::Left as c_int) {

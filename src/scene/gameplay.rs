@@ -1,6 +1,6 @@
 use std::os::raw::c_int;
 
-use super::{action::Action, pause::Pause, Scene};
+use super::{action::Action, helpers, pause::Pause, Scene};
 use crate::{
     colors,
     game::{Game, Level, Position},
@@ -39,24 +39,7 @@ impl Scene for Gameplay {
             zoom: 1.0,
         };
         let theme = self.get_theme();
-        let screen = Vector2 {
-            x: raylib::GetScreenWidth() as f32,
-            y: raylib::GetScreenHeight() as f32,
-        };
-        let screen = Rectangle {
-            x: if screen.x > screen.y {
-                (screen.x - screen.y) / 2.0
-            } else {
-                0.0
-            },
-            y: 0.0,
-            width: if screen.x > screen.y {
-                screen.y
-            } else {
-                screen.x
-            },
-            height: screen.y,
-        };
+        let screen = helpers::get_screen();
         let canvas = Rectangle {
             x: screen.x,
             y: screen.y,

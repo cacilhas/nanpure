@@ -42,17 +42,31 @@ impl Scene for Gameplay {
             x: raylib::GetScreenWidth() as f32,
             y: raylib::GetScreenHeight() as f32,
         };
-        let canvas = Rectangle {
-            x: 0.0,
+        let screen = Rectangle {
+            x: if screen.x > screen.y {
+                (screen.x - screen.y) / 2.0
+            } else {
+                0.0
+            },
             y: 0.0,
-            width: screen.x,
-            height: screen.y - 48.0,
+            width: if screen.x > screen.y {
+                screen.y
+            } else {
+                screen.x
+            },
+            height: screen.y,
+        };
+        let canvas = Rectangle {
+            x: screen.x,
+            y: screen.y,
+            width: screen.width,
+            height: screen.height - 48.0,
         };
         let info = Rectangle {
-            x: 12.0,
-            y: canvas.height,
-            width: screen.x - 24.0,
-            height: screen.y - canvas.height,
+            x: 12.0 + screen.x,
+            y: screen.y + canvas.height,
+            width: screen.width - 24.0,
+            height: screen.height - canvas.height,
         };
         let background = if self.game_over {
             theme.title

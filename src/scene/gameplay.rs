@@ -192,8 +192,8 @@ impl Gameplay {
     unsafe fn draw_player(&self, canvas: Rectangle) {
         let width = canvas.width / 9.0;
         let height = canvas.height / 9.0;
-        let x = (canvas.x + self.player.x as f32) * width;
-        let y = (canvas.y + self.player.y as f32) * height;
+        let x = canvas.x + self.player.x as f32 * width;
+        let y = canvas.y + self.player.y as f32 * height;
         let theme = self.get_theme();
         raylib::DrawRectangle(
             x as i32,

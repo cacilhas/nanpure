@@ -7,7 +7,7 @@ use crate::{
 };
 use raylib::{
     enums::{KeyboardKey, MouseButton},
-    rl_str, Camera2D, Font, Rectangle, Vector2,
+    rl_str, Camera2D, Color, Font, Rectangle, Vector2,
 };
 
 #[derive(Debug)]
@@ -74,7 +74,21 @@ impl Scene for Gameplay {
             theme.background
         };
         raylib::BeginMode2D(camera);
-        raylib::ClearBackground(background);
+        raylib::ClearBackground(Color {
+            r: 0x20,
+            g: 0x20,
+            b: 0x20,
+            a: 0xff,
+        });
+        raylib::DrawRectangleRec(
+            Rectangle {
+                x: canvas.x,
+                y: canvas.y,
+                width: canvas.width,
+                height: canvas.height + info.height,
+            },
+            background,
+        );
 
         if raylib::IsWindowFocused() || self.game_over {
             if !self.game_over {

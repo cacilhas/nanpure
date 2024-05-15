@@ -2,12 +2,13 @@ use std::os::raw::c_int;
 
 use super::{action::Action, pause::Pause, Scene};
 use crate::{
+    colors,
     game::{Game, Level, Position},
     themes::{self, Theme, ThemeContent},
 };
 use raylib::{
     enums::{KeyboardKey, MouseButton},
-    rl_str, Camera2D, Color, Font, Rectangle, Vector2,
+    rl_str, Camera2D, Font, Rectangle, Vector2,
 };
 
 #[derive(Debug)]
@@ -74,12 +75,7 @@ impl Scene for Gameplay {
             theme.background
         };
         raylib::BeginMode2D(camera);
-        raylib::ClearBackground(Color {
-            r: 0x20,
-            g: 0x20,
-            b: 0x20,
-            a: 0xff,
-        });
+        raylib::ClearBackground(colors::DARKGRAY);
         raylib::DrawRectangleRec(
             Rectangle {
                 x: canvas.x,
@@ -110,7 +106,6 @@ impl Scene for Gameplay {
 
         self.game_over = self.board.is_game_over();
 
-        // TODO: gameplay
         Ok(Action::Keep)
     }
 }

@@ -41,26 +41,24 @@ impl Scene for Pause {
         raylib::DrawRectangleRec(screen, theme.background);
 
         let font = self.font;
-        let width = raylib::GetScreenWidth() as f32;
-        let height = raylib::GetScreenHeight() as f32;
         let size = raylib::MeasureTextEx(font, rl_str!("Nanpurë"), 84.0, 2.0);
         let mut bottom = screen.y;
         let position = Vector2 {
-            x: screen.x + (width - size.x) / 2.0,
+            x: screen.x + (screen.width - size.x) / 2.0,
             y: bottom,
         };
         raylib::DrawTextEx(font, rl_str!("Nanpurë"), position, 84.0, 2.0, theme.title);
         bottom += size.y + 16.0;
         let size = raylib::MeasureTextEx(font, rl_str!("(Sudoku)"), 32.0, 1.0);
         let position = Vector2 {
-            x: screen.x + (width - size.x) / 2.0,
+            x: screen.x + (screen.width - size.x) / 2.0,
             y: bottom,
         };
         raylib::DrawTextEx(font, rl_str!("(Sudoku)"), position, 32.0, 1.0, theme.title);
         let size = raylib::MeasureTextEx(font, rl_str!("Paused"), 64.0, 2.0);
         let position = Vector2 {
-            x: screen.x + (width - size.x) / 2.0,
-            y: (height - size.y) / 2.0,
+            x: screen.x + (screen.width - size.x) / 2.0,
+            y: (screen.height - size.y) / 2.0,
         };
         raylib::DrawTextEx(
             font,

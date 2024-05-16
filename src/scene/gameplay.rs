@@ -161,6 +161,10 @@ impl Gameplay {
             self.draft = !self.draft;
         }
 
+        if raylib::IsKeyPressed(KeyboardKey::Space as c_int) {
+            self.board.set_all();
+        }
+
         let key = raylib::GetKeyPressed();
         if (key >= KeyboardKey::Zero as i32 && key <= KeyboardKey::Nine as i32)
             || (key >= KeyboardKey::Kp0 as i32 && key <= KeyboardKey::Kp9 as i32)

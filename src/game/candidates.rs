@@ -6,6 +6,15 @@ impl Candidates {
         self.0 & (1 << value) != 0
     }
 
+    pub fn get_single_value(&self) -> Option<u8> {
+        for value in 1_u8..=9 {
+            if self.0 == 1 << value {
+                return Some(value);
+            }
+        }
+        None
+    }
+
     pub fn set(&mut self, value: u8) {
         self.0 |= 1 << value;
     }

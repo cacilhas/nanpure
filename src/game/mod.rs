@@ -160,6 +160,15 @@ impl Game {
         }
     }
 
+    pub fn set_all(&mut self) {
+        for (_, (candidates, value)) in self.0.query_mut::<With<(&Candidates, &mut Value), &Cell>>()
+        {
+            if let Some(candidate) = candidates.get_single_value() {
+                value.insert(candidate);
+            }
+        }
+    }
+
     pub fn toggle_candidate(&mut self, x: u8, y: u8, value: u8) {
         for (_, (&position, current)) in self.0.query_mut::<With<(&Position, &Value), &Cell>>() {
             if position.x == x && position.y == y {

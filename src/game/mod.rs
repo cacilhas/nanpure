@@ -161,11 +161,31 @@ impl Game {
     }
 
     pub fn set_all(&mut self) {
-        for (_, (candidates, value)) in self.0.query_mut::<With<(&Candidates, &mut Value), &Cell>>()
+        let mut x: u8 = 0;
+        let mut y: u8 = 0;
+        let mut found: Option<u8> = None;
+        for (_, (&position, candidates, value)) in self
+            .0
+            .query_mut::<With<(&Position, &Candidates, &Value), &Cell>>()
         {
-            if let Some(candidate) = candidates.get_single_value() {
-                value.insert(candidate);
+            if value.is_none() {
+                if let Some(candidate) = candidates.get_single_value() {
+                    x = position.x;
+                    y = position.y;
+                    let _ = found.insert(candidate);
+                    break;
+                }
             }
+        }
+        if found.is_some() {
+            let mut res = SetCell { x, y, value: found };
+            for (_, (&position, candidates, value)) in self
+                .0
+                .query_mut::<With<(&Position, &mut Candidates, &mut Value), &Cell>>()
+            {
+                set_cell_system(position, candidates, value, &mut res);
+            }
+            self.set_all();
         }
     }
 

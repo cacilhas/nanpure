@@ -1,7 +1,8 @@
 use std::os::raw::c_int;
 
-use super::{action::Action, pause::Pause, Scene};
+use super::{action::Action, helpers, pause::Pause, Scene};
 use crate::{
+    colors,
     game::{Game, Level, Position},
     themes::{self, Theme, ThemeContent},
 };
@@ -38,21 +39,18 @@ impl Scene for Gameplay {
             zoom: 1.0,
         };
         let theme = self.get_theme();
-        let screen = Vector2 {
-            x: raylib::GetScreenWidth() as f32,
-            y: raylib::GetScreenHeight() as f32,
-        };
+        let screen = helpers::get_screen();
         let canvas = Rectangle {
-            x: 0.0,
-            y: 0.0,
-            width: screen.x,
-            height: screen.y - 48.0,
+            x: screen.x,
+            y: screen.y,
+            width: screen.width,
+            height: screen.height - 48.0,
         };
         let info = Rectangle {
-            x: 12.0,
-            y: canvas.height,
-            width: screen.x - 24.0,
-            height: screen.y - canvas.height,
+            x: 12.0 + screen.x,
+            y: screen.y + canvas.height,
+            width: screen.width - 24.0,
+            height: screen.height - canvas.height,
         };
         let background = if self.game_over {
             theme.title
@@ -60,7 +58,16 @@ impl Scene for Gameplay {
             theme.background
         };
         raylib::BeginMode2D(camera);
-        raylib::ClearBackground(background);
+        raylib::ClearBackground(colors::DARKGRAY);
+        raylib::DrawRectangleRec(
+            Rectangle {
+                x: canvas.x,
+                y: canvas.y,
+                width: canvas.width,
+                height: canvas.height + info.height,
+            },
+            background,
+        );
 
         if raylib::IsWindowFocused() || self.game_over {
             if !self.game_over {
@@ -82,7 +89,6 @@ impl Scene for Gameplay {
 
         self.game_over = self.board.is_game_over();
 
-        // TODO: gameplay
         Ok(Action::Keep)
     }
 }
@@ -178,8 +184,8 @@ impl Gameplay {
     unsafe fn draw_player(&self, canvas: Rectangle) {
         let width = canvas.width / 9.0;
         let height = canvas.height / 9.0;
-        let x = (canvas.x + self.player.x as f32) * width;
-        let y = (canvas.y + self.player.y as f32) * height;
+        let x = canvas.x + self.player.x as f32 * width;
+        let y = canvas.y + self.player.y as f32 * height;
         let theme = self.get_theme();
         raylib::DrawRectangle(
             x as i32,

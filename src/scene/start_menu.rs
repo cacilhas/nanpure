@@ -1,7 +1,8 @@
 use std::os::raw::c_int;
 
-use super::{action::Action, gameplay::Gameplay, Scene};
+use super::{action::Action, gameplay::Gameplay, helpers, Scene};
 use crate::{
+    colors,
     fonts::get_font,
     settings::{self, Config},
     themes::{self, Theme},
@@ -44,36 +45,35 @@ impl Scene for StartMenu {
         };
         let theme = themes::get(self.theme);
         raylib::BeginMode2D(camera);
-        raylib::ClearBackground(theme.background);
+        raylib::ClearBackground(colors::DARKGRAY);
+
+        let screen = helpers::get_screen();
+        raylib::DrawRectangleRec(screen, theme.background);
 
         let font = self.font;
-        let width = raylib::GetScreenWidth() as f32;
         let size = raylib::MeasureTextEx(font, rl_str!("Nanpurë"), 84.0, 2.0);
+        let mut bottom = screen.y;
         let position = Vector2 {
-            x: (width - size.x) / 2.0,
-            y: 0.0,
+            x: screen.x + (screen.width - size.x) / 2.0,
+            y: bottom,
         };
         raylib::DrawTextEx(font, rl_str!("Nanpurë"), position, 84.0, 2.0, theme.title);
-        let bottom = size.y + 16.0;
+        bottom += size.y + 16.0;
         let size = raylib::MeasureTextEx(font, rl_str!("(Sudoku)"), 32.0, 1.0);
         let position = Vector2 {
-            x: (width - size.x) / 2.0,
+            x: screen.x + (screen.width - size.x) / 2.0,
             y: bottom,
         };
         raylib::DrawTextEx(font, rl_str!("(Sudoku)"), position, 32.0, 1.0, theme.title);
         let mouse_pos = raylib::GetMousePosition();
 
-        let bottom = bottom + size.y + 64.0;
-        let (etr_easy_bt, bottom) = self.draw_bt("1. Extremely Easy", width, bottom, mouse_pos);
-        let bottom = bottom + 12.0;
-        let (easy_bt, bottom) = self.draw_bt("2. Easy", width, bottom, mouse_pos);
-        let bottom = bottom + 12.0;
-        let (medium_bt, bottom) = self.draw_bt("3. Medium", width, bottom, mouse_pos);
-        let bottom = bottom + 12.0;
-        let (hard_bt, bottom) = self.draw_bt("4. Hard", width, bottom, mouse_pos);
-        let bottom = bottom + 12.0;
-        let (fiendish_bt, _) = self.draw_bt("5. Fiendish", width, bottom, mouse_pos);
-        let theme_bt = self.theme_bt(width, raylib::GetScreenHeight() as f32, mouse_pos);
+        let (etr_easy_bt, bottom) =
+            self.draw_bt("1. Extremely Easy", screen, bottom + 64.0, mouse_pos);
+        let (easy_bt, bottom) = self.draw_bt("2. Easy", screen, bottom + 12.0, mouse_pos);
+        let (medium_bt, bottom) = self.draw_bt("3. Medium", screen, bottom + 12.0, mouse_pos);
+        let (hard_bt, bottom) = self.draw_bt("4. Hard", screen, bottom + 12.0, mouse_pos);
+        let (fiendish_bt, _) = self.draw_bt("5. Fiendish", screen, bottom + 12.0, mouse_pos);
+        let theme_bt = self.theme_bt(screen, mouse_pos);
 
         if raylib::IsMouseButtonPressed(MouseButton::Left as c_int) {
             let mut level: u8 = 0;
@@ -138,7 +138,7 @@ impl StartMenu {
     unsafe fn draw_bt(
         &self,
         text: impl Into<String>,
-        width: f32,
+        canvas: Rectangle,
         y: f32,
         mouse_pos: Vector2,
     ) -> (Rectangle, f32) {
@@ -146,13 +146,13 @@ impl StartMenu {
         let theme = themes::get(self.theme);
         let size = raylib::MeasureTextEx(self.font, rl_str!(text), 64.0, 1.0);
         let bt = Rectangle {
-            x: 0.0,
-            y,
-            width,
+            x: canvas.x,
+            y: canvas.y + y,
+            width: canvas.width,
             height: size.y,
         };
         let position = Vector2 {
-            x: (width - size.x) / 2.0,
+            x: bt.x + (canvas.width - size.x) / 2.0,
             y: bt.y,
         };
         let tint = if raylib::CheckCollisionPointRec(mouse_pos, bt) {
@@ -162,17 +162,17 @@ impl StartMenu {
             theme.foreground
         };
         raylib::DrawTextEx(self.font, rl_str!(text), position, 64.0, 1.0, tint);
-        (bt, y + size.y)
+        (bt, canvas.y + y + size.y)
     }
 
-    unsafe fn theme_bt(&mut self, width: f32, height: f32, mouse_pos: Vector2) -> Rectangle {
+    unsafe fn theme_bt(&mut self, canvas: Rectangle, mouse_pos: Vector2) -> Rectangle {
         let mut theme = themes::get(self.theme);
         let mut text = format!(" {}", theme.r#type);
         let next = theme.next();
         let size = raylib::MeasureTextEx(self.font, rl_str!("0000000000"), 28.0, 1.0);
         let bt = Rectangle {
-            x: width - size.x - 4.0,
-            y: height - size.y - 4.0,
+            x: canvas.x + canvas.width - size.x - 4.0,
+            y: canvas.y + canvas.height - size.y - 4.0,
             width: size.x,
             height: size.y,
         };

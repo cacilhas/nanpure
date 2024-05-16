@@ -1,5 +1,6 @@
 mod action;
 mod gameplay;
+mod helpers;
 mod pause;
 mod start_menu;
 

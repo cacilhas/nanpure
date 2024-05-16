@@ -4,7 +4,7 @@ use raylib::Color;
 
 pub(super) static LIGHT: ThemeContent = ThemeContent {
     title: colors::DARKCYAN,
-    foreground: colors::DARKGRAY,
+    foreground: colors::GRAY,
     background: colors::WHEAT,
     hover_foreground: colors::BLACK,
     hover_background: colors::BEIGE,
@@ -14,7 +14,7 @@ pub(super) static LIGHT: ThemeContent = ThemeContent {
 
 pub(super) static DARK: ThemeContent = ThemeContent {
     title: colors::DARKCYAN,
-    foreground: colors::DARKGRAY,
+    foreground: colors::GRAY,
     background: colors::BLACK,
     hover_foreground: colors::WHITE,
     hover_background: colors::DARKBROWN,

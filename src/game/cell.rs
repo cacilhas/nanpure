@@ -14,5 +14,5 @@ pub static COLORS: [Color; 10] = [
     colors::INDIGO,
     colors::VIOLET,
     colors::MAGENTA,
-    colors::DARKGRAY,
+    colors::GRAY,
 ];

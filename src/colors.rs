@@ -256,13 +256,6 @@ pub const ORCHID: Color = Color {
     a: 0xff,
 };
 /// #ff00ff
-pub const FUCHSIA: Color = Color {
-    r: 0xff,
-    g: 0x00,
-    b: 0xff,
-    a: 0xff,
-};
-/// #ff00ff
 pub const MAGENTA: Color = Color {
     r: 0xff,
     g: 0x00,
@@ -955,13 +948,6 @@ pub const SILVER: Color = Color {
     b: 0xc0,
     a: 0xff,
 };
-/// #a9a9a9
-pub const DARKGRAY: Color = Color {
-    r: 0xa9,
-    g: 0xa9,
-    b: 0xa9,
-    a: 0xff,
-};
 /// #808080
 pub const GRAY: Color = Color {
     r: 0x80,
@@ -995,6 +981,13 @@ pub const DARKSLATEGRAY: Color = Color {
     r: 0x2f,
     g: 0x4f,
     b: 0x4f,
+    a: 0xff,
+};
+/// #202020
+pub const DARKGRAY: Color = Color {
+    r: 0x20,
+    g: 0x20,
+    b: 0x20,
     a: 0xff,
 };
 /// #000000

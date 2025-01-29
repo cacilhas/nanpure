@@ -350,7 +350,7 @@ mod tests {
             345678912\n\
             678912345\n\
             912345678";
-        assert_eq!(game.stringify().unwrap(), expected);
+        assert_eq!(game.stringify(), expected);
     }
 
     #[test]
@@ -369,6 +369,6 @@ mod tests {
             345678912\n\
             678912345\n\
             912345678";
-        assert_eq!(game.stringify().unwrap(), expected);
+        assert_eq!(game.stringify(), expected);
     }
 }

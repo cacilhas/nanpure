@@ -40,6 +40,10 @@ version = "0.16.0-dev"
 git = "https://github.com/bevyengine/bevy.git"
 #features = ["wav"]
 
+[dependencies.bevy_ecs]
+version = "0.16.0-dev"
+git = "https://github.com/bevyengine/bevy.git"
+
 [dependencies.log]
 version = "*"
 features = ["max_level_debug", "release_max_level_warn"]

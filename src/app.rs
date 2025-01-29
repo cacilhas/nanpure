@@ -1,7 +1,10 @@
+use std::ops::Deref;
+
 use bevy::prelude::*;
 use bevy_ecs::result::Result;
 
 use crate::consts::*;
+use crate::easy::EasyMode;
 use crate::fonts::TitleFont;
 use crate::main_menu::MainMenu;
 use crate::state::GameState;
@@ -16,6 +19,7 @@ impl Plugin for NanpurePlugin {
             .add_systems(Main, Self::setup)
             .init_state::<GameState>()
 
+            // Main menu
             .add_systems(OnEnter(GameState::MainMenu), MainMenu::spawn)
             .add_systems(OnExit(GameState::MainMenu), MainMenu::despawn)
         ;
@@ -28,7 +32,9 @@ impl NanpurePlugin {
         mut commands: Commands,
         assets: Res<AssetServer>,
     ) -> Result {
+        let easy_mode: EasyMode = false.into();
         commands.insert_resource(ClearColor(BACKGROUND_COLOR));
+        commands.insert_resource(easy_mode);
         commands.insert_resource(TitleFont::new(&assets)?);
         Ok(())
     }

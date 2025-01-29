@@ -1,5 +1,6 @@
 mod app;
 mod consts;
+mod easy;
 mod fonts;
 mod game;
 mod main_menu;

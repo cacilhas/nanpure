@@ -1,6 +1,6 @@
 [package]
 name        = "nanpure"
-version     = "0.2.3"
+version     = "0.3.0"
 authors     = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license     = "BSD-3-Clause"
 readme      = "README.md"
@@ -11,24 +11,35 @@ categories  = ["Games"]
 description = "Yet another sudoku playing game."
 edition     = "2021"
 
+[profile.dev]
+opt-level = 1
+panic = "abort"
+debug = true
+
+[profile.dev.package."*"]
+inherits = "dev"
+opt-level = 3
+
 [profile.release]
-opt-level     = "s"
+opt-level = "s"
 codegen-units = 1
 panic = "abort"
 debug = false
-lto   = true
+lto   = "thin"
 rpath = false
 strip = true
 
+[toolchain]
+channel = "nightly"
+
 [dependencies]
-color-eyre = "0.6"
-eyre = "0.6"
-hecs = "0.10"
-raylib-ffi = "5.0"
-static_init = "1.0"
-toml = "0.8"
 walkdir = "2.5"
 
-[dependencies.serde]
-version = "1.0"
-features = ["derive"]
+[dependencies.bevy]
+version = "0.16.0-dev"
+git = "https://github.com/bevyengine/bevy.git"
+#features = ["wav"]
+
+[dependencies.log]
+version = "*"
+features = ["max_level_debug", "release_max_level_warn"]

@@ -1,3 +1,5 @@
+use bevy::input::ButtonState;
+use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 
 use crate::consts::*;
@@ -23,8 +25,9 @@ impl MainMenu {
             .insert(TextLayout::new_with_justify(JustifyText::Center))
             .insert(TextColor(TITLE_COLOR))
             .insert(Node {
-                position_type: PositionType::Relative,
+                position_type: PositionType::Absolute,
                 justify_self: JustifySelf::Center,
+                top: Val::Percent(5.0),
                 ..default()
             })
         ;
@@ -36,6 +39,17 @@ impl MainMenu {
     ) {
         if let Ok(entity) = query.get_single() {
             commands.entity(entity).despawn();
+        }
+    }
+
+    pub fn check_quit(
+        mut reader: EventReader<KeyboardInput>,
+        mut quit: EventWriter<AppExit>,
+    ) {
+        for evt in reader.read() {
+            if evt.state == ButtonState::Released && evt.logical_key == Key::Escape {
+                quit.send(AppExit::Success);
+            }
         }
     }
 }

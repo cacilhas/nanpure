@@ -35,7 +35,7 @@ walkdir = "2.5"
 [dependencies.bevy]
 version = "0.16.0-dev"
 git = "https://github.com/bevyengine/bevy.git"
-#features = ["wav"]
+features = ["multi_threaded", "wav"]
 
 [dependencies.bevy_ecs]
 version = "0.16.0-dev"

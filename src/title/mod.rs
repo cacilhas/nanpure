@@ -1,3 +1,4 @@
+mod keybindings;
 mod title_scene;
 mod title_scene_plugin;
 

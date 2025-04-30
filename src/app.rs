@@ -1,8 +1,8 @@
+use std::borrow::BorrowMut;
+use std::sync::LazyLock;
+
 use bevy::app::Plugin;
-use bevy::input::{
-    keyboard::KeyboardInput,
-    ButtonState,
-};
+use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
 use bevy::render::camera::SubCameraView;
 
@@ -34,12 +34,24 @@ pub fn exit_system(
     mut keyboard: EventReader<KeyboardInput>,
     mut exit: EventWriter<AppExit>,
 ) {
+    let mut key_q = false;
     for (input, _) in keyboard.par_read() {
-        if input.state == ButtonState::Pressed && input.key_code == KeyCode::KeyQ {
-            exit.write(AppExit::Success);
+        if input.key_code == KeyCode::ControlLeft || input.key_code == KeyCode::ControlRight {
+            unsafe {
+                CTRL[0] = input.state.is_pressed();
+            }
+        }
+
+        else if input.state.is_pressed() && input.key_code == KeyCode::KeyQ {
+            key_q = true;
         }
     }
+    if unsafe { CTRL[0] } && key_q {
+        exit.write(AppExit::Success);
+    }
 }
+
+static mut CTRL: [bool; 1] = [false];
 
 pub fn setup_camera(mut commands: Commands) {
     let size = UVec2::new(RESOLUTION.x as u32, RESOLUTION.y as u32);

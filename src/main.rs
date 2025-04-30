@@ -7,7 +7,6 @@ use bevy::window::{
 
 mod app;
 mod consts;
-mod exit;
 mod fonts;
 
 fn main() {

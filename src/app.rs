@@ -9,7 +9,7 @@ use bevy::render::camera::SubCameraView;
 use crate::consts::RESOLUTION;
 use crate::load::LoadPlugin;
 use crate::states::GameState;
-use crate::title_scene::TitleScenePlugin;
+use crate::title::TitleScenePlugin;
 
 #[derive(Clone, Copy, Debug)]
 pub struct NanpureApp;

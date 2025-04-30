@@ -10,7 +10,7 @@ mod consts;
 mod fonts;
 mod load;
 mod states;
-mod title_scene;
+mod title;
 
 fn main() {
     App::new()

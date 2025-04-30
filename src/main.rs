@@ -5,12 +5,14 @@ use bevy::window::{
     WindowTheme,
 };
 
+mod app;
 mod consts;
 mod exit;
+mod fonts;
 
 fn main() {
     App::new()
-        .add_plugins(
+        .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
                     title: consts::TITLE.into(),
@@ -28,8 +30,8 @@ fn main() {
                 }),
                 close_when_requested: true,
                 ..default()
-            })
-        )
-        .add_systems(Update, exit::exit_system)
+            }),
+            app::NanpureApp,
+        ))
         .run();
 }

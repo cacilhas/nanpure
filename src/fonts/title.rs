@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_ecs::result::Result;
+use bevy::ecs::error::Result;
 
 #[derive(Clone, Debug, Deref, Resource)]
 pub struct TitleFont(Handle<Font>);
@@ -10,5 +10,14 @@ impl TitleFont {
         let font = include_bytes!("../../assets/title.ttf");
         let font = Font::try_from_bytes(font.to_vec())?;
         Ok(Self(assets.add(font)))
+    }
+
+    pub fn init(
+        mut commands: Commands,
+        assets: Res<AssetServer>,
+    ) -> Result<()> {
+        let font = Self::new(&assets)?;
+        commands.insert_resource(font);
+        Ok(())
     }
 }

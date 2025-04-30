@@ -7,7 +7,7 @@ pub fn keybindings_system(
     mut exit: EventWriter<AppExit>,
 ) {
     for (input, _) in keyboard.par_read() {
-        if input.state.is_pressed() && input.logical_key == Key::Escape {
+        if input.state.is_pressed() && !input.repeat && input.logical_key == Key::Escape {
             exit.write(AppExit::Success);
         }
     }

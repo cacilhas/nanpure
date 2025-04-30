@@ -4,7 +4,9 @@ use bevy::input::{
     ButtonState,
 };
 use bevy::prelude::*;
+use bevy::render::camera::SubCameraView;
 
+use crate::consts::RESOLUTION;
 use crate::fonts::TitleFont;
 
 pub struct NanpureApp;
@@ -14,6 +16,7 @@ impl Plugin for NanpureApp {
         app
             .add_systems(PreStartup, TitleFont::init)
             .add_systems(Startup, background_system)
+            .add_systems(Startup, setup_camera)
             .add_systems(Update, exit_system);
     }
 }
@@ -31,4 +34,20 @@ pub fn exit_system(
             exit.write(AppExit::Success);
         }
     }
+}
+
+pub fn setup_camera(mut commands: Commands) {
+    let size = UVec2::new(RESOLUTION.x as u32, RESOLUTION.y as u32);
+    commands.spawn((
+        Camera2d,
+        Camera {
+            sub_camera_view: Some(SubCameraView {
+                full_size: size,
+                offset: Vec2::new(0.0, 0.0),
+                size,
+            }),
+            order: 1,
+            ..default()
+        },
+    ));
 }

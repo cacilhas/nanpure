@@ -2,7 +2,7 @@ use std::borrow::BorrowMut;
 use std::sync::LazyLock;
 
 use bevy::app::Plugin;
-use bevy::input::keyboard::KeyboardInput;
+use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 use bevy::render::camera::SubCameraView;
 
@@ -36,14 +36,19 @@ pub fn exit_system(
 ) {
     let mut key_q = false;
     for (input, _) in keyboard.par_read() {
-        if input.key_code == KeyCode::ControlLeft || input.key_code == KeyCode::ControlRight {
+        if input.logical_key == Key::Control {
             unsafe {
                 CTRL[0] = input.state.is_pressed();
             }
         }
 
-        else if input.state.is_pressed() && input.key_code == KeyCode::KeyQ {
-            key_q = true;
+        else if input.state.is_pressed() {
+            if let Some(text) = &input.text {
+                let text = text.as_str();
+                if text == "q" || text == "Q" {
+                    key_q = true;
+                }
+            }
         }
     }
     if unsafe { CTRL[0] } && key_q {
@@ -51,6 +56,7 @@ pub fn exit_system(
     }
 }
 
+// TODO: use lock
 static mut CTRL: [bool; 1] = [false];
 
 pub fn setup_camera(mut commands: Commands) {

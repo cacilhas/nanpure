@@ -20,4 +20,8 @@ impl TitleFont {
         commands.insert_resource(font);
         Ok(())
     }
+
+    pub fn font(&self) -> &Handle<Font> {
+        &self.0
+    }
 }

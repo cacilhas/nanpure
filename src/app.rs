@@ -8,6 +8,7 @@ use bevy::render::camera::SubCameraView;
 
 use crate::consts::RESOLUTION;
 use crate::fonts::TitleFont;
+use crate::title_scene::load_title_scene;
 
 pub struct NanpureApp;
 
@@ -17,6 +18,7 @@ impl Plugin for NanpureApp {
             .add_systems(PreStartup, TitleFont::init)
             .add_systems(Startup, background_system)
             .add_systems(Startup, setup_camera)
+            .add_systems(Startup, load_title_scene)
             .add_systems(Update, exit_system);
     }
 }

@@ -8,6 +8,8 @@ use bevy::window::{
 mod app;
 mod consts;
 mod fonts;
+mod load;
+mod states;
 mod title_scene;
 
 fn main() {

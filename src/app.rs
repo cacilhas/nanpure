@@ -7,18 +7,21 @@ use bevy::prelude::*;
 use bevy::render::camera::SubCameraView;
 
 use crate::consts::RESOLUTION;
-use crate::fonts::TitleFont;
-use crate::title_scene::load_title_scene;
+use crate::load::LoadPlugin;
+use crate::states::GameState;
+use crate::title_scene::TitleScenePlugin;
 
+#[derive(Clone, Copy, Debug)]
 pub struct NanpureApp;
 
 impl Plugin for NanpureApp {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(PreStartup, TitleFont::init)
+            .init_state::<GameState>()
+            .add_plugins(LoadPlugin)
+            .add_plugins(TitleScenePlugin)
             .add_systems(Startup, background_system)
             .add_systems(Startup, setup_camera)
-            .add_systems(Startup, load_title_scene)
             .add_systems(Update, exit_system);
     }
 }

@@ -12,15 +12,6 @@ impl TitleFont {
         Ok(Self(assets.add(font)))
     }
 
-    pub fn init(
-        mut commands: Commands,
-        assets: Res<AssetServer>,
-    ) -> Result<()> {
-        let font = Self::new(&assets)?;
-        commands.insert_resource(font);
-        Ok(())
-    }
-
     pub fn font(&self) -> &Handle<Font> {
         &self.0
     }

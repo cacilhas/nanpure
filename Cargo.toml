@@ -30,16 +30,13 @@ rpath = false
 strip = true
 
 [dependencies]
+bevy_ecs = "0.16.0"
+bevy_state = "0.16.0"
 walkdir = "2.5"
 
 [dependencies.bevy]
-version = "0.16.0-dev"
-git = "https://github.com/bevyengine/bevy.git"
+version = "0.16.0"
 features = ["multi_threaded", "wav"]
-
-[dependencies.bevy_ecs]
-version = "0.16.0-dev"
-git = "https://github.com/bevyengine/bevy.git"
 
 [dependencies.log]
 version = "*"

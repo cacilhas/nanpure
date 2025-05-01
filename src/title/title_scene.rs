@@ -35,13 +35,12 @@ impl TitleScene {
         ));
 
         let mut y = 100. / 6.;
-        for &level in &[Level::ExtremelyEasy, Level::Easy, Level::Medium, Level::Hard, Level::Fiendish] {
+        for level in Level::levels() {
             let level_number: u8 = level.into();
-            let text = format!("{}. {}", level_number, level.to_string());
             commands.spawn((
                 TitleScene,
                 level,
-                Text::new(text),
+                Text::new(format!("{}. {}", level_number, level.to_string())),
                 TextFont {
                     font: regular_font.font().clone_weak(),
                     font_size: 32.0,

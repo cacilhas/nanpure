@@ -9,6 +9,19 @@ pub enum Level {
     Fiendish,
 }
 
+impl Level {
+
+    pub fn levels() -> [Self; 5] {
+        [
+            Level::ExtremelyEasy,
+            Level::Easy,
+            Level::Medium,
+            Level::Hard,
+            Level::Fiendish,
+        ]
+    }
+}
+
 impl From<u8> for Level {
     fn from(value: u8) -> Self {
         match value {

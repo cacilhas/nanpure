@@ -1,9 +1,11 @@
 use bevy::ecs::error::Result;
+use bevy::input::mouse::MouseButtonInput;
 use bevy::prelude::*;
 
 use crate::consts::{SELECTED_COLOR, TITLE, TITLE_COLOR, UNSELECTED_COLOR};
 use crate::fonts::{RegularFont, TitleFont};
 use crate::game::Level;
+use crate::states::GameState;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
 pub struct TitleScene;
@@ -71,17 +73,32 @@ impl TitleScene {
     }
 
     pub fn update(
+        mut commands: Commands,
         mut level_query: Query<(&Level, &Transform, &ComputedNode, &mut TextColor, &mut BackgroundColor), With<TitleScene>>,
         window_query: Query<&Window>,
+        mut mouse_input: EventReader<MouseButtonInput>,
+        mut next_state: ResMut<NextState<GameState>>,
     ) -> Result<()> {
         let window = window_query.single()?;
         if let Some(mouse) = window.cursor_position() {
             let y = mouse.y;
-            for (_, transform, node, mut color, mut bg) in &mut level_query {
+            for (&level, transform, node, mut color, mut bg) in &mut level_query {
                 let half_size = node.size().y / 2.0;
                 if y > transform.translation.y - half_size && y < transform.translation.y + half_size {
                     color.0 = SELECTED_COLOR.clone();
-                    bg.0 = Color::Srgba(Srgba { red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0 })
+                    bg.0 = Color::Srgba(Srgba { red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0 });
+
+                    for event in mouse_input.read() {
+                        if event.button == MouseButton::Left {
+                            next_state.set(GameState::Playing);
+                            commands.spawn((
+                                // TODO: gameplay object
+                                level,
+                            ));
+                            return Ok(());
+                        }
+                    }
+
                 } else {
                     color.0 = UNSELECTED_COLOR.clone();
                     bg.0 = Color::Srgba(Srgba { red: 1.0, green: 1.0, blue: 1.0, alpha: 0.0 })

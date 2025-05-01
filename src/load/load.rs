@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::ecs::error::Result;
 
-use crate::fonts::TitleFont;
+use crate::fonts::{RegularFont, TitleFont};
 use crate::states::GameState;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
@@ -14,6 +14,10 @@ impl Load {
     ) -> Result<()> {
         let font = TitleFont::new(&assets)?;
         commands.insert_resource(font);
+
+        let font = RegularFont::new(&assets)?;
+        commands.insert_resource(font);
+
         Ok(())
     }
 

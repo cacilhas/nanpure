@@ -1,7 +1,9 @@
+use bevy::ecs::error::Result;
 use bevy::prelude::*;
 
-use crate::consts::{TITLE, TITLE_COLOR};
-use crate::fonts::TitleFont;
+use crate::consts::{SELECTED_COLOR, TITLE, TITLE_COLOR, UNSELECTED_COLOR};
+use crate::fonts::{RegularFont, TitleFont};
+use crate::game::Level;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
 pub struct TitleScene;
@@ -9,8 +11,10 @@ pub struct TitleScene;
 impl TitleScene {
     pub fn load_title_scene(
         mut commands: Commands,
+        regular_font: Res<RegularFont>,
         title_font: Res<TitleFont>,
     ) {
+        // Title Label
         commands.spawn((
             TitleScene,
             Text::new(TITLE.to_string()),
@@ -29,6 +33,33 @@ impl TitleScene {
                 ..default()
             },
         ));
+
+        let mut y = 100. / 6.;
+        for &level in &[Level::ExtremelyEasy, Level::Easy, Level::Medium, Level::Hard, Level::Fiendish] {
+            let level_number: u8 = level.into();
+            let text = format!("{}. {}", level_number, level.to_string());
+            commands.spawn((
+                TitleScene,
+                level,
+                Text::new(text),
+                TextFont {
+                    font: regular_font.font().clone_weak(),
+                    font_size: 32.0,
+                    ..default()
+                },
+                TextColor(UNSELECTED_COLOR.clone()),
+                TextLayout::new_with_justify(JustifyText::Center),
+                Node {
+                    position_type: PositionType::Absolute,
+                    align_items: AlignItems::Center,
+                    top: Val::Percent(y),
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(12.0),
+                    ..default()
+                },
+            ));
+            y += 100. / 6.;
+        }
     }
 
     pub fn unload_title_scene(
@@ -38,5 +69,26 @@ impl TitleScene {
         for entity in &title_scene {
             commands.entity(entity).despawn();
         }
+    }
+
+    pub fn update(
+        mut level_query: Query<(&Level, &Transform, &ComputedNode, &mut TextColor, &mut BackgroundColor), With<TitleScene>>,
+        window_query: Query<&Window>,
+    ) -> Result<()> {
+        let window = window_query.single()?;
+        if let Some(mouse) = window.cursor_position() {
+            let y = mouse.y;
+            for (_, transform, node, mut color, mut bg) in &mut level_query {
+                let half_size = node.size().y / 2.0;
+                if y > transform.translation.y - half_size && y < transform.translation.y + half_size {
+                    color.0 = SELECTED_COLOR.clone();
+                    bg.0 = Color::Srgba(Srgba { red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0 })
+                } else {
+                    color.0 = UNSELECTED_COLOR.clone();
+                    bg.0 = Color::Srgba(Srgba { red: 1.0, green: 1.0, blue: 1.0, alpha: 0.0 })
+                }
+            }
+        }
+        Ok(())
     }
 }

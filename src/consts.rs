@@ -6,3 +6,6 @@ pub const TITLE: &str = "Kodumaro Nanpūrë";
 
 pub const BACKGROUND_COLOR: Color = Color::srgb_u8(0xf5, 0xde, 0xb3);
 pub const TITLE_COLOR: Color = Color::srgb_u8(0x00, 0x8b, 0x8b);
+
+pub const UNSELECTED_COLOR: Color = Color::srgb_u8(0x8b, 0x8b, 0x8b);
+pub const SELECTED_COLOR: Color = Color::srgb_u8(0x00, 0x00, 0x00);

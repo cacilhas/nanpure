@@ -4,17 +4,21 @@ use bevy::window::{
     PresentMode,
     WindowTheme,
 };
+use bevy_rand::plugin::EntropyPlugin;
+use bevy_rand::prelude::WyRand;
 
 mod app;
 mod consts;
 mod fonts;
+mod game;
+mod kennett;
 mod load;
 mod states;
 mod title;
 
 fn main() {
     App::new()
-        .add_plugins((
+        .add_plugins(
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
                     title: consts::TITLE.into(),
@@ -32,8 +36,9 @@ fn main() {
                 }),
                 close_when_requested: true,
                 ..default()
-            }),
-            app::NanpureApp,
-        ))
+            })
+        )
+        .add_plugins(EntropyPlugin::<WyRand>::default())
+        .add_plugins(app::NanpureApp)
         .run();
 }

@@ -30,13 +30,17 @@ rpath = false
 strip = true
 
 [dependencies]
-bevy_ecs = "0.16.0"
-bevy_state = "0.16.0"
+bevy_ecs = "0.16"
+bevy_state = "0.16"
 walkdir = "2.5"
 
 [dependencies.bevy]
-version = "0.16.0"
+version = "0.16"
 features = ["multi_threaded", "wav"]
+
+[dependencies.bevy_rand]
+version = "0.10"
+features = ["wyrand"]
 
 [dependencies.log]
 version = "*"

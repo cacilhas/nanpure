@@ -21,6 +21,11 @@ impl Plugin for TitleScenePlugin {
             .add_systems(
                 Update,
                 keybindings_system.run_if(in_state(GameState::Title)),
-            );
+            )
+            .add_systems(
+                Update,
+                TitleScene::update.run_if(in_state(GameState::Title)),
+            )
+        ;
     }
 }

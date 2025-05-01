@@ -19,7 +19,8 @@ impl Plugin for NanpureApp {
             .add_plugins(TitleScenePlugin)
             .add_systems(Startup, background_system)
             .add_systems(Startup, setup_camera)
-            .add_systems(Update, exit_system);
+            .add_systems(Update, exit_system)
+        ;
     }
 }
 

@@ -17,6 +17,7 @@ impl Plugin for LoadPlugin {
             .add_systems(
                 Update,
                 Load::load_title.run_if(in_state(GameState::Loading)),
-            );
+            )
+        ;
     }
 }

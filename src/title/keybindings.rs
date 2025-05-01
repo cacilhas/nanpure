@@ -13,14 +13,15 @@ pub fn keybindings_system(
         if input.state.is_pressed() {
             if !input.repeat && input.logical_key == Key::Escape {
                 exit.write(AppExit::Success);
+                return;
             }
 
-            for num in 1..=5 {
+            'levels: for num in 1..=5 {
                 if let Some(text) = &input.text {
                     if text.to_string() == num.to_string() {
                         let level: Level = (num as u8).into();
                         event_writer.write(NanpureEvent::StartGame(level));
-                        break;
+                        break 'levels;
                     }
                 }
             }

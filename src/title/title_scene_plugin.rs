@@ -26,6 +26,10 @@ impl Plugin for TitleScenePlugin {
                 Update,
                 TitleScene::update.run_if(in_state(GameState::Title)),
             )
+            .add_systems(
+                Update,
+                TitleScene::event_handle.run_if(in_state(GameState::Title)),
+            )
         ;
     }
 }

@@ -9,6 +9,7 @@ use bevy_rand::prelude::WyRand;
 
 mod app;
 mod consts;
+mod events;
 mod fonts;
 mod game;
 mod kennett;

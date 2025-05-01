@@ -4,6 +4,7 @@ use bevy::prelude::*;
 use bevy::render::camera::SubCameraView;
 
 use crate::consts::RESOLUTION;
+use crate::events::NanpureEvent;
 use crate::load::LoadPlugin;
 use crate::states::GameState;
 use crate::title::TitleScenePlugin;
@@ -14,6 +15,7 @@ pub struct NanpureApp;
 impl Plugin for NanpureApp {
     fn build(&self, app: &mut App) {
         app
+            .add_event::<NanpureEvent>()
             .init_state::<GameState>()
             .add_plugins(LoadPlugin)
             .add_plugins(TitleScenePlugin)

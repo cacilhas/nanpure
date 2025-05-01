@@ -3,6 +3,7 @@ use bevy::input::mouse::MouseButtonInput;
 use bevy::prelude::*;
 
 use crate::consts::{SELECTED_COLOR, TITLE, TITLE_COLOR, UNSELECTED_COLOR};
+use crate::events::NanpureEvent;
 use crate::fonts::{RegularFont, TitleFont};
 use crate::game::Level;
 use crate::states::GameState;
@@ -73,11 +74,10 @@ impl TitleScene {
     }
 
     pub fn update(
-        mut commands: Commands,
         mut level_query: Query<(&Level, &Transform, &ComputedNode, &mut TextColor, &mut BackgroundColor), With<TitleScene>>,
         window_query: Query<&Window>,
         mut mouse_input: EventReader<MouseButtonInput>,
-        mut next_state: ResMut<NextState<GameState>>,
+        mut event_writer: EventWriter<NanpureEvent>,
     ) -> Result<()> {
         let window = window_query.single()?;
         if let Some(mouse) = window.cursor_position() {
@@ -90,11 +90,7 @@ impl TitleScene {
 
                     for event in mouse_input.read() {
                         if event.button == MouseButton::Left {
-                            next_state.set(GameState::Playing);
-                            commands.spawn((
-                                // TODO: gameplay object
-                                level,
-                            ));
+                            event_writer.write(NanpureEvent::StartGame(level));
                             return Ok(());
                         }
                     }
@@ -106,5 +102,23 @@ impl TitleScene {
             }
         }
         Ok(())
+    }
+
+    pub fn event_handle(
+        mut commands: Commands,
+        mut events: EventReader<NanpureEvent>,
+        mut next_state: ResMut<NextState<GameState>>,
+    ) {
+        for event in events.read() {
+            match event {
+                NanpureEvent::StartGame(level) => {
+                    commands.spawn((
+                        // TODO: Gameplay object
+                        *level,
+                    ));
+                    next_state.set(GameState::Playing);
+                }
+            }
+        }
     }
 }

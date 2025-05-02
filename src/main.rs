@@ -12,6 +12,7 @@ mod consts;
 mod events;
 mod fonts;
 mod game;
+mod gameplay;
 mod kennett;
 mod load;
 mod states;

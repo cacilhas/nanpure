@@ -6,6 +6,7 @@ use crate::consts::{SELECTED_COLOR, TITLE, TITLE_COLOR, UNSELECTED_COLOR};
 use crate::events::NanpureEvent;
 use crate::fonts::{RegularFont, TitleFont};
 use crate::game::Level;
+use crate::gameplay::Gameplay;
 use crate::states::GameState;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
@@ -19,7 +20,7 @@ impl TitleScene {
     ) {
         // Title Label
         commands.spawn((
-            TitleScene,
+            Self,
             Text::new(TITLE.to_string()),
             TextFont {
                 font: title_font.font().clone_weak(),
@@ -41,7 +42,7 @@ impl TitleScene {
         for level in Level::levels() {
             let level_number: u8 = level.into();
             commands.spawn((
-                TitleScene,
+                Self,
                 level,
                 Text::new(format!("{}. {}", level_number, level.to_string())),
                 TextFont {
@@ -66,15 +67,15 @@ impl TitleScene {
 
     pub fn unload_title_scene(
         mut commands: Commands,
-        title_scene: Query<Entity, With<TitleScene>>,
+        entities: Query<Entity, With<Self>>,
     ) {
-        for entity in &title_scene {
+        for entity in &entities {
             commands.entity(entity).despawn();
         }
     }
 
     pub fn update(
-        mut level_query: Query<(&Level, &Transform, &ComputedNode, &mut TextColor, &mut BackgroundColor), With<TitleScene>>,
+        mut level_query: Query<(&Level, &Transform, &ComputedNode, &mut TextColor, &mut BackgroundColor), With<Self>>,
         window_query: Query<&Window>,
         mut mouse_input: EventReader<MouseButtonInput>,
         mut event_writer: EventWriter<NanpureEvent>,
@@ -113,7 +114,7 @@ impl TitleScene {
             match event {
                 NanpureEvent::StartGame(level) => {
                     commands.spawn((
-                        // TODO: Gameplay object
+                        Gameplay,
                         *level,
                     ));
                     next_state.set(GameState::Playing);

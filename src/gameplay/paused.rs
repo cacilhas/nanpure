@@ -1,4 +1,4 @@
 use bevy::prelude::*;
 
-#[derive(Debug, Component)]
+#[derive(Debug, Resource)]
 pub struct Paused(pub bool);

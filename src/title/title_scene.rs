@@ -6,7 +6,7 @@ use crate::consts::{SELECTED_COLOR, TITLE, TITLE_COLOR, UNSELECTED_COLOR};
 use crate::events::NanpureEvent;
 use crate::fonts::{RegularFont, TitleFont};
 use crate::game::Level;
-use crate::gameplay::Gameplay;
+use crate::gameplay::{Gameplay, Paused};
 use crate::states::GameState;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
@@ -109,11 +109,13 @@ impl TitleScene {
         mut commands: Commands,
         mut events: EventReader<NanpureEvent>,
         mut next_state: ResMut<NextState<GameState>>,
+        mut paused: ResMut<Paused>,
     ) {
         for event in events.read() {
             match event {
                 NanpureEvent::StartGame(level) => {
                     commands.insert_resource(*level);
+                    paused.0 = false;
                     next_state.set(GameState::Playing);
                 }
             }

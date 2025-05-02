@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy::ecs::error::Result;
 
 use crate::fonts::{RegularFont, TitleFont};
+use crate::gameplay::Paused;
 use crate::states::GameState;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
@@ -17,6 +18,8 @@ impl Load {
 
         let font = RegularFont::new(&assets)?;
         commands.insert_resource(font);
+
+        commands.insert_resource(Paused(false));
 
         Ok(())
     }

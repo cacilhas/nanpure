@@ -15,16 +15,12 @@ impl Plugin for GameplayPlugin {
                 Gameplay::load_gameplay,
             )
             .add_systems(
-                OnEnter(GameState::Playing),
-                Gameplay::must_unpause,
+                Update,
+                Gameplay::must_unpause.run_if(in_state(GameState::Playing)),
             )
             .add_systems(
                 OnExit(GameState::Playing),
-                Gameplay::unload_gameplay,
-            )
-            .add_systems(
-                OnExit(GameState::Playing),
-                Gameplay::must_pause,
+                Gameplay::unload_or_pause,
             )
         ;
     }

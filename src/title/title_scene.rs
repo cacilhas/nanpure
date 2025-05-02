@@ -113,10 +113,7 @@ impl TitleScene {
         for event in events.read() {
             match event {
                 NanpureEvent::StartGame(level) => {
-                    commands.spawn((
-                        Gameplay,
-                        *level,
-                    ));
+                    commands.insert_resource(*level);
                     next_state.set(GameState::Playing);
                 }
             }

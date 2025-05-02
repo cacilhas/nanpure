@@ -12,9 +12,9 @@ pub struct Gameplay;
 impl Gameplay {
     pub fn load_gameplay(
         mut commands: Commands,
-        level_query: Query<&Level, With<Self>>,
         paused_query: Query<&Paused, With<Self>>,
         paused_clean_query: Query<Entity, With<Paused>>,
+        level: Res<Level>,
     ) -> Result<()> {
         if paused_query.single().unwrap_or_else(|_| &Paused(false)).0 {
             // Do NOT reload gameplay when unpausing
@@ -26,9 +26,7 @@ impl Gameplay {
             commands.entity(entity).despawn();
         }
 
-        let level = level_query.single()?;
         // TODO: create game board
-
         // TODO: spawn board
         commands.spawn((Paused(false), Self));
 
@@ -64,6 +62,7 @@ impl Gameplay {
             return;
         }
 
+        commands.remove_resource::<Level>();
         for entity in &entities {
             commands.entity(entity).despawn();
         }

@@ -1,6 +1,6 @@
-use bevy_ecs::component::Component;
+use bevy_ecs::{component::Component, resource::Resource};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Component)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Component, Resource)]
 pub enum Level {
     ExtremelyEasy = 1,
     Easy,

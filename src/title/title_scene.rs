@@ -4,7 +4,7 @@ use bevy::prelude::*;
 
 use crate::consts::{SELECTED_COLOR, TITLE, TITLE_COLOR, UNSELECTED_COLOR};
 use crate::events::NanpureEvent;
-use crate::fonts::{RegularFont, TitleFont};
+use crate::fonts::TitleFont;
 use crate::game::Level;
 use crate::gameplay::Paused;
 use crate::states::GameState;

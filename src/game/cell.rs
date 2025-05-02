@@ -104,8 +104,8 @@ impl Cell {
         commands.spawn((
             BoardCell,
             Gameplay,
-            Mesh2d(shapes.cell.clone()),
-            MeshMaterial2d(colors.get(value as usize).clone()),
+            Mesh2d(shapes.cell.clone_weak()),
+            MeshMaterial2d(colors.get(value as usize).clone_weak()),
             Transform::from_xyz(x, y, 1.0),
         ));
     }
@@ -126,8 +126,8 @@ impl Cell {
             commands.spawn((
                 BoardCell,
                 Gameplay,
-                Mesh2d(shape.clone()),
-                MeshMaterial2d(color.clone()),
+                Mesh2d(shape.clone_weak()),
+                MeshMaterial2d(color.clone_weak()),
                 Transform::from_xyz(ax, ay, 1.0),
             ));
         }

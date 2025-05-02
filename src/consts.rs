@@ -1,12 +1,14 @@
 use bevy::prelude::*;
 use bevy::math::Vec2;
 
+pub const MAGICAL_AJUSTMENT_NUMBER: f32 = 32.0;
+
 pub const CELL_SIZE: f32 = 90.0;
 pub const CANDIDATE_SIZE: f32 = CELL_SIZE / 3.0;
 
 pub const RESOLUTION: Vec2 = Vec2 {
     x: CELL_SIZE * 10.0 + 10.0,
-    y: CELL_SIZE * 10.0 + 42.0,
+    y: CELL_SIZE * 10.0 + 10.0 + MAGICAL_AJUSTMENT_NUMBER,
 };
 pub const TITLE: &str = "Kodumaro Nanpūrë";
 

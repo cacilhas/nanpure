@@ -1,7 +1,8 @@
+use bevy::color::palettes::css::CORNFLOWER_BLUE;
 use bevy::prelude::*;
 use bevy::ecs::error::Result;
 
-use crate::consts::{CANDIDATE_SIZE, CELL_SIZE};
+use crate::consts::{BACKGROUND_COLOR, CANDIDATE_SIZE, CELL_SIZE};
 use crate::fonts::{RegularFont, TitleFont};
 use crate::game::{Colors, Shapes};
 use crate::gameplay::Paused;
@@ -27,8 +28,11 @@ impl Load {
 
         let cell_shapes = Shapes {
             rect: meshes.add(Rectangle::new(CELL_SIZE, CELL_SIZE)),
+            full_bg_rect: meshes.add(Rectangle::new(CELL_SIZE * 9.5, CELL_SIZE * 9.5)),
             cell: meshes.add(Circle::new(CELL_SIZE / 2.0 - 4.0)),
             cell_candidate: meshes.add(Circle::new(CANDIDATE_SIZE / 2.0 - 2.0)),
+            vertical_line: meshes.add(Rectangle::new(9.0, CELL_SIZE * 9.0 + 4.5)),
+            horizontal_line: meshes.add(Rectangle::new(CELL_SIZE * 9.0 + 4.5, 9.0)),
         };
         commands.insert_resource(cell_shapes);
 
@@ -45,7 +49,7 @@ impl Load {
     }
 }
 
-pub static COLORS: [Color; 11] = [
+pub static COLORS: [Color; 12] = [
     Color::BLACK,
     Color::Srgba(Srgba { red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0 }),
     Color::Srgba(Srgba { red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0 }),
@@ -57,4 +61,5 @@ pub static COLORS: [Color; 11] = [
     Color::Srgba(Srgba { red: 1.0, green: 0.0, blue: 1.0, alpha: 1.0 }),
     Color::Srgba(Srgba { red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0 }),
     Color::WHITE,
+    BACKGROUND_COLOR,
 ];

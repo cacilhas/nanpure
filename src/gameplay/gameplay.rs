@@ -2,7 +2,7 @@ use bevy::ecs::error::Result;
 use bevy::prelude::*;
 
 use crate::consts::CELL_SIZE;
-use crate::consts::RESOLUTION;
+use crate::consts::MAGICAL_AJUSTMENT_NUMBER;
 use crate::events::NanpureEvent;
 use crate::game::BoardCell;
 use crate::game::BoardWrapper;
@@ -30,8 +30,61 @@ impl Gameplay {
             commands.spawn(MustUnpause);
 
         } else {
+            commands.spawn((
+                Gameplay,
+                Mesh2d(shapes.full_bg_rect.clone_weak()),
+                MeshMaterial2d(colors.get(10).clone_weak()),
+                Transform::from_xyz(0.0, 32.0, -10.0),
+            ));
+
+            for y in 0..9 {
+                for x in 0..9 {
+                    commands.spawn((
+                        Gameplay,
+                        Mesh2d(shapes.rect.clone_weak()),
+                        MeshMaterial2d(colors.get(11).clone_weak()),
+                        Transform {
+                            scale: Vec3 { x: 0.9, y: 0.9, z: 1.0 },
+                            translation: Vec3 {
+                                x: (x as f32 - 4.0) * CELL_SIZE,
+                                y: (y as f32 - 4.0) * CELL_SIZE + MAGICAL_AJUSTMENT_NUMBER,
+                                z: -5.0,
+                            },
+                            ..default()
+                        },
+                    ));
+                }
+            }
+
             let mut board = BoardWrapper::default();
             board.add((*level.into_inner()).try_into()?);
+
+            for y in 0..4 {
+                commands.spawn((
+                    Gameplay,
+                    Mesh2d(shapes.horizontal_line.clone_weak()),
+                    MeshMaterial2d(colors.get(0).clone_weak()),
+                    Transform::from_xyz(
+                        0.0,
+                        CELL_SIZE * 3.0 * y as f32 - board.size()?.y / 2.0 + MAGICAL_AJUSTMENT_NUMBER,
+                        -1.0,
+                    ),
+                ));
+            }
+
+            for x in 0..4 {
+                commands.spawn((
+                    Gameplay,
+                    Mesh2d(shapes.vertical_line.clone_weak()),
+                    MeshMaterial2d(colors.get(0).clone_weak()),
+                    Transform::from_xyz(
+                        CELL_SIZE * 3.0 * x as f32 - board.size()?.x / 2.0,
+                        MAGICAL_AJUSTMENT_NUMBER,
+                        -1.0,
+                    ),
+                ));
+            }
+
             board.render(
                 0.0,
                 32.0,

@@ -108,8 +108,8 @@ impl Cell {
     ) {
         let shape = &shapes.cell_candidate;
         for i in 0..9 {
-            let ax = x + ((i % 3) as f32 - 1.5) * CANDIDATE_SIZE;
-            let ay = y + ((i / 3) as f32 - 1.5) * CANDIDATE_SIZE;
+            let ax = x + ((i % 3) as f32 - 1.0) * CANDIDATE_SIZE;
+            let ay = y + ((i / 3) as f32 - 1.0) * CANDIDATE_SIZE;
             let color = colors.get(i);
             commands.spawn((
                 BoardCell,

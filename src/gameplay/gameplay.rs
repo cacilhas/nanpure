@@ -1,9 +1,11 @@
 use bevy::ecs::error::Result;
 use bevy::prelude::*;
 
+use crate::consts::CELL_SIZE;
+use crate::consts::RESOLUTION;
 use crate::events::NanpureEvent;
-use crate::game::Board;
 use crate::game::BoardCell;
+use crate::game::BoardWrapper;
 use crate::game::Colors;
 use crate::game::Level;
 use crate::game::Shapes;
@@ -28,15 +30,16 @@ impl Gameplay {
             commands.spawn(MustUnpause);
 
         } else {
-            let board: Board = (*level.into_inner()).try_into()?;
+            let mut board = BoardWrapper::default();
+            board.add((*level.into_inner()).try_into()?);
             board.render(
                 0.0,
-                0.0,
+                32.0,
                 &mut commands,
                 &query,
                 &mut shapes,
                 &mut colors,
-            );
+            )?;
             commands.spawn((Gameplay, board));
         }
 

@@ -7,13 +7,20 @@ use super::Colors;
 use super::Level;
 use super::Shapes;
 
-#[derive(Debug, Clone, Component)]
+#[derive(Debug, Clone)]
 pub struct Board([Cell; 81], usize);
+
+#[derive(Debug, Clone, Default, Component)]
+pub struct BoardWrapper(Vec<Board>);
 
 #[derive(Debug, Clone, Copy, Component)]
 pub struct BoardCell;
 
 impl Board {
+
+    pub fn size(&self) -> Vec2 {
+        Vec2::new(CELL_SIZE * 9.0, CELL_SIZE * 9.0)
+    }
 
     pub fn toggle_candidate(&self, x: usize, y: usize, value: u8) -> Option<Self> {
         let mut new_board = self.clone();
@@ -61,8 +68,8 @@ impl Board {
                 ));
             }
             self.0[i].render(
-                x + ((i % 9) as f32 - 4.5) * CELL_SIZE,
-                y + ((i / 9) as f32 - 4.5) * CELL_SIZE,
+                x + ((i % 9) as f32 - 4.0) * CELL_SIZE,
+                y + ((i / 9) as f32 - 4.0) * CELL_SIZE,
                 commands,
                 shapes,
                 colors,
@@ -115,8 +122,57 @@ impl TryFrom<Level> for Board {
         let cells = KennettConnector::generate(level)?;
         let mut board = Board::default();
         for (i, cell) in cells.into_iter().enumerate() {
-            board.0[i].set_value(cell);
+            let x = i % 9;
+            let y = i / 9;
+            board = match board.set_value(x, y, cell) {
+                Some(new_board) => new_board,
+                None => board,
+            };
         }
         Ok(board)
+    }
+}
+
+impl BoardWrapper {
+
+    pub fn size(&self) -> Result<Vec2, std::io::Error> {
+        Ok(self.current()?.size())
+    }
+
+    pub fn add(&mut self, board: Board) {
+        self.0.push(board);
+    }
+
+    pub fn render(
+        &self,
+        x: f32,
+        y: f32,
+        commands: &mut Commands,
+        query: &Query<Entity, With<BoardCell>>,
+        shapes: &mut ResMut<Shapes>,
+        colors: &mut ResMut<Colors>,
+    ) -> Result<(), std::io::Error> {
+        self.current()?.render(x, y, commands, query, shapes, colors);
+        Ok(())
+    }
+
+    pub fn current(&self) -> Result<&Board, std::io::Error> {
+        if self.0.is_empty() {
+            Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "No board available",
+            ))
+        } else {
+            Ok(&self.0[self.0.len() - 1])
+        }
+    }
+
+    pub fn undo(&mut self) -> bool {
+        if self.0.is_empty() {
+            false
+        } else {
+            self.0.pop();
+            true
+        }
     }
 }

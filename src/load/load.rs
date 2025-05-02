@@ -27,7 +27,7 @@ impl Load {
 
         let cell_shapes = Shapes {
             rect: meshes.add(Rectangle::new(CELL_SIZE, CELL_SIZE)),
-            cell: meshes.add(Circle::new(CELL_SIZE/ 2.0 - 2.0)),
+            cell: meshes.add(Circle::new(CELL_SIZE / 2.0 - 4.0)),
             cell_candidate: meshes.add(Circle::new(CANDIDATE_SIZE / 2.0 - 2.0)),
         };
         commands.insert_resource(cell_shapes);

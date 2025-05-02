@@ -6,7 +6,7 @@ use crate::consts::{SELECTED_COLOR, TITLE, TITLE_COLOR, UNSELECTED_COLOR};
 use crate::events::NanpureEvent;
 use crate::fonts::{RegularFont, TitleFont};
 use crate::game::Level;
-use crate::gameplay::{Gameplay, Paused};
+use crate::gameplay::Paused;
 use crate::states::GameState;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
@@ -15,7 +15,6 @@ pub struct TitleScene;
 impl TitleScene {
     pub fn load_title_scene(
         mut commands: Commands,
-        regular_font: Res<RegularFont>,
         title_font: Res<TitleFont>,
     ) {
         // Title Label
@@ -46,7 +45,7 @@ impl TitleScene {
                 level,
                 Text::new(format!("{}. {}", level_number, level.to_string())),
                 TextFont {
-                    font: regular_font.font().clone_weak(),
+                    font: title_font.font().clone_weak(),
                     font_size: 32.0,
                     ..default()
                 },

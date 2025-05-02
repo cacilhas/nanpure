@@ -1,4 +1,6 @@
 use bevy::app::Plugin;
+use bevy::core_pipeline::bloom::Bloom;
+use bevy::core_pipeline::tonemapping::DebandDither;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 use bevy::render::camera::SubCameraView;
@@ -74,5 +76,7 @@ pub fn setup_camera(mut commands: Commands) {
             order: 1,
             ..default()
         },
+        Bloom::default(),
+        DebandDither::Enabled,
     ));
 }

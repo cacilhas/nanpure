@@ -7,6 +7,7 @@ use crate::events::NanpureEvent;
 use crate::game::BoardCell;
 use crate::game::BoardWrapper;
 use crate::game::Colors;
+use crate::game::Cursor;
 use crate::game::Level;
 use crate::game::Shapes;
 use crate::states::GameState;
@@ -17,11 +18,21 @@ use super::paused::{MustUnpause, Paused};
 pub struct Gameplay;
 
 impl Gameplay {
+    pub fn update(
+        board_query: Query<&BoardWrapper>,
+        mut cursor_query: Query<&mut Transform, With<Cursor>>,
+    ) -> Result<()> {
+        let board = board_query.single()?;
+        board.update(&mut cursor_query)?;
+        Ok(())
+    }
+
     pub fn load_gameplay(
         mut commands: Commands,
         level: Res<Level>,
         paused: Res<Paused>,
-        query: Query<Entity, With<BoardCell>>,
+        cell_query: Query<Entity, With<BoardCell>>,
+        cursor_query: Query<Entity, With<Cursor>>,
         mut shapes: ResMut<Shapes>,
         mut colors: ResMut<Colors>,
     ) -> Result<()> {
@@ -89,7 +100,8 @@ impl Gameplay {
                 0.0,
                 32.0,
                 &mut commands,
-                &query,
+                &cell_query,
+                &cursor_query,
                 &mut shapes,
                 &mut colors,
             )?;

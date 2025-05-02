@@ -1,8 +1,11 @@
 use bevy::prelude::*;
 
+use crate::consts::MAGICAL_AJUSTMENT_NUMBER;
+use crate::gameplay::Gameplay;
 use crate::{consts::CELL_SIZE, kennett::KennettConnector};
 
 use super::cell::Cell;
+use super::cursor::Cursor;
 use super::Colors;
 use super::Level;
 use super::Shapes;
@@ -17,6 +20,21 @@ pub struct BoardWrapper(Vec<Board>);
 pub struct BoardCell;
 
 impl Board {
+
+    pub fn update(
+        &self,
+        query: &mut Query<&mut Transform, With<Cursor>>,
+    ) -> bevy::ecs::error::Result<()> {
+        for i in 0..81 {
+            if i == self.1 {
+                let mut transform = query.single_mut()?;
+                transform.translation.x = ((i % 9) as f32 - 4.0) * CELL_SIZE;
+                transform.translation.y = ((i / 9) as f32 - 4.0) * CELL_SIZE + MAGICAL_AJUSTMENT_NUMBER;
+                return Ok(());
+            }
+        }
+        Ok(())
+    }
 
     pub fn size(&self) -> Vec2 {
         Vec2::new(CELL_SIZE * 9.0, CELL_SIZE * 9.0)
@@ -50,23 +68,28 @@ impl Board {
         x: f32,
         y: f32,
         commands: &mut Commands,
-        query: &Query<Entity, With<BoardCell>>,
+        cell_query: &Query<Entity, With<BoardCell>>,
+        cursor_query: &Query<Entity, With<Cursor>>,
         shapes: &mut ResMut<Shapes>,
         colors: &mut ResMut<Colors>,
     ) {
         // Clean up before populate
-        for entity in query.iter() {
+        for entity in cell_query.iter() {
+            commands.entity(entity).despawn();
+        }
+        for entity in cursor_query.iter() {
             commands.entity(entity).despawn();
         }
 
+        commands.spawn((
+            Gameplay,
+            Cursor,
+            Mesh2d(shapes.rect.clone_weak()),
+            MeshMaterial2d(colors.get(12).clone()),
+            Transform::from_xyz(x, y, 0.0),
+        ));
+
         for i in 0..81 {
-            if self.1 == i {
-                commands.spawn((
-                    BoardCell,
-                    Mesh2d(shapes.rect.clone()),
-                    MeshMaterial2d(colors.get(10).clone())
-                ));
-            }
             self.0[i].render(
                 x + ((i % 9) as f32 - 4.0) * CELL_SIZE,
                 y + ((i / 9) as f32 - 4.0) * CELL_SIZE,
@@ -110,7 +133,7 @@ impl Default for Board {
     fn default() -> Self {
         Self(
             std::array::from_fn(|_| Cell::default()),
-            90,
+            40,
         )
     }
 }
@@ -135,6 +158,29 @@ impl TryFrom<Level> for Board {
 
 impl BoardWrapper {
 
+    pub fn update(
+        &self,
+        query: &mut Query<&mut Transform, With<Cursor>>,
+    ) -> bevy::ecs::error::Result<()> {
+        self.current()?.update(query)?;
+        Ok(())
+    }
+
+    pub fn highlight(&self) -> Result<(i32, i32), std::io::Error> {
+        let board = self.current()?;
+        let ix = board.1 % 9;
+        let iy = board.1 / 9;
+        Ok((ix as i32, iy as i32))
+    }
+
+    pub fn set_highlight(&mut self, xi: i32, yi: i32) {
+        let xi = ((9 + xi) % 9) as usize;
+        let yi = ((9 + yi) % 9) as usize;
+        for board in &mut self.0 {
+            board.1 = xi + yi * 9;
+        }
+    }
+
     pub fn size(&self) -> Result<Vec2, std::io::Error> {
         Ok(self.current()?.size())
     }
@@ -148,11 +194,12 @@ impl BoardWrapper {
         x: f32,
         y: f32,
         commands: &mut Commands,
-        query: &Query<Entity, With<BoardCell>>,
+        cell_query: &Query<Entity, With<BoardCell>>,
+        cursor_query: &Query<Entity, With<Cursor>>,
         shapes: &mut ResMut<Shapes>,
         colors: &mut ResMut<Colors>,
     ) -> Result<(), std::io::Error> {
-        self.current()?.render(x, y, commands, query, shapes, colors);
+        self.current()?.render(x, y, commands, cell_query, cursor_query, shapes, colors);
         Ok(())
     }
 

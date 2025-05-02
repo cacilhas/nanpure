@@ -1,4 +1,3 @@
-use bevy::color::palettes::css::CORNFLOWER_BLUE;
 use bevy::prelude::*;
 use bevy::ecs::error::Result;
 
@@ -49,7 +48,7 @@ impl Load {
     }
 }
 
-pub static COLORS: [Color; 12] = [
+pub static COLORS: [Color; 13] = [
     Color::BLACK,
     Color::Srgba(Srgba { red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0 }),
     Color::Srgba(Srgba { red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0 }),
@@ -62,4 +61,5 @@ pub static COLORS: [Color; 12] = [
     Color::Srgba(Srgba { red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0 }),
     Color::WHITE,
     BACKGROUND_COLOR,
+    Color::Srgba(Srgba { red: 10.0, green: 1.0, blue: 2.0, alpha: 1.0 })
 ];

@@ -28,6 +28,10 @@ impl Plugin for GameplayPlugin {
                 Gameplay::event_handle.run_if(in_state(GameState::Playing)),
             )
             .add_systems(
+                Update,
+                Gameplay::update.run_if(in_state(GameState::Playing)),
+            )
+            .add_systems(
                 OnExit(GameState::Playing),
                 Gameplay::unload_or_pause,
             )

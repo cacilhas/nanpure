@@ -15,7 +15,7 @@ impl Default for Cell {
 
 impl Cell {
 
-    pub fn get_value(&self) -> u8 {
+    pub fn value(&self) -> u8 {
         (self.0 & 0b0000_0000_0000_1111) as u8
     }
 
@@ -23,45 +23,57 @@ impl Cell {
         if value > 9 {
             return false;
         }
-        if self.is_set_candidate(value) {
-            self.0 |= value as u16;
-            true
+
+        if value == 0 {
+            if self.value() == 0 {
+                false
+            } else {
+                self.0 &= 0b0001_1111_1111_0000;
+                true
+            }
+
         } else {
-            false
+            if self.is_candidate_set(value) && self.value() != value {
+                self.0 |= value as u16;
+                true
+
+            } else {
+                false
+            }
         }
     }
 
     pub fn toggle_candidate(&mut self, value: u8) -> bool {
-        if value > 9 {
+        if value == 0 || value > 9 {
             return false;
         }
-        if self.is_set_candidate(value) {
+        if self.is_candidate_set(value) {
             self.clean_candidate(value)
         } else {
             self.set_candidate(value)
         }
     }
 
-    pub fn is_set_candidate(&self, value: u8) -> bool {
-        if value > 9 {
+    pub fn is_candidate_set(&self, value: u8) -> bool {
+        if value == 0 || value > 9 {
             return false;
         }
-        self.0 & (1 << (value + 4)) != 0
+        self.0 & (1 << (value + 3)) != 0
     }
 
     pub fn set_candidate(&mut self, value: u8) -> bool {
-        if value > 9 {
+        if value == 0 || value > 9 {
             return false;
         }
-        self.0 |= 1 << (value + 4);
+        self.0 |= 1 << (value + 3);
         true
     }
 
     pub fn clean_candidate(&mut self, value: u8) -> bool {
-        if value > 9 {
+        if value == 0 || value > 9 {
             return false;
         }
-        self.0 &= 0b0001_1111_1111_1111 ^ (1 << (value + 4));
+        self.0 &= 0b0001_1111_1111_1111 ^ (1 << (value + 3));
         true
     }
 
@@ -72,7 +84,7 @@ impl Cell {
         shapes: &mut ResMut<Shapes>,
         colors: &mut ResMut<Colors>,
     ) {
-        let value = self.get_value();
+        let value = self.value();
         if value == 0 {
             self.render_candidates(x, y, commands, shapes, colors);
         } else {
@@ -110,7 +122,7 @@ impl Cell {
         for i in 0..9 {
             let ax = x + ((i % 3) as f32 - 1.0) * CANDIDATE_SIZE;
             let ay = y + ((i / 3) as f32 - 1.0) * CANDIDATE_SIZE;
-            let color = colors.get(i);
+            let color = colors.get(i + 1);
             commands.spawn((
                 BoardCell,
                 Gameplay,

@@ -8,11 +8,7 @@ use std::{
 pub struct KennettConnector;
 
 impl KennettConnector {
-    pub fn generate(level: Level) -> Option<Vec<u8>> {
-        Self::do_generate(level).ok()
-    }
-
-    fn do_generate(level: Level) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    pub fn generate(level: Level) -> Result<[u8; 81], std::io::Error> {
         let output = Command::new("sudoku")
             .args(["-g", level.kennett_flag()])
             .output()?
@@ -31,7 +27,11 @@ impl KennettConnector {
         if output.len() != 81 {
             Err(Error::new(ErrorKind::Unsupported, "wrong size").into())
         } else {
-            Ok(output)
+            let mut res = [0u8; 81];
+            for (i, &c) in output.iter().enumerate() {
+                res[i] = c;
+            }
+            Ok(res)
         }
     }
 }

@@ -1,0 +1,18 @@
+use bevy::prelude::*;
+
+#[derive(Debug, Clone, Resource)]
+pub struct Colors(Vec<Handle<ColorMaterial>>);
+
+impl Colors {
+    pub fn new(colors: Vec<Handle<ColorMaterial>>) -> Self {
+        Colors(colors)
+    }
+
+    pub fn get(&self, index: usize) -> &Handle<ColorMaterial> {
+        self.0
+            .get(index)
+            .unwrap_or(
+                self.0.get(0).expect("Colors asset is empty")
+            )
+    }
+}

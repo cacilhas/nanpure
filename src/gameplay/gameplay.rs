@@ -2,7 +2,11 @@ use bevy::ecs::error::Result;
 use bevy::prelude::*;
 
 use crate::events::NanpureEvent;
-use crate::{app::NanpureApp, game::Level};
+use crate::game::Board;
+use crate::game::BoardCell;
+use crate::game::Colors;
+use crate::game::Level;
+use crate::game::Shapes;
 use crate::states::GameState;
 
 use super::paused::{MustUnpause, Paused};
@@ -15,14 +19,25 @@ impl Gameplay {
         mut commands: Commands,
         level: Res<Level>,
         paused: Res<Paused>,
+        query: Query<Entity, With<BoardCell>>,
+        mut shapes: ResMut<Shapes>,
+        mut colors: ResMut<Colors>,
     ) -> Result<()> {
         if paused.0 {
             // Do NOT reload gameplay when unpausing
             commands.spawn(MustUnpause);
 
         } else {
-            // TODO: create game board
-            // TODO: spawn board
+            let board: Board = (*level.into_inner()).try_into()?;
+            board.render(
+                0.0,
+                0.0,
+                &mut commands,
+                &query,
+                &mut shapes,
+                &mut colors,
+            );
+            commands.spawn((Gameplay, board));
         }
 
         Ok(())

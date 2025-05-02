@@ -9,3 +9,6 @@ pub const TITLE_COLOR: Color = Color::srgb_u8(0x00, 0x8b, 0x8b);
 
 pub const UNSELECTED_COLOR: Color = Color::srgb_u8(0x8b, 0x8b, 0x8b);
 pub const SELECTED_COLOR: Color = Color::srgb_u8(0x00, 0x00, 0x00);
+
+pub const CELL_SIZE: f32 = RESOLUTION.x / 9.0;
+pub const CANDIDATE_SIZE: f32 = CELL_SIZE / 3.0;

@@ -1,3 +1,4 @@
+mod keybindings;
 mod gameplay;
 mod gameplay_plugin;
 mod paused;

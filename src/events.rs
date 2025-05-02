@@ -6,4 +6,6 @@ use crate::game::Level;
 pub enum NanpureEvent {
 
     StartGame(Level),
+    AbortGame,
+    PauseGame,
 }

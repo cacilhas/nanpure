@@ -1,7 +1,8 @@
 use bevy::ecs::error::Result;
 use bevy::prelude::*;
 
-use crate::game::Level;
+use crate::events::NanpureEvent;
+use crate::{app::NanpureApp, game::Level};
 use crate::states::GameState;
 
 use super::paused::{MustUnpause, Paused};
@@ -69,6 +70,26 @@ impl Gameplay {
                 for entity in &entities {
                     commands.entity(entity).despawn();
                 }
+            }
+        }
+    }
+    pub fn event_handle(
+        mut events: EventReader<NanpureEvent>,
+        mut next_state: ResMut<NextState<GameState>>,
+    ) {
+        for event in events.read() {
+            match event {
+                NanpureEvent::AbortGame => {
+                    next_state.set(GameState::Title);
+                    return;
+                }
+
+                NanpureEvent::PauseGame => {
+                    next_state.set(GameState::Paused);
+                    return;
+                }
+
+                _ => (),
             }
         }
     }

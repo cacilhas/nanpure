@@ -118,6 +118,8 @@ impl TitleScene {
                     paused.0 = false;
                     next_state.set(GameState::Playing);
                 }
+
+                _ => (),
             }
         }
     }

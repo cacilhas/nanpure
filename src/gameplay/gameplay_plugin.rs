@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use crate::states::GameState;
 
+use super::keybindings::keybindings_system;
 use super::Gameplay;
 
 #[derive(Clone, Copy, Debug)]
@@ -16,7 +17,15 @@ impl Plugin for GameplayPlugin {
             )
             .add_systems(
                 Update,
+                keybindings_system.run_if(in_state(GameState::Playing)),
+            )
+            .add_systems(
+                Update,
                 Gameplay::must_unpause.run_if(in_state(GameState::Playing)),
+            )
+            .add_systems(
+                Update,
+                Gameplay::event_handle.run_if(in_state(GameState::Playing)),
             )
             .add_systems(
                 OnExit(GameState::Playing),

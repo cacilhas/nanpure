@@ -85,7 +85,7 @@ impl Board {
             Gameplay,
             Cursor,
             Mesh2d(shapes.rect.clone_weak()),
-            MeshMaterial2d(colors.get(12).clone()),
+            MeshMaterial2d(colors.highlight().clone_weak()),
             Transform::from_xyz(x, y, 0.0),
         ));
 

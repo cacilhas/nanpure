@@ -44,7 +44,7 @@ impl Gameplay {
             commands.spawn((
                 Gameplay,
                 Mesh2d(shapes.full_bg_rect.clone_weak()),
-                MeshMaterial2d(colors.get(10).clone_weak()),
+                MeshMaterial2d(colors.white().clone_weak()),
                 Transform::from_xyz(0.0, 32.0, -10.0),
             ));
 
@@ -53,7 +53,7 @@ impl Gameplay {
                     commands.spawn((
                         Gameplay,
                         Mesh2d(shapes.rect.clone_weak()),
-                        MeshMaterial2d(colors.get(11).clone_weak()),
+                        MeshMaterial2d(colors.background().clone_weak()),
                         Transform {
                             scale: Vec3 { x: 0.9, y: 0.9, z: 1.0 },
                             translation: Vec3 {

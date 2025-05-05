@@ -15,4 +15,16 @@ impl Colors {
                 self.0.get(0).expect("Colors asset is empty")
             )
     }
+
+    pub fn white(&self) -> &Handle<ColorMaterial> {
+        self.get(10)
+    }
+
+    pub fn background(&self) -> &Handle<ColorMaterial> {
+        self.get(11)
+    }
+
+    pub fn highlight(&self) -> &Handle<ColorMaterial> {
+        self.get(12)
+    }
 }

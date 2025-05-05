@@ -44,9 +44,28 @@ impl Gameplay {
             commands.spawn((
                 Gameplay,
                 Mesh2d(shapes.full_bg_rect.clone_weak()),
-                MeshMaterial2d(colors.white().clone_weak()),
+                MeshMaterial2d(colors.black().clone_weak()),
                 Transform::from_xyz(0.0, 32.0, -10.0),
             ));
+
+            for y in 0..3 {
+                for x in 0..3 {
+                    commands.spawn((
+                        Gameplay,
+                        Mesh2d(shapes.rect.clone_weak()),
+                        MeshMaterial2d(colors.white().clone_weak()),
+                        Transform {
+                            scale: Vec3 { x: 3.0, y: 3.0, z: 1.0 },
+                            translation: Vec3 {
+                                x: (x as f32 - 1.0) * CELL_SIZE * 3.0,
+                                y: (y as f32 - 1.0) * CELL_SIZE * 3.0 + MAGICAL_AJUSTMENT_NUMBER,
+                                z: -6.0,
+                            },
+                            ..default()
+                        },
+                    ));
+                }
+            }
 
             for y in 0..9 {
                 for x in 0..9 {

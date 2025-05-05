@@ -16,6 +16,10 @@ impl Colors {
             )
     }
 
+    pub fn black(&self) -> &Handle<ColorMaterial> {
+        self.get(0)
+    }
+
     pub fn white(&self) -> &Handle<ColorMaterial> {
         self.get(10)
     }

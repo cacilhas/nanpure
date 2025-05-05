@@ -27,7 +27,7 @@ impl Load {
 
         let cell_shapes = Shapes {
             rect: meshes.add(Rectangle::new(CELL_SIZE, CELL_SIZE)),
-            full_bg_rect: meshes.add(Rectangle::new(CELL_SIZE * 9.5, CELL_SIZE * 9.5)),
+            full_bg_rect: meshes.add(Rectangle::new(CELL_SIZE * 10.0, CELL_SIZE * 9.5)),
             cell: meshes.add(Circle::new(CELL_SIZE / 2.0 - 4.0)),
             cell_candidate: meshes.add(Circle::new(CANDIDATE_SIZE / 2.0 - 2.0)),
             vertical_line: meshes.add(Rectangle::new(9.0, CELL_SIZE * 9.0 + 4.5)),
@@ -61,5 +61,5 @@ pub static COLORS: [Color; 13] = [
     Color::Srgba(Srgba { red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0 }),
     Color::WHITE,
     BACKGROUND_COLOR,
-    Color::Srgba(Srgba { red: 10.0, green: 1.0, blue: 2.0, alpha: 1.0 })
+    Color::Srgba(Srgba { red: 1.0, green: 0.75, blue: 0.875, alpha: 1.0 })
 ];

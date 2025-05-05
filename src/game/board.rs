@@ -119,8 +119,8 @@ impl Board {
     fn clean_group(&mut self, x: usize, y: usize, value: u8) {
         let gx = (x / 3) * 3;
         let gy = (y / 3) * 3;
-        for ax in gx..(gx + 2) {
-            for ay in gy..(gy + 2) {
+        for ax in gx..(gx + 3) {
+            for ay in gy..(gy + 3) {
                 if ax != x || ay != y {
                     self.0[ax + ay * 9].clean_candidate(value);
                 }

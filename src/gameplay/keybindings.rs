@@ -3,14 +3,14 @@ use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 
 use crate::events::NanpureEvent;
-use crate::game::BoardWrapper;
+use crate::game::Board;
 
 use super::Gameplay;
 
 pub fn keybindings_system(
     mut keyboard: EventReader<KeyboardInput>,
     mut event_writer: EventWriter<NanpureEvent>,
-    mut board_query: Query<&mut BoardWrapper, With<Gameplay>>,
+    mut board_query: Query<&mut Board, With<Gameplay>>,
 ) -> Result<()> {
     let mut board = board_query.single_mut()?;
     for (input, _) in keyboard.par_read() {

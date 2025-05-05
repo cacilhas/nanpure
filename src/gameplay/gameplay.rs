@@ -5,7 +5,7 @@ use crate::consts::CELL_SIZE;
 use crate::consts::MAGICAL_AJUSTMENT_NUMBER;
 use crate::events::NanpureEvent;
 use crate::game::BoardCell;
-use crate::game::BoardWrapper;
+use crate::game::Board;
 use crate::game::Colors;
 use crate::game::Cursor;
 use crate::game::Level;
@@ -19,7 +19,7 @@ pub struct Gameplay;
 
 impl Gameplay {
     pub fn update(
-        board_query: Query<&BoardWrapper>,
+        board_query: Query<&Board>,
         mut cursor_query: Query<&mut Transform, With<Cursor>>,
     ) -> Result<()> {
         let board = board_query.single()?;
@@ -86,8 +86,7 @@ impl Gameplay {
                 }
             }
 
-            let mut board = BoardWrapper::default();
-            board.add((*level.into_inner()).try_into()?);
+            let board: Board = (*level.into_inner()).try_into()?;
 
             for y in 0..4 {
                 commands.spawn((
@@ -117,7 +116,7 @@ impl Gameplay {
 
             board.render(
                 0.0,
-                32.0,
+                MAGICAL_AJUSTMENT_NUMBER,
                 &mut commands,
                 &cell_query,
                 &cursor_query,

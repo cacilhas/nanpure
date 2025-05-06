@@ -1,5 +1,4 @@
 use bevy::ecs::error::Result;
-use bevy::input::mouse::MouseButtonInput;
 use bevy::prelude::*;
 
 use crate::consts::{SELECTED_COLOR, TITLE, TITLE_COLOR, UNSELECTED_COLOR};
@@ -80,7 +79,7 @@ impl TitleScene {
     pub fn update(
         mut level_query: Query<(&Level, &Transform, &ComputedNode, &mut TextColor, &mut BackgroundColor), With<Self>>,
         window_query: Query<&Window>,
-        mut mouse_input: EventReader<MouseButtonInput>,
+        mouse_input: Res<ButtonInput<MouseButton>>,
         mut event_writer: EventWriter<NanpureEvent>,
     ) -> Result<()> {
         let window = window_query.single()?;
@@ -92,11 +91,9 @@ impl TitleScene {
                     color.0 = SELECTED_COLOR.clone();
                     bg.0 = Color::Srgba(Srgba { red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0 });
 
-                    for event in mouse_input.read() {
-                        if event.button == MouseButton::Left {
-                            event_writer.write(NanpureEvent::StartGame(level));
-                            return Ok(());
-                        }
+                    if mouse_input.just_pressed(MouseButton::Left) {
+                        event_writer.write(NanpureEvent::StartGame(level));
+                        return Ok(());
                     }
 
                 } else {

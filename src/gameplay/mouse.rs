@@ -1,5 +1,4 @@
 use bevy::ecs::error::Result;
-use bevy::input::mouse::MouseButtonInput;
 use bevy::prelude::*;
 
 use crate::consts::CELL_SIZE;
@@ -9,7 +8,7 @@ use super::clock::ClockDisplay;
 
 pub fn mouse_system(
     window_query: Query<&Window>,
-    mut click_event: EventReader<MouseButtonInput>,
+    click_event: Res<ButtonInput<MouseButton>>,
     mut board_query: Query<&mut Board>,
     mut clock_query: Query<&mut Visibility, With<ClockDisplay>>,
 ) -> Result<()> {
@@ -26,13 +25,11 @@ pub fn mouse_system(
             };
         }
 
-        for event in click_event.read() {
-            if event.button == MouseButton::Left {
-                if x >= 0 && x < 9 && y >= 0 && y < 9 {
-                    let mut board = board_query.single_mut()?;
-                    board.set_highlight(x, y);
-                    return Ok(());
-                }
+        if click_event.just_pressed(MouseButton::Left) {
+            if x >= 0 && x < 9 && y >= 0 && y < 9 {
+                let mut board = board_query.single_mut()?;
+                board.set_highlight(x, y);
+                return Ok(());
             }
         }
     }

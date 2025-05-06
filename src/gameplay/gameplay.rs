@@ -25,11 +25,17 @@ pub struct Gameplay;
 impl Gameplay {
     pub fn update(
         board_query: Query<&Board>,
+        window_query: Query<&Window>,
         mut cursor_query: Query<&mut Transform, With<Cursor>>,
         mut error_cells_query: Query<&mut MeshMaterial2d<ColorMaterial>, With<ErrorCell>>,
+        mut event_writer: EventWriter<NanpureEvent>,
         time: Res<Time>,
         colors: Res<Colors>,
     ) -> Result<()> {
+        let window = window_query.single()?;
+        if !window.focused {
+            event_writer.write(NanpureEvent::PauseGame);
+        }
         let board = board_query.single()?;
         board.update(&mut cursor_query)?;
         for mut material in &mut error_cells_query {

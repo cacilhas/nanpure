@@ -10,6 +10,7 @@ use crate::game::BoardCell;
 use crate::game::Board;
 use crate::game::Colors;
 use crate::game::Cursor;
+use crate::game::ErrorCell;
 use crate::game::Level;
 use crate::game::Shapes;
 use crate::states::GameState;
@@ -23,9 +24,22 @@ impl Gameplay {
     pub fn update(
         board_query: Query<&Board>,
         mut cursor_query: Query<&mut Transform, With<Cursor>>,
+        mut error_cells_query: Query<&mut MeshMaterial2d<ColorMaterial>, With<ErrorCell>>,
+        time: Res<Time>,
+        colors: Res<Colors>,
     ) -> Result<()> {
         let board = board_query.single()?;
         board.update(&mut cursor_query)?;
+        for mut material in &mut error_cells_query {
+            let elapsed = time.elapsed_secs_f64() % 0.125;
+            material.0 = colors.get(
+                if elapsed < 0.0625 {
+                    1
+                } else {
+                    3
+                }
+            ).clone_weak();
+        }
         Ok(())
     }
 

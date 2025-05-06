@@ -4,6 +4,7 @@ use crate::{consts::CANDIDATE_SIZE, gameplay::Gameplay};
 
 use super::board_cell::BoardCell;
 use super::colors::Colors;
+use super::error_cell::ErrorCell;
 use super::shapes::Shapes;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -134,8 +135,10 @@ impl Cell {
         colors: &Res<Colors>,
     ) {
         let shape = &shapes.cell_candidate;
+        let mut no_candidate = true;
         for i in 0..9 {
             if self.is_candidate_set(i as u8 + 1) {
+                no_candidate = false;
                 let ax = x + ((i % 3) as f32 - 1.0) * CANDIDATE_SIZE;
                 let ay = y + ((i / 3) as f32 - 1.0) * CANDIDATE_SIZE;
                 let color = colors.get(i + 1);
@@ -147,6 +150,17 @@ impl Cell {
                     Transform::from_xyz(ax, ay, 1.0),
                 ));
             }
+        }
+        if no_candidate {
+            let shape = &shapes.rect;
+            commands.spawn((
+                BoardCell,
+                Gameplay,
+                ErrorCell,
+                Mesh2d(shape.clone_weak()),
+                MeshMaterial2d(colors.get(1).clone_weak()),
+                Transform::from_xyz(x, y, 1.0),
+            ));
         }
     }
 }

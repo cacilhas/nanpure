@@ -23,7 +23,7 @@ cargo install nanpure
 - 0: clean cell value up
 - Control + number: toggle cell candidate
 - Escape: back
-- Pause: pause
+- Pause: pause / unpause
 - Control + Q: quit
 
 You can use the mouse to select cells as well.

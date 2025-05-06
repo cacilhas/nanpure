@@ -2,6 +2,7 @@ mod background;
 mod keybindings;
 mod gameplay;
 mod gameplay_plugin;
+mod mouse;
 mod paused;
 
 pub use self::background::BGFlag;

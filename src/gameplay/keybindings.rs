@@ -6,7 +6,7 @@ use crate::events::NanpureEvent;
 use crate::game::Board;
 use crate::load::Ctrl;
 
-use super::Gameplay;
+use super::gameplay::Gameplay;
 
 pub fn keybindings_system(
     mut keyboard: EventReader<KeyboardInput>,

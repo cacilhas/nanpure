@@ -223,16 +223,19 @@ impl Gameplay {
                 }
 
                 NanpureEvent::RenderBoard => {
-                    board_query.single()?
-                        .render(
-                            0.0,
-                            MAGICAL_AJUSTMENT_NUMBER,
-                            &mut commands,
-                            &cell_query,
-                            &cursor_query,
-                            &shapes,
-                            &colors,
-                        )?;
+                    let board =  board_query.single()?;
+                    board.render(
+                        0.0,
+                        MAGICAL_AJUSTMENT_NUMBER,
+                        &mut commands,
+                        &cell_query,
+                        &cursor_query,
+                        &shapes,
+                        &colors,
+                    )?;
+                    if board.is_done()? {
+                        next_state.set(GameState::GameOver);
+                    }
                     return Ok(());
                 }
 

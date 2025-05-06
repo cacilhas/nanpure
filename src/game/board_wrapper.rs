@@ -15,6 +15,10 @@ pub struct Board(Vec<InnerBoard>);
 
 impl Board {
 
+    pub fn is_done(&self) -> Result<bool, std::io::Error> {
+        Ok(self.current()?.is_done())
+    }
+
     pub fn update(
         &self,
         query: &mut Query<&mut Transform, With<Cursor>>,

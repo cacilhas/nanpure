@@ -12,9 +12,24 @@ use super::Level;
 use super::Shapes;
 
 #[derive(Debug)]
-pub struct InnerBoard([Cell; 81], usize);
+pub struct InnerBoard([Cell; 81], usize, bool);
 
 impl InnerBoard {
+
+    fn recalculate(mut self) -> Self {
+        for idx in 0..81 {
+            if self.0[idx].value() == 0 {
+                self.2 = false;
+                return self;
+            }
+        }
+        self.2 = true;
+        self
+    }
+
+    pub fn is_done(&self) -> bool {
+        self.2
+    }
 
     pub fn update(
         &self,
@@ -51,7 +66,7 @@ impl InnerBoard {
             new_board.clean_row(x, y, value);
             new_board.clean_column(x, y, value);
             new_board.clean_group(x, y, value);
-            Some(new_board)
+            Some(new_board.recalculate())
 
         } else {
             None
@@ -150,6 +165,7 @@ impl Default for InnerBoard {
         Self(
             std::array::from_fn(|_| Cell::default()),
             40,
+            false,
         )
     }
 }
@@ -159,6 +175,7 @@ impl Clone for InnerBoard {
         Self(
             std::array::from_fn(|idx| self.0[idx].clone()),
             self.1,
+            self.2,
         )
     }
 }

@@ -70,6 +70,6 @@ pub static COLORS: [Color; 14] = [
     Color::Srgba(Srgba { red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0 }),
     Color::WHITE,
     BACKGROUND_COLOR,
-    Color::Srgba(Srgba { red: 1.0, green: 0.75, blue: 0.875, alpha: 1.0 }),
+    Color::Srgba(Srgba { red: 1.0, green: 0.75, blue: 0.875, alpha: 0.5 }),
     WIN_COLOR,
 ];

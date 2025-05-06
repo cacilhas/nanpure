@@ -8,4 +8,5 @@ pub enum NanpureEvent {
     StartGame(Level),
     AbortGame,
     PauseGame,
+    RenderBoard,
 }

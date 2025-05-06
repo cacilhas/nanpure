@@ -96,8 +96,8 @@ impl Cell {
         x: f32,
         y: f32,
         commands: &mut Commands,
-        shapes: &mut ResMut<Shapes>,
-        colors: &mut ResMut<Colors>,
+        shapes: &Res<Shapes>,
+        colors: &Res<Colors>,
     ) {
         let value = self.value();
         if value == 0 {
@@ -113,8 +113,8 @@ impl Cell {
         x: f32,
         y: f32,
         commands: &mut Commands,
-        shapes: &mut ResMut<Shapes>,
-        colors: &mut ResMut<Colors>,
+        shapes: &Res<Shapes>,
+        colors: &Res<Colors>,
     ) {
         commands.spawn((
             BoardCell,
@@ -130,8 +130,8 @@ impl Cell {
         x: f32,
         y: f32,
         commands: &mut Commands,
-        shapes: &mut ResMut<Shapes>,
-        colors: &mut ResMut<Colors>,
+        shapes: &Res<Shapes>,
+        colors: &Res<Colors>,
     ) {
         let shape = &shapes.cell_candidate;
         for i in 0..9 {

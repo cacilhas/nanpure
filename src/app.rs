@@ -8,7 +8,7 @@ use bevy::render::camera::SubCameraView;
 use crate::consts::RESOLUTION;
 use crate::events::NanpureEvent;
 use crate::gameplay::GameplayPlugin;
-use crate::load::LoadPlugin;
+use crate::load::{Ctrl, LoadPlugin};
 use crate::states::GameState;
 use crate::title::TitleScenePlugin;
 
@@ -37,13 +37,12 @@ fn background_system(mut commands: Commands) {
 pub fn exit_system(
     mut keyboard: EventReader<KeyboardInput>,
     mut exit: EventWriter<AppExit>,
+    mut ctrl: ResMut<Ctrl>,
 ) {
     let mut key_q = false;
     for (input, _) in keyboard.par_read() {
         if input.logical_key == Key::Control {
-            unsafe {
-                CTRL[0] = input.state.is_pressed();
-            }
+            ctrl.0 = input.state.is_pressed();
         }
 
         else if input.state.is_pressed() {
@@ -55,13 +54,10 @@ pub fn exit_system(
             }
         }
     }
-    if unsafe { CTRL[0] } && key_q {
+    if ctrl.0 && key_q {
         exit.write(AppExit::Success);
     }
 }
-
-// TODO: use lock
-static mut CTRL: [bool; 1] = [false];
 
 pub fn setup_camera(mut commands: Commands) {
     let size = UVec2::new(RESOLUTION.x as u32, RESOLUTION.y as u32);

@@ -19,23 +19,23 @@ impl InnerBoard {
     pub fn update(
         &self,
         query: &mut Query<&mut Transform, With<Cursor>>,
-    ) -> bevy::ecs::error::Result<()> {
+    ) {
         for idx in 0..81 {
             if idx == self.1 {
-                let mut transform = query.single_mut()?;
-                transform.translation.x = ((idx % 9) as f32 - 4.0) * CELL_SIZE;
-                transform.translation.y = ((idx / 9) as f32 - 4.0) * CELL_SIZE + MAGICAL_AJUSTMENT_NUMBER;
-                return Ok(());
+                if let Ok(mut transform) = query.single_mut() {
+                    transform.translation.x = ((idx % 9) as f32 - 4.0) * CELL_SIZE;
+                    transform.translation.y = ((idx / 9) as f32 - 4.0) * CELL_SIZE + MAGICAL_AJUSTMENT_NUMBER;
+                }
+                return;
             }
         }
-        Ok(())
     }
 
     pub fn size(&self) -> Vec2 {
         Vec2::new(CELL_SIZE * 9.0, CELL_SIZE * 9.0)
     }
 
-    fn toggle_candidate(&self, x: usize, y: usize, value: u8) -> Option<Self> {
+    pub(super) fn toggle_candidate(&self, x: usize, y: usize, value: u8) -> Option<Self> {
         let mut new_board = self.clone();
         if new_board.0[x + y * 9].toggle_candidate(value) {
             Some(new_board)
@@ -44,7 +44,7 @@ impl InnerBoard {
         }
     }
 
-    fn set_value(&self, x: usize, y: usize, value: u8) -> Option<Self> {
+    pub(super) fn set_value(&self, x: usize, y: usize, value: u8) -> Option<Self> {
         let mut new_board = self.clone();
 
         if new_board.cell_mut(x, y).set_value(value) {
@@ -65,8 +65,8 @@ impl InnerBoard {
         commands: &mut Commands,
         cell_query: &Query<Entity, With<BoardCell>>,
         cursor_query: &Query<Entity, With<Cursor>>,
-        shapes: &mut ResMut<Shapes>,
-        colors: &mut ResMut<Colors>,
+        shapes: &Res<Shapes>,
+        colors: &Res<Colors>,
     ) {
         // Clean up before populate
         for entity in cell_query.iter() {

@@ -7,6 +7,8 @@ use crate::game::{Colors, Shapes};
 use crate::gameplay::Paused;
 use crate::states::GameState;
 
+use super::ctrl::Ctrl;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
 pub struct Load;
 
@@ -34,6 +36,7 @@ impl Load {
             horizontal_line: meshes.add(Rectangle::new(CELL_SIZE * 9.0 + 4.5, 9.0)),
         };
         commands.insert_resource(cell_shapes);
+        commands.insert_resource(Ctrl(false));
 
         let colors = COLORS.iter()
             .map(|color| materials.add(*color))

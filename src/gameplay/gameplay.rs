@@ -31,10 +31,9 @@ impl Gameplay {
         mut commands: Commands,
         level: Res<Level>,
         paused: Res<Paused>,
-        cell_query: Query<Entity, With<BoardCell>>,
-        cursor_query: Query<Entity, With<Cursor>>,
-        mut shapes: ResMut<Shapes>,
-        mut colors: ResMut<Colors>,
+        shapes: Res<Shapes>,
+        colors: Res<Colors>,
+        mut event_writer: EventWriter<NanpureEvent>,
     ) -> Result<()> {
         if paused.0 {
             // Do NOT reload gameplay when unpausing
@@ -114,16 +113,8 @@ impl Gameplay {
                 ));
             }
 
-            board.render(
-                0.0,
-                MAGICAL_AJUSTMENT_NUMBER,
-                &mut commands,
-                &cell_query,
-                &cursor_query,
-                &mut shapes,
-                &mut colors,
-            )?;
             commands.spawn((Gameplay, board));
+            event_writer.write(NanpureEvent::RenderBoard);
         }
 
         Ok(())
@@ -175,23 +166,44 @@ impl Gameplay {
         }
     }
     pub fn event_handle(
+        mut commands: Commands,
+        board_query: Query<&Board>,
+        cell_query: Query<Entity, With<BoardCell>>,
+        cursor_query: Query<Entity, With<Cursor>>,
         mut events: EventReader<NanpureEvent>,
         mut next_state: ResMut<NextState<GameState>>,
-    ) {
+        shapes: Res<Shapes>,
+        colors: Res<Colors>,
+    ) -> Result<()> {
         for event in events.read() {
             match event {
                 NanpureEvent::AbortGame => {
                     next_state.set(GameState::Title);
-                    return;
+                    return Ok(());
                 }
 
                 NanpureEvent::PauseGame => {
                     next_state.set(GameState::Paused);
-                    return;
+                    return Ok(());
+                }
+
+                NanpureEvent::RenderBoard => {
+                    board_query.single()?
+                        .render(
+                            0.0,
+                            MAGICAL_AJUSTMENT_NUMBER,
+                            &mut commands,
+                            &cell_query,
+                            &cursor_query,
+                            &shapes,
+                            &colors,
+                        )?;
+                    return Ok(());
                 }
 
                 _ => (),
             }
         }
+        Ok(())
     }
 }

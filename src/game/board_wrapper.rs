@@ -19,7 +19,7 @@ impl Board {
         &self,
         query: &mut Query<&mut Transform, With<Cursor>>,
     ) -> bevy::ecs::error::Result<()> {
-        self.current()?.update(query)?;
+        self.current()?.update(query);
         Ok(())
     }
 
@@ -40,6 +40,35 @@ impl Board {
         Ok(self.current()?.size())
     }
 
+    pub fn set_value(&mut self, value: u8) -> Result<bool, std::io::Error> {
+        let (x, y) = self.highlight()?;
+        if let Some(board) = self.current()?.set_value(x as usize, y as usize, value) {
+            self.0.push(board);
+            Ok(true)
+        } else {
+            Ok(false)
+        }
+    }
+
+    pub fn toggle_candidate(&mut self, candidate: u8) -> Result<bool, std::io::Error> {
+        let (x, y) = self.highlight()?;
+        if let Some(board) = self.current()?.toggle_candidate(x as usize, y as usize, candidate) {
+            self.0.push(board);
+            Ok(true)
+        } else {
+            Ok(false)
+        }
+    }
+
+    pub fn undo(&mut self) -> bool {
+        if self.0.len() < 2 {
+            false
+        } else {
+            self.0.pop();
+            true
+        }
+    }
+
     pub fn render(
         &self,
         x: f32,
@@ -47,14 +76,14 @@ impl Board {
         commands: &mut Commands,
         cell_query: &Query<Entity, With<BoardCell>>,
         cursor_query: &Query<Entity, With<Cursor>>,
-        shapes: &mut ResMut<Shapes>,
-        colors: &mut ResMut<Colors>,
+        shapes: &Res<Shapes>,
+        colors: &Res<Colors>,
     ) -> Result<(), std::io::Error> {
         self.current()?.render(x, y, commands, cell_query, cursor_query, shapes, colors);
         Ok(())
     }
 
-    pub fn current(&self) -> Result<&InnerBoard, std::io::Error> {
+    fn current(&self) -> Result<&InnerBoard, std::io::Error> {
         if self.0.is_empty() {
             Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
@@ -62,15 +91,6 @@ impl Board {
             ))
         } else {
             Ok(&self.0[self.0.len() - 1])
-        }
-    }
-
-    pub fn undo(&mut self) -> bool {
-        if self.0.is_empty() {
-            false
-        } else {
-            self.0.pop();
-            true
         }
     }
 

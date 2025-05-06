@@ -9,6 +9,7 @@ use crate::consts::RESOLUTION;
 use crate::events::NanpureEvent;
 use crate::gameplay::GameplayPlugin;
 use crate::load::{Ctrl, LoadPlugin};
+use crate::pause::PausePlugin;
 use crate::states::GameState;
 use crate::title::TitleScenePlugin;
 
@@ -23,6 +24,7 @@ impl Plugin for NanpureApp {
             .add_plugins(LoadPlugin)
             .add_plugins(TitleScenePlugin)
             .add_plugins(GameplayPlugin)
+            .add_plugins(PausePlugin)
             .add_systems(Startup, background_system)
             .add_systems(Startup, setup_camera)
             .add_systems(Update, exit_system)

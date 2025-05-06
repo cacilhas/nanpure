@@ -15,6 +15,7 @@ mod game;
 mod gameplay;
 mod kennett;
 mod load;
+mod pause;
 mod states;
 mod title;
 

@@ -3,7 +3,9 @@ use bevy::prelude::*;
 
 use crate::consts::CELL_SIZE;
 use crate::consts::MAGICAL_AJUSTMENT_NUMBER;
+use crate::consts::TITLE_COLOR;
 use crate::events::NanpureEvent;
+use crate::fonts::RegularFont;
 use crate::game::BoardCell;
 use crate::game::Board;
 use crate::game::Colors;
@@ -34,6 +36,7 @@ impl Gameplay {
         shapes: Res<Shapes>,
         colors: Res<Colors>,
         mut event_writer: EventWriter<NanpureEvent>,
+        regular_font: Res<RegularFont>,
     ) -> Result<()> {
         if paused.0 {
             // Do NOT reload gameplay when unpausing
@@ -41,16 +44,35 @@ impl Gameplay {
 
         } else {
             commands.spawn((
-                Gameplay,
+                Self,
                 Mesh2d(shapes.full_bg_rect.clone_weak()),
                 MeshMaterial2d(colors.black().clone_weak()),
                 Transform::from_xyz(0.0, 32.0, -10.0),
             ));
 
+            commands.spawn((
+                Self,
+                Text::new(level.to_string()),
+                TextFont {
+                    font: regular_font.font().clone_weak(),
+                    font_size: 32.0,
+                    ..default()
+                },
+                TextColor(TITLE_COLOR.clone()),
+                TextLayout::new_with_justify(JustifyText::Left),
+                Node {
+                    position_type: PositionType::Absolute,
+                    align_items: AlignItems::Center,
+                    left: Val::Px(8.0),
+                    bottom: Val::Px(8.0),
+                    ..default()
+                },
+            ));
+
             for y in 0..3 {
                 for x in 0..3 {
                     commands.spawn((
-                        Gameplay,
+                        Self,
                         Mesh2d(shapes.rect.clone_weak()),
                         MeshMaterial2d(colors.white().clone_weak()),
                         Transform {
@@ -69,7 +91,7 @@ impl Gameplay {
             for y in 0..9 {
                 for x in 0..9 {
                     commands.spawn((
-                        Gameplay,
+                        Self,
                         Mesh2d(shapes.rect.clone_weak()),
                         MeshMaterial2d(colors.background().clone_weak()),
                         Transform {
@@ -89,7 +111,7 @@ impl Gameplay {
 
             for y in 0..4 {
                 commands.spawn((
-                    Gameplay,
+                    Self,
                     Mesh2d(shapes.horizontal_line.clone_weak()),
                     MeshMaterial2d(colors.get(0).clone_weak()),
                     Transform::from_xyz(
@@ -102,7 +124,7 @@ impl Gameplay {
 
             for x in 0..4 {
                 commands.spawn((
-                    Gameplay,
+                    Self,
                     Mesh2d(shapes.vertical_line.clone_weak()),
                     MeshMaterial2d(colors.get(0).clone_weak()),
                     Transform::from_xyz(
@@ -113,7 +135,7 @@ impl Gameplay {
                 ));
             }
 
-            commands.spawn((Gameplay, board));
+            commands.spawn((Self, board));
             event_writer.write(NanpureEvent::RenderBoard);
         }
 
@@ -158,7 +180,6 @@ impl Gameplay {
             _ => {
                 // Unload
 
-                commands.remove_resource::<Level>();
                 for entity in &entities {
                     commands.entity(entity).despawn();
                 }

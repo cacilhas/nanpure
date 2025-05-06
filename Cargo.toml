@@ -36,7 +36,7 @@ walkdir = "2.5"
 
 [dependencies.bevy]
 version = "0.16"
-features = ["multi_threaded", "wav"]
+features = ["multi_threaded"]
 
 [dependencies.bevy_rand]
 version = "0.10"

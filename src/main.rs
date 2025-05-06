@@ -7,18 +7,7 @@ use bevy::window::{
 use bevy_rand::plugin::EntropyPlugin;
 use bevy_rand::prelude::WyRand;
 
-mod app;
-mod consts;
-mod events;
-mod fonts;
-mod game;
-mod gameover;
-mod gameplay;
-mod kennett;
-mod load;
-mod pause;
-mod states;
-mod title;
+use nanpure::prelude::*;
 
 fn main() {
     App::new()
@@ -43,6 +32,6 @@ fn main() {
             })
         )
         .add_plugins(EntropyPlugin::<WyRand>::default())
-        .add_plugins(app::NanpureApp)
+        .add_plugins(NanpureApp)
         .run();
 }

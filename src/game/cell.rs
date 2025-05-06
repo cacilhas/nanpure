@@ -59,14 +59,6 @@ impl Cell {
         }
     }
 
-    pub fn set_candidate(&mut self, value: u8) -> bool {
-        if self.is_candidate_set(value) {
-            false
-        } else {
-            self.do_set_candidate(value)
-        }
-    }
-
     pub fn clean_candidate(&mut self, value: u8) -> bool {
         if self.is_candidate_set(value) {
             self.do_clean_candidate(value)

@@ -31,4 +31,8 @@ impl Colors {
     pub fn highlight(&self) -> &Handle<ColorMaterial> {
         self.get(12)
     }
+
+    pub fn win(&self) -> &Handle<ColorMaterial> {
+        self.get(13)
+    }
 }

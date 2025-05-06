@@ -1,8 +1,13 @@
-use bevy::{input::keyboard::{Key, KeyboardInput}, prelude::*};
+use bevy::input::keyboard::{Key, KeyboardInput};
+use bevy::prelude::*;
 
 use crate::consts::{BACKGROUND_COLOR, WIN_COLOR};
-use crate::gameplay::Gameplay;
+use crate::game::{Colors, Cursor};
+use crate::gameplay::{BGFlag, Gameplay};
 use crate::states::GameState;
+
+#[derive(Debug, Clone, Resource)]
+pub struct GameOverCheck(pub bool);
 
 #[derive(Debug, Clone, Copy)]
 pub struct GameOverPlugin;
@@ -22,9 +27,21 @@ struct GameOver;
 
 impl GameOver {
 
-    fn load(mut bg_query: Query<&mut BackgroundColor>) {
+    fn load(
+        mut commands: Commands,
+        mut bg_query: Query<&mut BackgroundColor>,
+        mut fg_query: Query<&mut MeshMaterial2d<ColorMaterial>, With<BGFlag>>,
+        cursor_query: Query<Entity, With<Cursor>>,
+        colors: Res<Colors>,
+    ) {
+        if let Ok(cursor) = cursor_query.single() {
+            commands.entity(cursor).despawn();
+        }
         if let Ok(mut color) = bg_query.single_mut() {
             color.0 = WIN_COLOR.clone();
+        }
+        for mut color in &mut fg_query {
+            color.0 = colors.win().clone_weak();
         }
     }
 

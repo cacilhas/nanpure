@@ -13,9 +13,11 @@ use crate::game::Cursor;
 use crate::game::ErrorCell;
 use crate::game::Level;
 use crate::game::Shapes;
+use crate::gameover::GameOverCheck;
 use crate::states::GameState;
 
 use super::paused::{MustUnpause, Paused};
+use super::background::BGFlag;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
 pub struct Gameplay;
@@ -60,6 +62,7 @@ impl Gameplay {
 
         commands.spawn((
             Self,
+            BGFlag,
             Mesh2d(shapes.full_bg_rect.clone_weak()),
             MeshMaterial2d(colors.black().clone_weak()),
             Transform::from_xyz(0.0, 32.0, -10.0),
@@ -88,6 +91,7 @@ impl Gameplay {
             for x in 0..3 {
                 commands.spawn((
                     Self,
+                    BGFlag,
                     Mesh2d(shapes.rect.clone_weak()),
                     MeshMaterial2d(colors.white().clone_weak()),
                     Transform {
@@ -107,6 +111,7 @@ impl Gameplay {
             for x in 0..9 {
                 commands.spawn((
                     Self,
+                    BGFlag,
                     Mesh2d(shapes.rect.clone_weak()),
                     MeshMaterial2d(colors.background().clone_weak()),
                     Transform {
@@ -127,6 +132,7 @@ impl Gameplay {
         for y in 0..4 {
             commands.spawn((
                 Self,
+                BGFlag,
                 Mesh2d(shapes.horizontal_line.clone_weak()),
                 MeshMaterial2d(colors.get(0).clone_weak()),
                 Transform::from_xyz(
@@ -140,6 +146,7 @@ impl Gameplay {
         for x in 0..4 {
             commands.spawn((
                 Self,
+                BGFlag,
                 Mesh2d(shapes.vertical_line.clone_weak()),
                 MeshMaterial2d(colors.get(0).clone_weak()),
                 Transform::from_xyz(
@@ -176,13 +183,14 @@ impl Gameplay {
         entities: Query<Entity, With<Self>>,
         mut visibilities: Query<&mut Visibility, With<Self>>,
         paused: Res<Paused>,
+        game_over: Res<GameOverCheck>,
     ) {
         if paused.0 {
             // Pause
             for mut visibility in &mut visibilities {
                 *visibility = Visibility::Hidden;
             }
-        } else  {
+        } else if !game_over.0 {
             // Unload
             for entity in &entities {
                 commands.entity(entity).despawn();
@@ -197,6 +205,7 @@ impl Gameplay {
         cursor_query: Query<Entity, With<Cursor>>,
         mut events: EventReader<NanpureEvent>,
         mut next_state: ResMut<NextState<GameState>>,
+        mut game_over: ResMut<GameOverCheck>,
         mut paused: ResMut<Paused>,
         shapes: Res<Shapes>,
         colors: Res<Colors>,
@@ -226,6 +235,7 @@ impl Gameplay {
                         &colors,
                     )?;
                     if board.is_done()? {
+                        game_over.0 = true;
                         next_state.set(GameState::GameOver);
                     }
                     return Ok(());

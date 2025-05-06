@@ -6,6 +6,7 @@ use crate::consts::{SELECTED_COLOR, TITLE, TITLE_COLOR, UNSELECTED_COLOR};
 use crate::events::NanpureEvent;
 use crate::fonts::TitleFont;
 use crate::game::Level;
+use crate::gameover::GameOverCheck;
 use crate::gameplay::Paused;
 use crate::states::GameState;
 
@@ -16,7 +17,10 @@ impl TitleScene {
     pub fn load_title_scene(
         mut commands: Commands,
         title_font: Res<TitleFont>,
+        mut game_over: ResMut<GameOverCheck>,
     ) {
+        game_over.0 = false;
+
         // Title Label
         commands.spawn((
             Self,

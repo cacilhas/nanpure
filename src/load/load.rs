@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 use bevy::ecs::error::Result;
 
-use crate::consts::{BACKGROUND_COLOR, CANDIDATE_SIZE, CELL_SIZE};
+use crate::consts::{BACKGROUND_COLOR, CANDIDATE_SIZE, CELL_SIZE, WIN_COLOR};
 use crate::fonts::{RegularFont, TitleFont};
 use crate::game::{Colors, Shapes};
+use crate::gameover::GameOverCheck;
 use crate::gameplay::Paused;
 use crate::states::GameState;
 
@@ -24,8 +25,8 @@ impl Load {
 
         let font = RegularFont::new(&assets)?;
         commands.insert_resource(font);
-
         commands.insert_resource(Paused(false));
+        commands.insert_resource(GameOverCheck(false));
 
         let cell_shapes = Shapes {
             rect: meshes.add(Rectangle::new(CELL_SIZE, CELL_SIZE)),
@@ -51,7 +52,7 @@ impl Load {
     }
 }
 
-pub static COLORS: [Color; 13] = [
+pub static COLORS: [Color; 14] = [
     Color::BLACK,
     Color::Srgba(Srgba { red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0 }),
     Color::Srgba(Srgba { red: 1.0, green: 0.5, blue: 0.0, alpha: 1.0 }),
@@ -64,5 +65,6 @@ pub static COLORS: [Color; 13] = [
     Color::Srgba(Srgba { red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0 }),
     Color::WHITE,
     BACKGROUND_COLOR,
-    Color::Srgba(Srgba { red: 1.0, green: 0.75, blue: 0.875, alpha: 1.0 })
+    Color::Srgba(Srgba { red: 1.0, green: 0.75, blue: 0.875, alpha: 1.0 }),
+    WIN_COLOR,
 ];

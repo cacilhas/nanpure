@@ -22,6 +22,7 @@ cargo install nanpure
 - Numbers: set cell value
 - 0: clean cell value up
 - Control + number: toggle cell candidate
+- U: undo
 - Escape: back
 - Pause: pause / unpause
 - Control + Q: quit

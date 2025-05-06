@@ -17,7 +17,7 @@ pub fn keybindings_system(
     let mut board = board_query.single_mut()?;
     for (input, _) in keyboard.par_read() {
         if input.state.is_pressed() && !input.repeat {
-            match input.logical_key {
+            match &input.logical_key {
                 Key::Escape => {
                     event_writer.write(NanpureEvent::AbortGame);
                     return Ok(());
@@ -48,15 +48,13 @@ pub fn keybindings_system(
                     board.set_highlight(xi + 1, yi);
                 }
 
-                _ => if let Some(text) = &input.text {
-                    let text = text.as_str();
-                    if text == "u" || text == "U" {
-                        if board.undo() {
-                            event_writer.write(NanpureEvent::RenderBoard);
-                            return Ok(());
-                        }
-                    }
-                },
+                Key::Character(ch) if ch == "u" || ch == "U" =>
+                    if board.undo() {
+                        event_writer.write(NanpureEvent::RenderBoard);
+                        return Ok(());
+                    },
+
+                _ => (),
             }
 
             let rerender = match input.key_code {

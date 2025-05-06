@@ -45,17 +45,13 @@ pub fn exit_system(
 ) {
     let mut key_q = false;
     for (input, _) in keyboard.par_read() {
-        if input.logical_key == Key::Control {
-            ctrl.0 = input.state.is_pressed();
-        }
+        match (&input.logical_key, input.state.is_pressed()) {
+            (Key::Control, pressed) => ctrl.0 = pressed,
 
-        else if input.state.is_pressed() {
-            if let Some(text) = &input.text {
-                let text = text.as_str();
-                if text == "q" || text == "Q" {
-                    key_q = true;
-                }
-            }
+            (Key::Character(ch), pressed) if pressed && (ch == "q" || ch == "Q") =>
+                    key_q = true,
+
+            _ => (),
         }
     }
     if ctrl.0 && key_q {

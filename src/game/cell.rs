@@ -135,7 +135,7 @@ impl Cell {
     ) {
         let shape = &shapes.cell_candidate;
         for i in 0..9 {
-            if self.is_candidate_set(i as u8) {
+            if self.is_candidate_set(i as u8 + 1) {
                 let ax = x + ((i % 3) as f32 - 1.0) * CANDIDATE_SIZE;
                 let ay = y + ((i / 3) as f32 - 1.0) * CANDIDATE_SIZE;
                 let color = colors.get(i + 1);

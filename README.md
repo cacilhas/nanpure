@@ -1,4 +1,4 @@
-# nanpure
+# Kodumaro Nanpūrë
 
 [COPYING]: https://github.com/cacilhas/nanpure/blob/master/COPYING
 [email]: mailto:montegasppa@cacilhas.info
@@ -6,7 +6,7 @@
 [The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 
-## Nanpure
+## Nanpūrë
 
 Yet another (colourful) [Sudoku][] playing game.
 
@@ -18,15 +18,15 @@ cargo install nanpure
 
 ### Controls
 
-- Cursor keys or WASD: select cell
-- Numbers: toggle candidates
-- Control + number (or Shift + number): set cell value
-- Control + 0 (or Shift + 0): clean cell value up
-- Space: alias to toggle single-value cell
-- F1: help
-- Escape: back or quit
+- Cursor keys: select cell
+- Numbers: set cell value
+- 0: clean cell value up
+- Control + number: toggle cell candidate
+- Escape: back
+- Pause: pause
+- Control + Q: quit
 
-No mouse during gameplay.
+You can use the mouse to select cells as well.
 
 ### Colours
 
@@ -47,7 +47,7 @@ generator.
 
 ### License
 
-- Copyright 2023 [Rodrigo Cacilhας \<montegasppa@cacilhas.info\>][email]
+- Copyright 2023-2025 [Rodrigo Cacilhας \<montegasppa@cacilhas.info\>][email]
 - [The 3-Clause BSD License][]
 - [COPYING][]
 

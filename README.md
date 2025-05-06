@@ -42,9 +42,9 @@ You can use the mouse to select cells as well.
 - 8: <span style="color: black; background-color: #ff00ff;">magenta</span>
 - 9: <span style="color: white; background-color: #808080;">gray</span>
 
-### Generator
+### Requirements
 
-It’s require that [Michael Kennett’s Sudoku][] be installed. It’s used as board
+It’s require that [Michael Kennett’s Sudoku][] be installed: it’s used as board
 generating back-end.
 
 ### License

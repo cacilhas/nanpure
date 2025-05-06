@@ -36,7 +36,7 @@ impl Load {
             rect: meshes.add(Rectangle::new(CELL_SIZE, CELL_SIZE)),
             full_bg_rect: meshes.add(Rectangle::new(CELL_SIZE * 10.0, CELL_SIZE * 9.5)),
             cell: meshes.add(Circle::new(CELL_SIZE / 2.0 - 4.0)),
-            cell_candidate: meshes.add(Circle::new(CANDIDATE_SIZE / 2.0 - 2.0)),
+            cell_candidate: meshes.add(Circle::new(CANDIDATE_SIZE / 2.0 - 4.0)),
             vertical_line: meshes.add(Rectangle::new(9.0, CELL_SIZE * 9.0 + 4.5)),
             horizontal_line: meshes.add(Rectangle::new(CELL_SIZE * 9.0 + 4.5, 9.0)),
         };

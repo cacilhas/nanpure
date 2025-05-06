@@ -5,6 +5,7 @@ use crate::consts::CELL_SIZE;
 use crate::consts::MAGICAL_AJUSTMENT_NUMBER;
 use crate::consts::TITLE_COLOR;
 use crate::events::NanpureEvent;
+use crate::fonts::MonospaceFont;
 use crate::fonts::RegularFont;
 use crate::game::BoardCell;
 use crate::game::Board;
@@ -16,8 +17,10 @@ use crate::game::Shapes;
 use crate::gameover::GameOverCheck;
 use crate::states::GameState;
 
+use super::clock::ClockDisplay;
 use super::paused::{MustUnpause, Paused};
 use super::background::BGFlag;
+use super::clock::Clock;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Component)]
 pub struct Gameplay;
@@ -26,15 +29,21 @@ impl Gameplay {
     pub fn update(
         board_query: Query<&Board>,
         window_query: Query<&Window>,
+        mut clock_query: Query<&mut Text, With<ClockDisplay>>,
         mut cursor_query: Query<&mut Transform, With<Cursor>>,
         mut error_cells_query: Query<&mut MeshMaterial2d<ColorMaterial>, With<ErrorCell>>,
         mut event_writer: EventWriter<NanpureEvent>,
         time: Res<Time>,
         colors: Res<Colors>,
+        mut clock: ResMut<Clock>,
     ) -> Result<()> {
         let window = window_query.single()?;
         if !window.focused {
             event_writer.write(NanpureEvent::PauseGame);
+        }
+        clock.update(&time);
+        if let Ok(mut display) = clock_query.single_mut() {
+            display.0 = clock.to_string();
         }
         let board = board_query.single()?;
         board.update(&mut cursor_query)?;
@@ -57,8 +66,10 @@ impl Gameplay {
         paused: Res<Paused>,
         shapes: Res<Shapes>,
         colors: Res<Colors>,
-        mut event_writer: EventWriter<NanpureEvent>,
         regular_font: Res<RegularFont>,
+        mut clock: ResMut<Clock>,
+        monospace_font: Res<MonospaceFont>,
+        mut event_writer: EventWriter<NanpureEvent>,
     ) -> Result<()> {
         if paused.0 {
             // Do NOT reload gameplay when unpausing
@@ -66,6 +77,7 @@ impl Gameplay {
             return Ok(());
         }
 
+        clock.reset();
         commands.spawn((
             Self,
             BGFlag,
@@ -164,6 +176,27 @@ impl Gameplay {
         }
 
         commands.spawn((Self, board));
+
+        commands.spawn((
+            Self,
+            ClockDisplay,
+            Text::new(clock.to_string()),
+            TextFont {
+                font: monospace_font.font().clone_weak(),
+                font_size: 32.0,
+                ..default()
+            },
+            TextColor(TITLE_COLOR.clone()),
+            TextLayout::new_with_justify(JustifyText::Center),
+            Node {
+                position_type: PositionType::Absolute,
+                right: Val::Px(8.0),
+                bottom: Val::Px(16.0),
+                height: Val::Px(32.0),
+                ..default()
+            },
+        ));
+
         event_writer.write(NanpureEvent::RenderBoard);
 
         Ok(())

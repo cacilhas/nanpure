@@ -2,10 +2,10 @@ use bevy::prelude::*;
 use bevy::ecs::error::Result;
 
 use crate::consts::{BACKGROUND_COLOR, CANDIDATE_SIZE, CELL_SIZE, WIN_COLOR};
-use crate::fonts::{RegularFont, TitleFont};
+use crate::fonts::{MonospaceFont, RegularFont, TitleFont};
 use crate::game::{Colors, Shapes};
 use crate::gameover::GameOverCheck;
-use crate::gameplay::Paused;
+use crate::gameplay::{Clock, Paused};
 use crate::states::GameState;
 
 use super::ctrl::Ctrl;
@@ -25,6 +25,10 @@ impl Load {
 
         let font = RegularFont::new(&assets)?;
         commands.insert_resource(font);
+
+        let font = MonospaceFont::new(&assets)?;
+        commands.insert_resource(font);
+
         commands.insert_resource(Paused(false));
         commands.insert_resource(GameOverCheck(false));
 
@@ -38,6 +42,7 @@ impl Load {
         };
         commands.insert_resource(cell_shapes);
         commands.insert_resource(Ctrl(false));
+        commands.insert_resource(Clock::default());
 
         let colors = COLORS.iter()
             .map(|color| materials.add(*color))

@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 use crate::consts::{BACKGROUND_COLOR, WIN_COLOR};
 use crate::game::{Colors, Cursor};
-use crate::gameplay::{BGFlag, Gameplay};
+use crate::gameplay::{BGFlag, ClockDisplay, Gameplay};
 use crate::states::GameState;
 
 #[derive(Debug, Clone, Resource)]
@@ -31,6 +31,7 @@ impl GameOver {
         mut commands: Commands,
         mut bg_query: Query<&mut BackgroundColor>,
         mut fg_query: Query<&mut MeshMaterial2d<ColorMaterial>, With<BGFlag>>,
+        mut clock_query: Query<&mut Visibility, With<ClockDisplay>>,
         cursor_query: Query<Entity, With<Cursor>>,
         colors: Res<Colors>,
     ) {
@@ -39,6 +40,9 @@ impl GameOver {
         }
         if let Ok(mut color) = bg_query.single_mut() {
             color.0 = WIN_COLOR.clone();
+        }
+        if let Ok(mut clock) = clock_query.single_mut() {
+            *clock = Visibility::Visible;
         }
         for mut color in &mut fg_query {
             color.0 = colors.win().clone_weak();

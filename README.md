@@ -32,15 +32,15 @@ You can use the mouse to select cells as well.
 
 ### Colours
 
-- 1: <span style="color: white; background-color: #ff0000;">red</span>
+- 1: <span style="color: black; background-color: #ff0000;">red</span>
 - 2: <span style="color: black; background-color: #ff8000;">orange</span>
 - 3: <span style="color: black; background-color: #ffff00;">yellow</span>
-- 4: <span style="color: white; background-color: #00ff00;">green</span>
+- 4: <span style="color: black; background-color: #00ff00;">green</span>
 - 5: <span style="color: black; background-color: #00ffff;">blue</span>
 - 6: <span style="color: white; background-color: #0000ff;">indigo</span>
 - 7: <span style="color: black; background-color: #cd33ff;">violet</span>
-- 8: <span style="color: white; background-color: #ff00ff;">magenta</span>
-- 9: <span style="color: black: background-color: #808080;">gray</span>
+- 8: <span style="color: black; background-color: #ff00ff;">magenta</span>
+- 9: <span style="color: white; background-color: #808080;">gray</span>
 
 ### Generator
 

@@ -5,6 +5,7 @@
 [Michael Kennett’s Sudoku]: https://github.com/cinemast/sudoku
 [The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
+[Screenshot]: ./assets/screenshot.png
 
 ## Nanpūrë
 
@@ -53,3 +54,5 @@ generator.
 - [COPYING][]
 
 License: BSD-3-Clause
+
+![Screenshot][]

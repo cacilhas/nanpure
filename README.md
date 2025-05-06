@@ -44,8 +44,8 @@ You can use the mouse to select cells as well.
 
 ### Generator
 
-It’s require to have [Michael Kennett’s Sudoku][] installed. It’s used as board
-generator.
+It’s require that [Michael Kennett’s Sudoku][] be installed. It’s used as board
+generating back-end.
 
 ### License
 

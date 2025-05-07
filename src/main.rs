@@ -4,8 +4,6 @@ use bevy::window::{
     PresentMode,
     WindowTheme,
 };
-use bevy_rand::plugin::EntropyPlugin;
-use bevy_rand::prelude::WyRand;
 
 use numples::prelude::*;
 
@@ -31,7 +29,6 @@ fn main() {
                 ..default()
             })
         )
-        .add_plugins(EntropyPlugin::<WyRand>::default())
         .add_plugins(NumplesApp)
         .run();
 }

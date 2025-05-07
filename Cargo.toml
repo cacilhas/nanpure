@@ -34,7 +34,6 @@ inherits = "release"
 [dependencies]
 bevy_ecs = "0.16"
 bevy_state = "0.16"
-walkdir = "2.5"
 
 [dependencies.bevy]
 version = "0.16"
@@ -77,11 +76,3 @@ features = [
     # "webgl2",
     "x11",
 ]
-
-[dependencies.bevy_rand]
-version = "0.10"
-features = ["wyrand"]
-
-[dependencies.log]
-version = "0.4"
-features = ["max_level_debug", "release_max_level_warn"]

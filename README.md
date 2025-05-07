@@ -8,7 +8,7 @@
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 [Screenshot]: ./assets/screenshot.png
 
-## Numplës (ナンプレ)
+## Numplës (ナンプレツ)
 
 Yet another (colourful) [Sudoku][] playing game.
 

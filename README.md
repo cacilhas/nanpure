@@ -1,4 +1,4 @@
-# Kodumaro Nanpūrë
+# Kodumaro Nanpŭrë
 
 [COPYING]: https://codeberg.org/cacilhas/nanpure/src/branch/master/COPYING
 [email]: mailto:montegasppa@cacilhas.info
@@ -8,7 +8,7 @@
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 [Screenshot]: ./assets/screenshot.png
 
-## Nanpūrë
+## Nanpŭrë
 
 Yet another (colourful) [Sudoku][] playing game.
 

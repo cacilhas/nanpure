@@ -13,7 +13,9 @@ fn main() {
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
                     title: consts::TITLE.into(),
+                    name: Some("kodumaro-numples".to_string()),
                     resolution: consts::RESOLUTION.into(),
+                    position: WindowPosition::Centered(MonitorSelection::Current),
                     present_mode: PresentMode::AutoVsync,
                     prevent_default_event_handling: true,
                     window_theme: Some(WindowTheme::Light),
@@ -22,10 +24,15 @@ fn main() {
                         maximize: false,
                         close: true,
                     },
-                    visible: true,
+                    resize_constraints: WindowResizeConstraints {
+                        min_width: consts::RESOLUTION.x,
+                        min_height: consts::RESOLUTION.y,
+                        max_width: consts::RESOLUTION.x,
+                        max_height: consts::RESOLUTION.y,
+                    },
                     ..default()
                 }),
-                close_when_requested: true,
+                exit_condition: ExitCondition::OnPrimaryClosed,
                 ..default()
             })
         )

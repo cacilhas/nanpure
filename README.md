@@ -2,6 +2,7 @@
 
 [COPYING]: https://github.com/cacilhas/nanpure/blob/master/COPYING
 [email]: mailto:montegasppa@cacilhas.info
+[issues]: https://codeberg.org/cacilhas/nanpure/issues
 [Michael Kennett’s Sudoku]: https://github.com/cinemast/sudoku
 [The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
@@ -46,6 +47,10 @@ You can use the mouse to select cells as well.
 
 It’s require that [Michael Kennett’s Sudoku][] be installed: it’s used as board
 generating back-end.
+
+### Known bugs
+
+Found bugs can be reported [here][issues].
 
 ### License
 

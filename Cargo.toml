@@ -7,7 +7,7 @@ readme = "README.md"
 homepage = "https://crates.io/crates/nanpure"
 repository = "https://codeberg.org/cacilhas/nanpure"
 keywords = ["raylib", "sudoku"]
-categories = ["Games"]
+categories = ["games"]
 description = "Yet another sudoku playing game."
 edition = "2021"
 

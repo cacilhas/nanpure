@@ -23,14 +23,16 @@ impl Cell {
     }
 
     pub fn set_value(&mut self, value: u8) -> bool {
-        if value > 9 || value == self.value() {
+        let current = self.value();
+
+        if value > 9 || value == current {
             false
 
         } else if value == 0 {
             self.0 &= 0b0001_1111_1111_0000;
             true
 
-        } else if self.is_candidate_set(value) {
+        } else if self.is_candidate_set(value) && current == 0 {
             self.0 |= value as u16;
             true
 

@@ -1,6 +1,6 @@
 # Kodumaro Nanpūrë
 
-[COPYING]: https://github.com/cacilhas/nanpure/blob/master/COPYING
+[COPYING]: https://codeberg.org/cacilhas/nanpure/src/branch/master/COPYING
 [email]: mailto:montegasppa@cacilhas.info
 [issues]: https://codeberg.org/cacilhas/nanpure/issues
 [Michael Kennett’s Sudoku]: https://github.com/cinemast/sudoku

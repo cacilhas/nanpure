@@ -1,4 +1,4 @@
-# Kodumaro Numples
+# Kodumaro Numplës
 
 [COPYING]: https://codeberg.org/cacilhas/numples/src/branch/master/COPYING
 [email]: mailto:montegasppa@cacilhas.info
@@ -8,7 +8,7 @@
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 [Screenshot]: ./assets/screenshot.png
 
-## Numples (ナンプレ)
+## Numplës (ナンプレ)
 
 Yet another (colourful) [Sudoku][] playing game.
 

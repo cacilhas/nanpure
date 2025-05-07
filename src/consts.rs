@@ -10,7 +10,7 @@ pub const RESOLUTION: Vec2 = Vec2 {
     x: CELL_SIZE * 10.0 + 10.0,
     y: CELL_SIZE * 10.0 + 10.0 + MAGICAL_AJUSTMENT_NUMBER,
 };
-pub const TITLE: &str = "Kodumaro Numples";
+pub const TITLE: &str = "Kodumaro Numplës";
 
 pub const BACKGROUND_COLOR: Color = Color::srgb_u8(0xf5, 0xde, 0xb3);
 pub const WIN_COLOR: Color = Color::srgb_u8(0x00, 0x2a, 0x35);

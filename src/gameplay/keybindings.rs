@@ -2,7 +2,7 @@ use bevy::ecs::error::Result;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 
-use crate::events::NanpureEvent;
+use crate::events::NumplesEvent;
 use crate::game::Board;
 use crate::load::Ctrl;
 
@@ -10,7 +10,7 @@ use super::gameplay::Gameplay;
 
 pub fn keybindings_system(
     mut keyboard: EventReader<KeyboardInput>,
-    mut event_writer: EventWriter<NanpureEvent>,
+    mut event_writer: EventWriter<NumplesEvent>,
     mut board_query: Query<&mut Board, With<Gameplay>>,
     ctrl: Res<Ctrl>,
 ) -> Result<()> {
@@ -19,12 +19,12 @@ pub fn keybindings_system(
         if input.state.is_pressed() && !input.repeat {
             match &input.logical_key {
                 Key::Escape => {
-                    event_writer.write(NanpureEvent::AbortGame);
+                    event_writer.write(NumplesEvent::AbortGame);
                     return Ok(());
                 }
 
                 Key::Pause => {
-                    event_writer.write(NanpureEvent::PauseGame);
+                    event_writer.write(NumplesEvent::PauseGame);
                     return Ok(());
                 }
 
@@ -50,7 +50,7 @@ pub fn keybindings_system(
 
                 Key::Character(ch) if ch == "u" || ch == "U" =>
                     if board.undo() {
-                        event_writer.write(NanpureEvent::RenderBoard);
+                        event_writer.write(NumplesEvent::RenderBoard);
                         return Ok(());
                     },
 
@@ -101,7 +101,7 @@ pub fn keybindings_system(
             };
 
             if rerender {
-                event_writer.write(NanpureEvent::RenderBoard);
+                event_writer.write(NumplesEvent::RenderBoard);
             }
         }
     }

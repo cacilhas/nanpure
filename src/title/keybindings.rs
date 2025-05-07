@@ -1,13 +1,13 @@
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 
-use crate::events::NanpureEvent;
+use crate::events::NumplesEvent;
 use crate::game::Level;
 
 pub fn keybindings_system(
     mut keyboard: EventReader<KeyboardInput>,
     mut exit: EventWriter<AppExit>,
-    mut event_writer: EventWriter<NanpureEvent>,
+    mut event_writer: EventWriter<NumplesEvent>,
 ) {
     for (input, _) in keyboard.par_read() {
         if input.state.is_pressed() {
@@ -20,7 +20,7 @@ pub fn keybindings_system(
                 if let Some(text) = &input.text {
                     if text.to_string() == num.to_string() {
                         let level: Level = (num as u8).into();
-                        event_writer.write(NanpureEvent::StartGame(level));
+                        event_writer.write(NumplesEvent::StartGame(level));
                         break 'levels;
                     }
                 }

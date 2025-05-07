@@ -18,7 +18,7 @@ use bevy::prelude::*;
 use bevy::render::camera::SubCameraView;
 
 use crate::consts::RESOLUTION;
-use crate::events::NanpureEvent;
+use crate::events::NumplesEvent;
 use crate::gameover::GameOverPlugin;
 use crate::gameplay::GameplayPlugin;
 use crate::load::{Ctrl, LoadPlugin};
@@ -30,16 +30,16 @@ pub mod prelude {
     pub mod consts {
         pub use crate::consts::*;
     }
-    pub use super::NanpureApp;
+    pub use super::NumplesApp;
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct NanpureApp;
+pub struct NumplesApp;
 
-impl Plugin for NanpureApp {
+impl Plugin for NumplesApp {
     fn build(&self, app: &mut App) {
         app
-            .add_event::<NanpureEvent>()
+            .add_event::<NumplesEvent>()
             .init_state::<GameState>()
             .add_plugins(LoadPlugin)
             .add_plugins(TitleScenePlugin)

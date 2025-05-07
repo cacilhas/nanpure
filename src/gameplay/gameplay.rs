@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use crate::consts::CELL_SIZE;
 use crate::consts::MAGICAL_AJUSTMENT_NUMBER;
 use crate::consts::TITLE_COLOR;
-use crate::events::NanpureEvent;
+use crate::events::NumplesEvent;
 use crate::fonts::MonospaceFont;
 use crate::fonts::RegularFont;
 use crate::game::BoardCell;
@@ -32,14 +32,14 @@ impl Gameplay {
         mut clock_query: Query<&mut Text, With<ClockDisplay>>,
         mut cursor_query: Query<&mut Transform, With<Cursor>>,
         mut error_cells_query: Query<&mut MeshMaterial2d<ColorMaterial>, With<ErrorCell>>,
-        mut event_writer: EventWriter<NanpureEvent>,
+        mut event_writer: EventWriter<NumplesEvent>,
         time: Res<Time>,
         colors: Res<Colors>,
         mut clock: ResMut<Clock>,
     ) -> Result<()> {
         let window = window_query.single()?;
         if !window.focused {
-            event_writer.write(NanpureEvent::PauseGame);
+            event_writer.write(NumplesEvent::PauseGame);
         }
         clock.update(&time);
         if let Ok(mut display) = clock_query.single_mut() {
@@ -69,7 +69,7 @@ impl Gameplay {
         regular_font: Res<RegularFont>,
         mut clock: ResMut<Clock>,
         monospace_font: Res<MonospaceFont>,
-        mut event_writer: EventWriter<NanpureEvent>,
+        mut event_writer: EventWriter<NumplesEvent>,
     ) -> Result<()> {
         if paused.0 {
             // Do NOT reload gameplay when unpausing
@@ -197,7 +197,7 @@ impl Gameplay {
             },
         ));
 
-        event_writer.write(NanpureEvent::RenderBoard);
+        event_writer.write(NumplesEvent::RenderBoard);
 
         Ok(())
     }
@@ -242,7 +242,7 @@ impl Gameplay {
         board_query: Query<&Board>,
         cell_query: Query<Entity, With<BoardCell>>,
         cursor_query: Query<Entity, With<Cursor>>,
-        mut events: EventReader<NanpureEvent>,
+        mut events: EventReader<NumplesEvent>,
         mut next_state: ResMut<NextState<GameState>>,
         mut game_over: ResMut<GameOverCheck>,
         mut paused: ResMut<Paused>,
@@ -251,18 +251,18 @@ impl Gameplay {
     ) -> Result<()> {
         for event in events.read() {
             match event {
-                NanpureEvent::AbortGame => {
+                NumplesEvent::AbortGame => {
                     next_state.set(GameState::Title);
                     return Ok(());
                 }
 
-                NanpureEvent::PauseGame => {
+                NumplesEvent::PauseGame => {
                     paused.0 = true;
                     next_state.set(GameState::Paused);
                     return Ok(());
                 }
 
-                NanpureEvent::RenderBoard => {
+                NumplesEvent::RenderBoard => {
                     let board =  board_query.single()?;
                     board.render(
                         0.0,

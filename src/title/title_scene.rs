@@ -2,7 +2,7 @@ use bevy::ecs::error::Result;
 use bevy::prelude::*;
 
 use crate::consts::{SELECTED_COLOR, TITLE, TITLE_COLOR, UNSELECTED_COLOR};
-use crate::events::NanpureEvent;
+use crate::events::NumplesEvent;
 use crate::fonts::TitleFont;
 use crate::game::Level;
 use crate::gameover::GameOverCheck;
@@ -80,7 +80,7 @@ impl TitleScene {
         mut level_query: Query<(&Level, &Transform, &ComputedNode, &mut TextColor, &mut BackgroundColor), With<Self>>,
         window_query: Query<&Window>,
         mouse_input: Res<ButtonInput<MouseButton>>,
-        mut event_writer: EventWriter<NanpureEvent>,
+        mut event_writer: EventWriter<NumplesEvent>,
     ) -> Result<()> {
         let window = window_query.single()?;
         if let Some(mouse) = window.cursor_position() {
@@ -92,7 +92,7 @@ impl TitleScene {
                     bg.0 = Color::Srgba(Srgba { red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0 });
 
                     if mouse_input.just_pressed(MouseButton::Left) {
-                        event_writer.write(NanpureEvent::StartGame(level));
+                        event_writer.write(NumplesEvent::StartGame(level));
                         return Ok(());
                     }
 
@@ -107,13 +107,13 @@ impl TitleScene {
 
     pub fn event_handle(
         mut commands: Commands,
-        mut events: EventReader<NanpureEvent>,
+        mut events: EventReader<NumplesEvent>,
         mut next_state: ResMut<NextState<GameState>>,
         mut paused: ResMut<Paused>,
     ) {
         for event in events.read() {
             match event {
-                NanpureEvent::StartGame(level) => {
+                NumplesEvent::StartGame(level) => {
                     commands.insert_resource(*level);
                     paused.0 = false;
                     next_state.set(GameState::Playing);

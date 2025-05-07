@@ -32,6 +32,6 @@ fn main() {
             })
         )
         .add_plugins(EntropyPlugin::<WyRand>::default())
-        .add_plugins(NanpureApp)
+        .add_plugins(NumplesApp)
         .run();
 }

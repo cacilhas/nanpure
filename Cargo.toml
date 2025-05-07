@@ -1,11 +1,11 @@
 [package]
-name = "nanpure"
+name = "numples"                                                      # numples
 version = "1.0.1"
 authors = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info"]
 license = "BSD-3-Clause"
 readme = "README.md"
-homepage = "https://crates.io/crates/nanpure"
-repository = "https://codeberg.org/cacilhas/nanpure"
+homepage = "https://crates.io/crates/numples"                         # numples
+repository = "https://codeberg.org/cacilhas/numples"
 keywords = ["raylib", "sudoku"]
 categories = ["games"]
 description = "Yet another sudoku playing game."

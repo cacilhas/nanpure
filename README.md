@@ -1,21 +1,21 @@
-# Kodumaro Nanpŭrë
+# Kodumaro Numples
 
-[COPYING]: https://codeberg.org/cacilhas/nanpure/src/branch/master/COPYING
+[COPYING]: https://codeberg.org/cacilhas/numples/src/branch/master/COPYING
 [email]: mailto:montegasppa@cacilhas.info
-[issues]: https://codeberg.org/cacilhas/nanpure/issues
+[issues]: https://codeberg.org/cacilhas/numples/issues
 [Michael Kennett’s Sudoku]: https://github.com/cinemast/sudoku
 [The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 [Screenshot]: ./assets/screenshot.png
 
-## Nanpŭrë
+## Numples (ナンプレ)
 
 Yet another (colourful) [Sudoku][] playing game.
 
 ### Installation
 
 ```sh
-cargo install nanpure
+cargo install numples
 ```
 
 ### Controls

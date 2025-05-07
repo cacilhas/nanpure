@@ -7,7 +7,7 @@ use bevy::window::{
 use bevy_rand::plugin::EntropyPlugin;
 use bevy_rand::prelude::WyRand;
 
-use nanpure::prelude::*;
+use numples::prelude::*;
 
 fn main() {
     App::new()

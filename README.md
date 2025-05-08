@@ -4,9 +4,10 @@
 [email]: mailto:montegasppa@cacilhas.info
 [issues]: https://codeberg.org/cacilhas/numples/issues
 [Michael Kennett’s Sudoku]: https://github.com/cinemast/sudoku
-[The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 [Screenshot]: ./assets/screenshot.png
+[The 3-Clause BSD License]: https://opensource.org/license/bsd-3-clause/
+[UPX]: https://upx.github.io/
 
 ## Numplës (ナンプレツ)
 
@@ -16,6 +17,12 @@ Yet another (colourful) [Sudoku][] playing game.
 
 ```sh
 cargo install numples
+```
+
+You’re probably going to want to run [UPX][] on the binary:
+
+```sh
+upx --best --lzma ~/.cargo/bin/numples
 ```
 
 ### Controls

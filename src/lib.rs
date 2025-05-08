@@ -11,13 +11,9 @@ mod states;
 mod title;
 
 use bevy::app::Plugin;
-use bevy::core_pipeline::bloom::Bloom;
-use bevy::core_pipeline::tonemapping::DebandDither;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
-use bevy::render::camera::SubCameraView;
 
-use crate::consts::RESOLUTION;
 use crate::events::NumplesEvent;
 use crate::gameover::GameOverPlugin;
 use crate::gameplay::GameplayPlugin;
@@ -79,19 +75,5 @@ fn exit_system(
 }
 
 fn setup_camera(mut commands: Commands) {
-    let size = UVec2::new(RESOLUTION.x as u32, RESOLUTION.y as u32);
-    commands.spawn((
-        Camera2d,
-        Camera {
-            sub_camera_view: Some(SubCameraView {
-                full_size: size,
-                offset: Vec2::new(0.0, 0.0),
-                size,
-            }),
-            order: 1,
-            ..default()
-        },
-        Bloom::default(),
-        DebandDither::Enabled,
-    ));
+    commands.spawn(Camera2d);
 }

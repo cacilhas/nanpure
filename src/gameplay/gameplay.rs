@@ -1,19 +1,22 @@
 use bevy::ecs::error::Result;
 use bevy::prelude::*;
 
-use crate::consts::CELL_SIZE;
-use crate::consts::MAGICAL_AJUSTMENT_NUMBER;
-use crate::consts::TITLE_COLOR;
+use crate::consts::{
+    CELL_SIZE,
+    MAGICAL_AJUSTMENT_NUMBER,
+    TITLE_COLOR,
+};
 use crate::events::NumplesEvent;
-use crate::fonts::MonospaceFont;
-use crate::fonts::RegularFont;
-use crate::game::BoardCell;
-use crate::game::Board;
-use crate::game::Colors;
-use crate::game::Cursor;
-use crate::game::ErrorCell;
-use crate::game::Level;
-use crate::game::Shapes;
+use crate::fonts::{MonospaceFont, RegularFont};
+use crate::game::{
+    BoardCell,
+    Board,
+    Colors,
+    Cursor,
+    ErrorCell,
+    Level,
+    Shapes,
+};
 use crate::gameover::GameOverCheck;
 use crate::states::GameState;
 
@@ -83,7 +86,7 @@ impl Gameplay {
             BGFlag,
             Mesh2d(shapes.full_bg_rect.clone_weak()),
             MeshMaterial2d(colors.black().clone_weak()),
-            Transform::from_xyz(0.0, 32.0, -10.0),
+            Transform::from_xyz(0.0, 0.0, -10.0),
         ));
 
         commands.spawn((

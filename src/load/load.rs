@@ -1,7 +1,13 @@
 use bevy::prelude::*;
 use bevy::ecs::error::Result;
 
-use crate::consts::{BACKGROUND_COLOR, CANDIDATE_SIZE, CELL_SIZE, WIN_COLOR};
+use crate::consts::{
+    BACKGROUND_COLOR,
+    CANDIDATE_SIZE,
+    CELL_SIZE,
+    RESOLUTION,
+    WIN_COLOR,
+};
 use crate::fonts::{MonospaceFont, RegularFont, TitleFont};
 use crate::game::{Colors, Shapes};
 use crate::gameover::GameOverCheck;
@@ -34,7 +40,7 @@ impl Load {
 
         let cell_shapes = Shapes {
             rect: meshes.add(Rectangle::new(CELL_SIZE, CELL_SIZE)),
-            full_bg_rect: meshes.add(Rectangle::new(CELL_SIZE * 10.0, CELL_SIZE * 9.5)),
+            full_bg_rect: meshes.add(Rectangle::from_size(RESOLUTION)),
             cell: meshes.add(Circle::new(CELL_SIZE / 2.0 - 4.0)),
             cell_candidate: meshes.add(Circle::new(CANDIDATE_SIZE / 2.0 - 4.0)),
             vertical_line: meshes.add(Rectangle::new(9.0, CELL_SIZE * 9.0 + 4.5)),

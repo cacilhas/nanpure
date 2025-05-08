@@ -1,7 +1,7 @@
 # Kodumaro Numplës
 
 [COPYING]: https://codeberg.org/cacilhas/numples/src/branch/master/COPYING
-[email]: mailto:montegasppa@cacilhas.info
+[email]: mailto:montegasppa@cacilhas.cc
 [issues]: https://codeberg.org/cacilhas/numples/issues
 [Michael Kennett’s Sudoku]: https://github.com/cinemast/sudoku
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
@@ -61,7 +61,7 @@ Found bugs can be reported [here][issues].
 
 ### License
 
-- Copyright 2023-2025 [Rodrigo Cacilhας \<montegasppa@cacilhas.info\>][email]
+- Copyright 2023-2025 [Rodrigo Cacilhας \<montegasppa@cacilhas.cc\>][email]
 - [The 3-Clause BSD License][]
 - [COPYING][]
 

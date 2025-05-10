@@ -14,7 +14,7 @@ fn main() {
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
                     title: consts::TITLE.into(),
-                    name: Some("kodumaro-numples".to_string()),
+                    name: Some("Kodumaro-numples".to_string()),
                     resolution: consts::RESOLUTION.into(),
                     position: WindowPosition::Centered(MonitorSelection::Current),
                     present_mode: PresentMode::AutoVsync,

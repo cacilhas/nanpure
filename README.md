@@ -25,6 +25,11 @@ You’re probably going to want to run [UPX][] on the binary:
 upx --best --lzma ~/.cargo/bin/numples
 ```
 
+> Author note:
+>
+> Here in my case, release 1.0.1, UPX reduced the binary size from 27 MiB to
+> 5.8 MiB (about 22% of the original size).
+
 ### Controls
 
 - Cursor keys: select cell

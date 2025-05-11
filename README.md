@@ -47,7 +47,7 @@ You can use the mouse to select cells as well.
 - 5: <span style="color: black; background-color: #00ffff;">blue</span>
 - 6: <span style="color: white; background-color: #0000ff;">indigo</span>
 - 7: <span style="color: black; background-color: #cd33ff;">violet</span>
-- 8: <span style="color: black; background-color: #ff00ff;">magenta</span>
+- 8: <span style="color: black; background-color: #ff94ff;">pink</span>
 - 9: <span style="color: white; background-color: #808080;">gray</span>
 
 ### Requirements

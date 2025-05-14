@@ -6,10 +6,16 @@ use bevy::window::{
     WindowTheme,
 };
 
+use bevy_render::batching::gpu_preprocessing::{
+    GpuPreprocessingMode,
+    GpuPreprocessingSupport,
+};
+use bevy_render::RenderApp;
 use numples::prelude::*;
 
 fn main() {
-    App::new()
+    let mut app = App::new();
+    app
         .add_plugins(
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
@@ -38,5 +44,12 @@ fn main() {
             })
         )
         .add_plugins(NumplesApp)
-        .run();
+
+        // Sub-app
+        .sub_app_mut(RenderApp)
+        .insert_resource(GpuPreprocessingSupport {
+            max_supported_mode: GpuPreprocessingMode::None,
+        })
+    ;
+    app.run();
 }

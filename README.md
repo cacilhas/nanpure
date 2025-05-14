@@ -11,7 +11,9 @@
 
 ## Numplës (ナンプレツ)
 
-Yet another (colourful) [Sudoku][] playing game.
+Yet another (colourful) [Sudoku][] playing game. **Numplës** is pronounced as
+“num-place” and stands for “number place”. It’s derivative from the Japanese
+ナンプレ (*nanpŭrē*, Sudoku).
 
 ### Installation
 

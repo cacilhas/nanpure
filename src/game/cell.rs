@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::game::anim::Anim;
 use crate::{consts::CANDIDATE_SIZE, gameplay::Gameplay};
 
 use super::board_cell::BoardCell;
@@ -93,12 +94,23 @@ impl Cell {
         commands: &mut Commands,
         shapes: &Res<Shapes>,
         colors: &Res<Colors>,
+        anims: Vec<Anim>,
     ) {
-        let value = self.value();
-        if value == 0 {
-            self.render_candidates(x, y, commands, shapes, colors);
+        if let Some(anim) = anims.first() {
+            if anim.is_candidate() {
+                // TODO: deal with changing candidates
+            } else {
+                // TODO: deal with seting/unseting value
+            }
+
         } else {
-            self.render_value(value, x, y, commands, shapes, colors);
+            // No animation, same state as earlier
+            let value = self.value();
+            if value == 0 {
+                self.render_candidates(x, y, commands, shapes, colors);
+            } else {
+                self.render_value(value, x, y, commands, shapes, colors);
+            }
         }
     }
 

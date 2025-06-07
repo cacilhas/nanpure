@@ -108,13 +108,31 @@ impl InnerBoard {
 
         for iy in 0..9 {
             for ix in 0..9 {
-                // TODO: deal with anims
+                let mut anims: Vec<Anim> = anims.iter()
+                    .filter_map(|anim|
+                        if anim.is_at(ix, iy) {
+                            Some(anim.clone())
+                        } else {
+                            None
+                        }
+                    )
+                    .collect()
+                ;
+                anims.sort();
+                if let Some(anim) = anims.first() {
+                    if !anim.is_candidate() {
+                        let anim = anim.clone();
+                        anims.clear();
+                        anims.push(anim);
+                    }
+                }
                 self.cell(ix, iy).render(
                     x + (ix as f32 - 4.0) * CELL_SIZE,
                     y + (iy as f32 - 4.0) * CELL_SIZE,
                     commands,
                     shapes,
                     colors,
+                    anims,
                 );
             }
         }

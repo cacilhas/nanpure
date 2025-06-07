@@ -4,6 +4,7 @@ use crate::consts::MAGICAL_AJUSTMENT_NUMBER;
 use crate::gameplay::Gameplay;
 use crate::{consts::CELL_SIZE, kennett::KennettConnector};
 
+use super::anim::Anim;
 use super::board_cell::BoardCell;
 use super::cell::Cell;
 use super::cursor::Cursor;
@@ -50,22 +51,27 @@ impl InnerBoard {
         Vec2::new(CELL_SIZE * 9.0, CELL_SIZE * 9.0)
     }
 
-    pub(super) fn toggle_candidate(&self, x: usize, y: usize, value: u8) -> Option<Self> {
-        let mut new_board = self.clone();
-        if new_board.0[x + y * 9].toggle_candidate(value) {
-            Some(new_board)
+    pub(super) fn toggle_candidate(&self, x: usize, y: usize, value: u8, actions: &mut Vec<Anim>) -> Option<Self> {
+        let mut board = self.clone();
+        if board.0[x + y * 9].toggle_candidate(value) {
+            actions.push(if board.cell(x, y).is_candidate_set(value) {
+                Anim::SetCandidate { x, y, value }
+            } else {
+                Anim::UnsetCandidate { x, y, value }
+            });
+            Some(board)
         } else {
             None
         }
     }
 
-    pub(super) fn set_value(&self, x: usize, y: usize, value: u8) -> Option<Self> {
+    pub(super) fn set_value(&self, x: usize, y: usize, value: u8, actions: &mut Vec<Anim>) -> Option<Self> {
         let mut new_board = self.clone();
 
         if new_board.cell_mut(x, y).set_value(value) {
-            new_board.clean_row(x, y, value);
-            new_board.clean_column(x, y, value);
-            new_board.clean_group(x, y, value);
+            new_board.clean_row(x, y, value, actions);
+            new_board.clean_column(x, y, value, actions);
+            new_board.clean_group(x, y, value, actions);
             Some(new_board.recalculate())
 
         } else {
@@ -112,7 +118,7 @@ impl InnerBoard {
         }
     }
 
-    fn cell(&self, x: usize, y: usize) -> &Cell {
+    pub fn cell(&self, x: usize, y: usize) -> &Cell {
         &self.0[x + y * 9]
     }
 
@@ -131,29 +137,35 @@ impl InnerBoard {
         self.1 = (x % 9) + (y % 9) * 9;
     }
 
-    fn clean_row(&mut self, x: usize, y: usize, value: u8) {
+    fn clean_row(&mut self, x: usize, y: usize, value: u8, actions: &mut Vec<Anim>) {
         for ax in 0..9 {
             if ax != x {
-                self.cell_mut(ax, y).clean_candidate(value);
+                if self.cell_mut(ax, y).clean_candidate(value) {
+                    actions.push(Anim::UnsetCandidate { x: ax, y, value });
+                }
             }
         }
     }
 
-    fn clean_column(&mut self, x: usize, y: usize, value: u8) {
+    fn clean_column(&mut self, x: usize, y: usize, value: u8, actions: &mut Vec<Anim>) {
         for ay in 0..9 {
             if ay != y {
-                self.cell_mut(x, ay).clean_candidate(value);
+                if self.cell_mut(x, ay).clean_candidate(value) {
+                    actions.push(Anim::UnsetCandidate { x, y: ay, value });
+                }
             }
         }
     }
 
-    fn clean_group(&mut self, x: usize, y: usize, value: u8) {
+    fn clean_group(&mut self, x: usize, y: usize, value: u8, actions: &mut Vec<Anim>) {
         let gx = (x / 3) * 3;
         let gy = (y / 3) * 3;
         for ax in gx..(gx + 3) {
             for ay in gy..(gy + 3) {
                 if ax != x || ay != y {
-                    self.cell_mut(ax, ay).clean_candidate(value);
+                    if self.cell_mut(ax, ay).clean_candidate(value) {
+                        actions.push(Anim::UnsetCandidate { x: ax, y: ay, value });
+                    }
                 }
             }
         }
@@ -189,7 +201,7 @@ impl TryFrom<Level> for InnerBoard {
         for (i, cell) in cells.into_iter().enumerate() {
             let x = i % 9;
             let y = i / 9;
-            board = match board.set_value(x, y, cell) {
+            board = match board.set_value(x, y, cell, &mut Vec::new()) {
                 Some(new_board) => new_board,
                 None => board,
             };

@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use super::anim::Anim;
 use super::board_cell::BoardCell;
 use super::colors::Colors;
 use super::cursor::Cursor;
@@ -11,7 +12,10 @@ use super::Level;
  * Wrapper around the InnerBoard struct in order to supply undo functionality.
  */
 #[derive(Debug, Clone, Default, Component)]
-pub struct Board(Vec<InnerBoard>);
+pub struct Board {
+    inner: Vec<InnerBoard>,
+    actions: Vec<Anim>,
+}
 
 impl Board {
 
@@ -35,7 +39,7 @@ impl Board {
     pub fn set_highlight(&mut self, xi: i32, yi: i32) {
         let xi = ((9 + xi) % 9) as usize;
         let yi = ((9 + yi) % 9) as usize;
-        for board in &mut self.0 {
+        for board in &mut self.inner {
             board.set_highlight(xi, yi);
         }
     }
@@ -45,19 +49,35 @@ impl Board {
     }
 
     pub fn set_value(&mut self, value: u8) -> Result<bool, std::io::Error> {
+        let mut actions: Vec<Anim> = Vec::new();
         let (x, y) = self.highlight()?;
-        if let Some(board) = self.current()?.set_value(x as usize, y as usize, value) {
-            self.0.push(board);
+        let (x, y) = (x as usize, y as usize);
+        let current = self.current()?;
+        if let Some(board) = current.set_value(x, y, value, &mut actions) {
+            if value == 0 {
+                let value = current.cell(x, y).value();
+                if value != 0 {
+                    actions.push(Anim::Unset { x, y, value });
+                }
+            } else {
+                actions.push(Anim::Set { x, y, value });
+            }
+            self.inner.push(board);
+            self.actions.append(&mut actions);
             Ok(true)
+
         } else {
             Ok(false)
         }
     }
 
     pub fn toggle_candidate(&mut self, candidate: u8) -> Result<bool, std::io::Error> {
+        let mut actions: Vec<Anim> = Vec::new();
         let (x, y) = self.highlight()?;
-        if let Some(board) = self.current()?.toggle_candidate(x as usize, y as usize, candidate) {
-            self.0.push(board);
+        let (x, y) = (x as usize, y as usize);
+        if let Some(board) = self.current()?.toggle_candidate(x, y, candidate, &mut actions) {
+            self.inner.push(board);
+            self.actions.append(&mut actions);
             Ok(true)
         } else {
             Ok(false)
@@ -65,10 +85,10 @@ impl Board {
     }
 
     pub fn undo(&mut self) -> bool {
-        if self.0.len() < 2 {
+        if self.inner.len() < 2 {
             false
         } else {
-            self.0.pop();
+            self.inner.pop();
             true
         }
     }
@@ -88,18 +108,18 @@ impl Board {
     }
 
     fn current(&self) -> Result<&InnerBoard, std::io::Error> {
-        if self.0.is_empty() {
+        if self.inner.is_empty() {
             Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
                 "No board available",
             ))
         } else {
-            Ok(&self.0[self.0.len() - 1])
+            Ok(&self.inner[self.inner.len() - 1])
         }
     }
 
     fn add(&mut self, board: InnerBoard) {
-        self.0.push(board);
+        self.inner.push(board);
     }
 }
 

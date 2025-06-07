@@ -1,3 +1,4 @@
+mod anim;
 mod board_cell;
 mod board_wrapper;
 mod cell;

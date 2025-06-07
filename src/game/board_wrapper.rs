@@ -14,7 +14,7 @@ use super::Level;
 #[derive(Debug, Clone, Default, Component)]
 pub struct Board {
     inner: Vec<InnerBoard>,
-    actions: Vec<Anim>,
+    anims: Vec<Anim>,
 }
 
 impl Board {
@@ -49,21 +49,21 @@ impl Board {
     }
 
     pub fn set_value(&mut self, value: u8) -> Result<bool, std::io::Error> {
-        let mut actions: Vec<Anim> = Vec::new();
+        let mut anims: Vec<Anim> = Vec::new();
         let (x, y) = self.highlight()?;
         let (x, y) = (x as usize, y as usize);
         let current = self.current()?;
-        if let Some(board) = current.set_value(x, y, value, &mut actions) {
+        if let Some(board) = current.set_value(x, y, value, &mut anims) {
             if value == 0 {
                 let value = current.cell(x, y).value();
                 if value != 0 {
-                    actions.push(Anim::Unset { x, y, value });
+                    anims.push(Anim::Unset { x, y, value });
                 }
             } else {
-                actions.push(Anim::Set { x, y, value });
+                anims.push(Anim::Set { x, y, value });
             }
             self.inner.push(board);
-            self.actions.append(&mut actions);
+            self.anims.append(&mut anims);
             Ok(true)
 
         } else {
@@ -72,12 +72,12 @@ impl Board {
     }
 
     pub fn toggle_candidate(&mut self, candidate: u8) -> Result<bool, std::io::Error> {
-        let mut actions: Vec<Anim> = Vec::new();
+        let mut anims: Vec<Anim> = Vec::new();
         let (x, y) = self.highlight()?;
         let (x, y) = (x as usize, y as usize);
-        if let Some(board) = self.current()?.toggle_candidate(x, y, candidate, &mut actions) {
+        if let Some(board) = self.current()?.toggle_candidate(x, y, candidate, &mut anims) {
             self.inner.push(board);
-            self.actions.append(&mut actions);
+            self.anims.append(&mut anims);
             Ok(true)
         } else {
             Ok(false)
@@ -94,7 +94,7 @@ impl Board {
     }
 
     pub fn render(
-        &self,
+        &mut self,
         x: f32,
         y: f32,
         commands: &mut Commands,
@@ -103,7 +103,16 @@ impl Board {
         shapes: &Res<Shapes>,
         colors: &Res<Colors>,
     ) -> Result<(), std::io::Error> {
-        self.current()?.render(x, y, commands, cell_query, cursor_query, shapes, colors);
+        self.current()?.render(
+            x, y,
+            commands,
+            cell_query,
+            cursor_query,
+            shapes,
+            colors,
+            &self.anims,
+        );
+        self.anims.clear();
         Ok(())
     }
 

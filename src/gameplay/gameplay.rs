@@ -242,7 +242,7 @@ impl Gameplay {
 
     pub fn event_handle(
         mut commands: Commands,
-        board_query: Query<&Board>,
+        mut board_query: Query<&mut Board>,
         cell_query: Query<Entity, With<BoardCell>>,
         cursor_query: Query<Entity, With<Cursor>>,
         mut events: EventReader<NumplesEvent>,
@@ -266,7 +266,7 @@ impl Gameplay {
                 }
 
                 NumplesEvent::RenderBoard => {
-                    let board =  board_query.single()?;
+                    let mut board = board_query.single_mut()?;
                     board.render(
                         0.0,
                         MAGICAL_AJUSTMENT_NUMBER,

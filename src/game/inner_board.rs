@@ -88,6 +88,7 @@ impl InnerBoard {
         cursor_query: &Query<Entity, With<Cursor>>,
         shapes: &Res<Shapes>,
         colors: &Res<Colors>,
+        anims: &Vec<Anim>,
     ) {
         // Clean up before populate
         for entity in cell_query.iter() {
@@ -107,6 +108,7 @@ impl InnerBoard {
 
         for iy in 0..9 {
             for ix in 0..9 {
+                // TODO: deal with anims
                 self.cell(ix, iy).render(
                     x + (ix as f32 - 4.0) * CELL_SIZE,
                     y + (iy as f32 - 4.0) * CELL_SIZE,

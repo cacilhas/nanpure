@@ -100,7 +100,7 @@ impl Cell {
             if anim.is_candidate() {
                 // TODO: deal with changing candidates
             } else {
-                // TODO: deal with seting/unseting value
+                // TODO: deal with setting/unsetting value
             }
 
         } else {

@@ -12,6 +12,10 @@ impl Anim {
         matches!(self, Self::SetCandidate { .. }) || matches!(self, Self::UnsetCandidate { .. })
     }
 
+    pub fn is_set(&self) -> bool {
+        matches!(self, Self::Set { .. }) || matches!(self, Self::SetCandidate { .. })
+    }
+
     pub fn is_at(&self, x: usize, y: usize) -> bool {
         let (tx, ty) = self.xy();
         tx == x && ty == y
